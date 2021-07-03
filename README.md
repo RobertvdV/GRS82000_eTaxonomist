@@ -1,7 +1,16 @@
 MSc Thesis topic: eTaxonomist: Explainable AI for biodiversity classification
 ==============================
 
+With an estimated 50% of animal species yet to be discovered, and many going extinct before they are ever described, it is more important than ever to reinforce the effort of monitoring known species and describing new ones. As a first step towards automating this process, we need to gather as much information as possible about how expert taxonomists distinguish between different species. This information can then be used to teach an Artificial Intelligence (AI) model to communicate like a taxonomist.
+
+Current AI systems based on deep learning allow for incredible feats, such as to automatically identify a plant or animal species based on an image (for instance, with the iNaturalist app). However, these models still have some serious drawbacks: 1) They are black boxes, meaning that it is very hard to understand the process that has led to a certain result. This prevents experts from spotting potential mistakes and amateurs to learn from the system; 2) They are quite rigid, and it is not straightforward to detect whether an image belongs to an unknown species or to add new species to the system.
+
 This project aims at solving this problem by splitting the system into two agents that communicate using natural language. The first is a visual-language hybrid model that takes an image as input and generates descriptions of the image in natural language using the vocabulary of expert taxonomists, but is not aware of species names. The second is a pure language model that takes as input the description provided by the first and outputs the corresponding species name.
+
+Goals of this project:
+- Develop a web-crawling system able to retrieve web pages with species descriptions.
+- Train a Natural Language Processing (NLP) model able to identify whether a paragraph is part of a species description or something else.
+- Train an NLP model able to infer a species name based on partial descriptions.
 
 Project Organization
 ------------
