@@ -1,7 +1,12 @@
 \documentclass{article}
 \usepackage{inputenc}
+\usepackage{hyperref}
+\usepackage{biblatex}
 
-\title{MSc. Thesis}
+
+
+\addbibresource{references.bib}
+\title{Explainable Deep Learning Models by Using Natural Language}
 \author{Robert Vlasakker, van de}
 \date{May 2021}
 
@@ -10,12 +15,28 @@
 \maketitle
 
 \section{Introduction}
+
+Deep Learning allows for incredible applications from the automatic classification of text and images, natural language processing to reinforcement learning.
+In a lot of cases, deep learning models have already surpassed human experts.
+While the results of the models are incredible, the reasoning behind the results remains a mystery \cite{li_interpretable_2021}.
+Deep learning models often consist of millions (or even billions) of parameters, and their behaviour is often referred to as a 'back box'.
+With sensitive fields, like health care, financial classification, autonomous driving, this black box behaviour could raise issues as it hampers the trustworthiness of the models \cite{carvalho_machine_2019}.
+
+
+
+
+
 \section{Research Gap}
+
+Different algorithms have been proposed to increase the interpretation of the models, were feature reduction algorithms \cite{ribeiro_why_2016} or inference of training sample contribution \cite{koh_understanding_2020}.
+These algorithms do explain some of the 
+
 \section{Objective}
 \section{Methodology}
 \section{Time Schedule}
 \section{Feasibility}
 
+\printbibliography
 
 
 \end{document}
