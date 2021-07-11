@@ -1,14 +1,21 @@
 \documentclass{article}
 \usepackage{inputenc}
-\usepackage{hyperref}
+\emergencystretch=2em
+\usepackage[breaklinks]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=black}
 \usepackage{biblatex}
 
 
 
 \addbibresource{references.bib}
-\title{Explainable Deep Learning Models by Using Natural Language}
+\title{Explainable AI by Using Natural Language as Intermediate Result Between Deep Learning Models}
 \author{Robert Vlasakker, van de}
-\date{May 2021}
+\date{August 2021}
 
 \begin{document}
 
@@ -18,21 +25,41 @@
 
 Deep Learning allows for incredible applications from the automatic classification of text and images, natural language processing to reinforcement learning.
 In a lot of cases, deep learning models have already surpassed human experts.
-While the results of the models are incredible, the reasoning behind the results remains a mystery \cite{li_interpretable_2021}.
-Deep learning models often consist of millions (or even billions) of parameters, and their behaviour is often referred to as a 'back box'.
-With sensitive fields, like health care, financial classification, autonomous driving, this black box behaviour could raise issues as it hampers the trustworthiness of the models \cite{carvalho_machine_2019}.
+Auto-regressive models like GPT-3 (Generative Pre-trained Transformer 3) can even produce text, that cannot be distinguished from real humans \cite{brown_language_2020}.
 
+%Something about eTaxonomist
+
+While the results of the models are incredible, the reasoning behind the results remains a mystery in most cases \cite{li_interpretable_2021}.
+Deep learning models often consist of millions (or even billions in the case of GPT-3 \cite{brown_language_2020}) of parameters. 
+Their behaviour is often referred to as a 'back box', which means that the reasoning behind the result is tough to understand.
+With sensitive fields, like health care, financial classification, autonomous driving, this black box behaviour could raise issues as it hampers the trustworthiness of the models \cite{carvalho_machine_2019}.
+When their behaviour is better understood, this could also lead to improvement of deep learning models \cite{amershi_modeltracker_2015}.
+When Deep Learning models are better understood, model usability could be expanded to more fields.
 
 
 
 
 \section{Research Gap}
-
-Different algorithms have been proposed to increase the interpretation of the models, were feature reduction algorithms \cite{ribeiro_why_2016} or inference of training sample contribution \cite{koh_understanding_2020}.
+Different algorithms have been proposed to increase the interpretation of the models, like feature reduction algorithms \cite{ribeiro_why_2016} or inference of training sample contribution \cite{koh_understanding_2020}.
 These algorithms do explain some of the 
 
 \section{Objective}
+
+
 \section{Methodology}
+
+\textbf{Database.}
+The first step of this research is creating a database.
+Data from structured data sources, like \href{http://www.Wikipedia.com}{Wikipedia} and \href{https://birdsoftheworld.org}{Birds of the World}, will be used.
+These sources have already labelled their data by providing sections headers, e.g. 'Description', 'Habitat', etc.
+The text will be labelled a one (true) if the text belongs to a 'Description' or 'Measurement' section and will be labelled zero (false) otherwise.
+For the false labels, the remaining text of the URL containing description data will be used.
+
+\textbf{Text Classification.}
+For the text classification, the Pytoch EmbeddingBag layer will be used.
+The EmbeddingBag layer is suitable for simple text classification like 'Description' vs 'Non-Description'.
+The power of the EmbeddingBad layer also lies in the fact that it works on text of various lengths.
+Unlike a GRU or an LSTM layer, short sentences do not need to be padded.
 \section{Time Schedule}
 \section{Feasibility}
 
