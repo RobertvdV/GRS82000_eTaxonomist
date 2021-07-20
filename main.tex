@@ -6,10 +6,10 @@
     colorlinks=true,
     linkcolor=blue,
     filecolor=magenta,      
-    urlcolor=cyan,
+    urlcolor=magenta,
     citecolor=black}
 \usepackage{biblatex}
-
+%\setlength{\parindent}{0pt}
 
 
 \addbibresource{references.bib}
@@ -22,44 +22,68 @@
 \maketitle
 
 \section{Introduction}
-
 Deep Learning allows for incredible applications from the automatic classification of text and images, natural language processing to reinforcement learning.
 In a lot of cases, deep learning models have already surpassed human experts.
-Auto-regressive models like GPT-3 (Generative Pre-trained Transformer 3) can even produce text, that cannot be distinguished from real humans \cite{brown_language_2020}.
-
-%Something about eTaxonomist
-
-While the results of the models are incredible, the reasoning behind the results remains a mystery in most cases \cite{li_interpretable_2021}.
-Deep learning models often consist of millions (or even billions in the case of GPT-3 \cite{brown_language_2020}) of parameters. 
-Their behaviour is often referred to as a 'back box', which means that the reasoning behind the result is tough to understand.
+Auto-regressive models like GPT-3 (Generative Pre-trained Transformer 3) can even produce text, that barely can be distinguished from real humans \cite{brown_language_2020}. With the \href{https://www.inaturalist.org/}{iNaturalist} species can automatically be recognized just by taking a picture of the species \cite{radford_learning_2021}.
+While these results of the deep learning models are incredible, the reasoning behind the results remains a mystery in most cases \cite{li_interpretable_2021, losch_interpretability_2019}.
+Deep learning models often consist of millions (or even billions in the case of GPT-3) of parameters.
+These parameters are the coefficients of the model.
+The parameters are initially chosen by the designer or randomly initialized by the model and get updated by the model as it 'learns'\footnote{The learning varies across different deep learning models.} from the data.
+After training the parameters of the deep learning model can no learning be easily interpreted.
+This behaviour is often referred to as a 'back box', which means that the reasoning behind the result is tough to understand.
 With sensitive fields, like health care, financial classification, autonomous driving, this black box behaviour could raise issues as it hampers the trustworthiness of the models \cite{carvalho_machine_2019}.
-When their behaviour is better understood, this could also lead to improvement of deep learning models \cite{amershi_modeltracker_2015}.
+When their behaviour is better understood, this could also lead to the improvement of deep learning models \cite{amershi_modeltracker_2015}.
+
+Different algorithms have been proposed to increase the interpretation of the models, like feature reduction algorithms \cite{ribeiro_why_2016}, inference of training sample contribution \cite{koh_understanding_2020} or by changing jittering test samples and see how the prediction changes \cite{li_understanding_2017}.
 When Deep Learning models are better understood, model usability could be expanded to more fields.
+In the taxonomy, new species are described by experts in the field. 
+Estimated is that 50\% of the species is yet to be discovered, and many species will go extinct before every described.
+Automatic monitoring with deep learning is more important than ever in this field.
+It is important to 'teach' deep learning models how taxonomy experts describe new species and in the meantime keep the model output interpretable for humans.
 
 
 
+
+
+%%% TRANSFER LEARNING SOMEWHERE
 
 \section{Research Gap}
-Different algorithms have been proposed to increase the interpretation of the models, like feature reduction algorithms \cite{ribeiro_why_2016} or inference of training sample contribution \cite{koh_understanding_2020}.
-These algorithms do explain some of the 
+By combining two different deep learning models their behaviour can be better understood.
 
 \section{Objective}
 
-
 \section{Methodology}
+The first step is creating a database that contains description and non-description data.
+To create a database large enough for the problem posed above a model is needed to classify text into description and non-description, a text classification deep learning model can be used for this.
+Text classification in deep learning aims to assign labels to sentences, paragraphs or even complete documents. 
+The data used for the model training can come from various sources. 
+However, most text sources are not structured and it can become very time-consuming by manually assigning labels to the text.
+By using text data from (semi)-structured databases in combination with a rule-based system enough training data can be created for the deep learning text classification model.
+\newline
 
-\textbf{Database.}
+\noindent
+\textbf{Database I.}
 The first step of this research is creating a database.
 Data from structured data sources, like \href{http://www.Wikipedia.com}{Wikipedia} and \href{https://birdsoftheworld.org}{Birds of the World}, will be used.
 These sources have already labelled their data by providing sections headers, e.g. 'Description', 'Habitat', etc.
 The text will be labelled a one (true) if the text belongs to a 'Description' or 'Measurement' section and will be labelled zero (false) otherwise.
 For the false labels, the remaining text of the URL containing description data will be used.
+\newline
 
+\noindent
 \textbf{Text Classification.}
-For the text classification, the Pytoch EmbeddingBag layer will be used.
-The EmbeddingBag layer is suitable for simple text classification like 'Description' vs 'Non-Description'.
-The power of the EmbeddingBad layer also lies in the fact that it works on text of various lengths.
-Unlike a GRU or an LSTM layer, short sentences do not need to be padded.
+A short literature research has been conducted for the best approach for text classification.
+Using a pre-trained word embeddings can help models achieve much better results, than the model trained from scratch \cite{mikolov_distributed_2013}.   
+BERT is a model that satisfies these conditions.
+BERT is a Bidirectional Encoder Representations from Transformers \cite{devlin_bert_2019}.
+The benefit of BERT is that BERT is already a pre-trained model.
+\newline
+
+\noindent
+\textbf{Database II.}
+The description database will be used to infer species descriptions from an species photograph in the first deep learning model agent.
+
+
 \section{Time Schedule}
 \section{Feasibility}
 
