@@ -24,19 +24,19 @@
 \section{Introduction}
 Deep Learning allows for incredible applications from the automatic classification of text and images, natural language processing to reinforcement learning.
 In a lot of cases, especially in the case of computer vision, deep learning models have already surpassed human experts \cite{he_delving_2015}.
-Auto-regressive models like GPT-3 (Generative Pre-trained Transformer 3) can even produce text, that barely can be distinguished from text produced by real humans \cite{brown_language_2020}.
-Nowadays deep learning models are also found quite often in consumer grade electronics, like smartphones and are also used in a lot of different applications like the \href{https://www.inaturalist.org/}{iNaturalist} application.
+Auto-regressive models like GPT-3 (Generative Pre-trained Transformer 3) can even produce text, that barely can be distinguished from a text produced by real humans \cite{brown_language_2020}.
+Nowadays deep learning models are also found quite often in consumer-grade electronics, like smartphones and are also used in a lot of different applications like the \href{https://www.inaturalist.org/}{iNaturalist} application.
 With the \href{https://www.inaturalist.org/}{iNaturalist} model, species can automatically be recognized just by taking a picture of the species \cite{radford_learning_2021}.
 While these results of the deep learning models are incredible, the reasoning behind the results remains a mystery in most cases \cite{li_interpretable_2021, losch_interpretability_2019}.
 
 Unlike classic machine learning models, deep learning models can automatically extract features needed for detection or classification.
-Domain knowledge, in combination with careful engineering to extract to necessary features for the detection and/or classification is no longer needed \cite{lecun_deep_2015}.
-Deep learning models use multiple simple neurons that take an input, process the input to a slightly more abstract representation and pass it trough the next neuron.
+Domain knowledge, in combination with careful engineering to extract to necessary features for the detection and/or classification, is no longer needed \cite{lecun_deep_2015}.
+Deep learning models use multiple simple neurons that take an input, process it to a slightly more abstract representation and pass it through the next neuron.
 Provided enough neurons are 'stacked' upon each other, very complex features can be extracted and correctly detected and/or classified by such a network.
 Stacking multiple neurons on top of each often results in millions of parameters (or even billions in the case of GPT-3) and use several non-linear activation functions that increase their complexity.
 These parameters are the coefficients of the model
 They are initially chosen by the designer or randomly initialized by the model and get updated by the model as it 'learns'\footnote{The learning varies across different deep learning models.} from the data.
-After training the parameters of the deep learning model they can no longer be easily interpreted.
+After training, the parameters of the  model can no longer easily interpret them.
 This behaviour is often referred to as a 'back box', which means that the reasoning behind the result is tough to understand or is lacking at all.
 With sensitive fields, like health care, financial classification, autonomous driving, this black box behaviour could raise issues as it hampers the trustworthiness of the models \cite{carvalho_machine_2019}.
 When their behaviour is better understood, these insights could also lead to the improvements of deep learning models \cite{amershi_modeltracker_2015} and deep learning models can be expanded to more fields \cite{lei_opening_2018}.
@@ -44,39 +44,46 @@ When their behaviour is better understood, these insights could also lead to the
 
 \section{Research Gap}
 Different algorithms have been proposed to increase the interpretation of the models, like feature reduction algorithms \cite{ribeiro_why_2016}, inference of training sample contribution \cite{koh_understanding_2020} or by changing jittering test samples and see how the prediction changes \cite{li_understanding_2017}.
-One of the most popular techniques to to make deep learning models easier to interpret are decomposition and partial derivatives techniques \cite{samek_explainable_2017}.
+One of the most popular techniques for making deep learning models easier to interpret are decomposition and partial derivatives techniques \cite{samek_explainable_2017}.
 Both techniques use heat maps.
-The heat map of a decomposed model will show how much each pixel contributes to the prediction of the model.
-The heat map of a model with partial derivatives will show how much the changes in each pixel affects the prediction of model.
-While some advanced have been made in model understanding, large leaps forward remain limited \cite{lipton_mythos_2017, li_interpretable_2021}.
+The heat map of a decomposed model will show how much each pixel contributes to the model's prediction.
+The heat map of a model with partial derivatives will show how much the changes in each pixel affect the model's prediction.
+While some advances have been made in model understanding, large leaps forward remain limited \cite{lipton_mythos_2017, li_interpretable_2021}.
+
 In the taxonomy, new species are described now by experts in the field.
 Estimated is that 50\% of the species is yet to be discovered, and many species will go extinct before every described.
 Automatic monitoring with deep learning is more important than ever in this field.
 Deep learning models can help discover new species.
-It is however, important to better understand the reasoning of a deep learning model in such a sensitive case \cite{carvalho_machine_2019}.
-The reasoning of the models are very important is these cases, why is a certain species labelled as new and others are not?
+It is, however, important to better understand the reasoning of a deep learning model in such a sensitive case \cite{carvalho_machine_2019}.
+The reasoning of deep learning models is critical in this sensitive field, why are certain species labelled as new and others are not?
 It is important to 'teach' deep learning models how taxonomy experts describe new species and in the meantime keep the model output interpretable for humans.
-
-A regular classification model will predict species and predict if a species does not exists within a known database.
-It his case it is important to know why a species would be labelled as a new species.
-By splitting a classification model into two models this problem can be solved.
-
+This way reasoning of deep learning can be tracked and evaluated.
+A regular classification model will predict species and predict if a species does not exist within a known database based on an image.
+In this case, it is vital to see how the model's reasoning works in the case of new predicted species.
+Are the species really new species or is the deep learning model not accurate enough?
+By splitting a classification model into two models this classification problem might be solved solve this problem and in the meantime create explainable AI.
+The input of the first model will still be an image. Still, instead of predicting species, the model will infer descriptions in natural language based on the image without knowing anything about the species itself.
+The second model will take these descriptions to predict to which species the descriptions belong and if there are not any existing species matching the descriptions predict new species.
+This research will focus on the database creation and curation for the description data and a deep learning model for the inference of species based on natural language descriptions.
 
 
 
 \section{Objective}
-
 \begin{itemize}
-    \item What is the best way to create a database that include species names, and their corresponding description data?
-    \item How can the description data be processed in such a way that structured sentences can be created without including the name of the species?
-    \item What is the best way to train a deep learning model that can infer species names based on generated description sentences?
+    \item How can a database be created that includes species names, and their corresponding description data?
+    \item How can the description data be processed so that structured sentences can be created without including the name of the species?
+    \item What is the best way to train a deep learning model to infer species names based on generated description sentences?
 \end{itemize}
-\section{Methodology}
 
+The first goal of this research is to create a database with species names and their description data.
+This database needs to be cleaned.
+
+
+\section{Methodology}
 %Transferlearning
 % The first is a visual-language hybrid model that takes an image as input and generates descriptions of the image in natural language using the vocabulary of expert taxonomists, but is not aware of species names.
 
-The first step is creating a database that contains description and non-description data.
+The first step is creating a database that contains the description and non-description data.
 To create a database large enough for the problem posed above, a web-crawler in combination with a model is needed to classify text into description and non-description.
 Text classification in deep learning aims to assign labels to sentences, paragraphs or even complete documents. 
 The data used for the model training can come from various sources. 
