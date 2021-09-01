@@ -1,16 +1,21 @@
+# specify device
+from torch import cuda
+import torch.nn as nn
+import transformers
+from transformers import DistilBertTokenizer, DistilBertModel
+import warnings
+import torch
+import torch
+from transformers import DistilBertTokenizer, DistilBertModel
+    
+# Load the BERT tokenizer
+tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')  
+
 def loadBERT(location, modelname):
     
     """
     Load the pretrained BERT model for text description data.
     """
-    
-    # specify device
-    from torch import cuda
-    import torch.nn as nn
-    import transformers
-    from transformers import DistilBertTokenizer, DistilBertModel
-    import warnings
-    import torch
     
     warnings.filterwarnings("ignore")
 
@@ -39,11 +44,11 @@ def loadBERT(location, modelname):
             self.softmax = nn.LogSoftmax(dim=1)
 
         #define the forward pass
-        def forward(self, sent_id, mask):
+        def forward(self, **kwargs):
 
             #pass the inputs to the model BERT  
-            cls_hs = self.bert(sent_id, attention_mask=mask)
-            hidden_state = cls_hs[0]
+            cls_hs = self.bert(**kwargs)
+            hidden_state = cls_hs.last_hidden_state
             pooler = hidden_state[:, 0]
 
             # dense layer 1        
@@ -82,23 +87,17 @@ def loadBERT(location, modelname):
     return model
 
 def SpanPredictor(span, model, pred_values=False):
-    
-    import torch
-    from transformers import DistilBertTokenizer, DistilBertModel
 
     """
     Uses a trained bert classifier to see if a span
     belongs to a species description or otherwise.
     """
-    
-    # Load the BERT tokenizer
-    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')  
         
     with torch.no_grad():
         # Tokenize input
         inputs = tokenizer(span, return_tensors="pt", truncation=True)
         # Predict class
-        outputs = model(inputs['input_ids'], inputs['attention_mask'])
+        outputs = model(**inputs)
         # Get prediction values
         exps = torch.exp(outputs)
         # Get class
@@ -107,5 +106,6 @@ def SpanPredictor(span, model, pred_values=False):
         # Print the prediction values
         if pred_values:
             return span_class, exps[0]
-        else:
-            return span_class    
+        else:    
+            return span_class
+        

@@ -6,7 +6,6 @@ def VisualizeDoc(sentences, per_sentence=True, save=False):
     from spacy.matcher import PhraseMatcher
     from spacy.tokens import Span
     from spacy.util import filter_spans
-    nlp = spacy.load("en_core_web_lg")
     
     """
     Creates and HTML file (can be rendered in a notebook) by using the SpaCy 
