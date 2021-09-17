@@ -59,13 +59,13 @@ def text_cleaner(dirty_text, per_sent=True):
         (r'\(\d+.+?Close\n\t\n\)', ''),
         (r'\(.+?\)', ''),
         (r'\[.+?\]', ''),
-        (r'cm\.', 'centimeters'),
-        (r'm\.', 'meters'),
-        (r'ft\.', 'feet'),
         (r'\.\.\.', '.'),
         (r'\.\s*\.', '.'),
         (r'-*subsp\.', 'subspecies'),
         (r'-*var\.', 'variation'),
+        (r'\s*?…', ''),
+        (r'Morphology:\xa0', ''),
+        (' +', ' '),
     ]
 
     # Clean text
@@ -73,12 +73,15 @@ def text_cleaner(dirty_text, per_sent=True):
         dirty_text = re.sub(regex, replace, dirty_text)
     # Clean stuff
     text = dirty_text.replace('\r', "")\
-                 .replace('\n', "")\
-                 .replace('\t', "")\
-                 .strip()
-                 #.encode("ascii", "ignore")\
-                 #.decode()\
-    
+                     .replace('\n', "")\
+                     .replace('\t', "")\
+                     .replace(';', ',')\
+                     .strip()
+                     #.replace(';', '.')\
+                     #.strip()
+                     #.encode("ascii", "ignore")\
+                     #.decode()\
+
     #nlp
     doc = nlp(text)
     sents = [i for i in doc.sents]
@@ -92,9 +95,15 @@ def text_cleaner(dirty_text, per_sent=True):
         # Create ratio
         non_eng = [token.is_oov for token in sentence].count(True)
         # Continue if the ratio is bad (non English jibberisch)
-        if non_eng != 0:
-            if non_eng / len(doc) > .2:
-                continue
+        if non_eng > 0 and non_eng / len(sentence) > .2:
+            continue
+        # Skip too much rubble
+        if non_eng > 8:
+            continue
+                
+        # Skip sentences without upper, results in mostly sentence part without information
+        if not sentence[0].is_title or not sentence[-1].is_punct:
+            continue
         sents_clean.append(sentence.text)
     
     sents_clean = list(set(sents_clean))
@@ -132,6 +141,7 @@ def get_prediction_results(dictionary, model,
         for sent in sentences:
             sent_str = sent.text
             
+            # Soft error instead of hard error
             if soft_error:
                 pred = classify(sent_str, model=model, pred_values=True)
                 pred_np = pred[1][1].numpy().item()
