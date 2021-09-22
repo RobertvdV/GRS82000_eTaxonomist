@@ -209,35 +209,37 @@ This will result in a large distance for different labels.
 For the deep metric learning network, a pre-trained BERT basis will again be used.
 As the last hidden state of BERT already contains a matrix, this last hidden state could be used as a feature for the loss function to compute the distance between two matrices.
 It has to be seen which model will perform better (accuracy/timewise), the metric model or the model that uses a soft max activation output layer. 
-To retrieve the the focus words used for making a prediction different attribution methods can be used.
-\textcite{vig_multiscale_2019} developed an open package that can be used to visualize the attention in transformer networks like BERT.
-Simple visualization like occlusions sensitivity heat maps can be used to track the change in the prediction by removing words one by one \autocite{fleet_visualizing_2014}, the benefit of occluding is that is can be done post-hoc on a trained model.
-An other approach is using the gradients of the network, like SmoothGrad \autocite{smilkov_smoothgrad_2017} or using the integrated gradients \autocite{sundararajan_axiomatic_2017}.
-With SmoothGrad, noise is added to the data multiple times and the average gradients are calculated, while with integrated gradients one searches for the parts where the derivative has the steepest slope (i.e. the most information is added).
-It has to been seen which approach gives to best results in retrieving the keywords used for the prediction.
+
+Different attribution methods can be used to retrieve the focus words used for making a prediction. 
+\textcite{vig_multiscale_2019} developed an open package that visualise the attention in transformer networks like BERT.
+Simple visualization like occlusions sensitivity heat maps can track the change in the prediction by removing words one by one \autocite{fleet_visualizing_2014}.
+The benefit of occluding is that it can be done posthoc on a trained model.
+Another approach is using the gradients of the network, like SmoothGrad \autocite{smilkov_smoothgrad_2017} or using the integrated gradients \autocite{sundararajan_axiomatic_2017}.
+With SmoothGrad, noise is added to the data multiple times, and the average gradients are calculated, while with integrated gradients, one searches for the parts where the derivative has the steepest slope (i.e. the most information is added).
+It has to be seen which approach gives the best results in retrieving the keywords used for the prediction.
 
 %\newpage
 %\begin{landscape}
 \section{Feasibility}
-In Figure \ref{fig:time_schedule} the schedule can be found. 
-As the workload of this thesis is relatively heavy, the start is at 15 July 2021.
+In Figure \ref{fig:time_schedule}, the schedule can be found. 
+As the workload of this thesis is relatively heavy, the start is on 15 July 2021.
 Another research is also dependent on some data that will be created in this research.
-By bringing the starting date forward, the other research can use the data earlier.
+By bringing the starting date forward, the other researchers can use the data earlier.
 \subsection{Web Crawler}
 The first step is to create a web crawler pipeline. 
-For this a lot of data needs to be scraped from structured sources.
-This is not a computationally expensive task and can be done a personal computer running Python with some basic packages like BeautifulSoup and Selenium.
-As the WUR server is not available for student at the time of writing (10 september 2020), the deep learning model for description recognition will be trained on \href{https://colab.research.google.com/}{Google Colab Pro}. 
-By storing and reloading the model at each instance, the model can be trained for multiple epochs.
-As the dataset will be initialized at every instance the same seed will be set to make sure the training, validating and testing date stays the same.
-If the model is trained enough and the results are sufficient, the model will be deployed on a personal laptop to crawl trough the web pages and store sentences that contain description data.
-A possible risk is that trained model, will not generalize well and will fail to recognize description sentences.
-In this case new data needs to be scraped manually to make sure the model will generalize better.
+For this, a lot of data needs to be scraped from structured sources.
+This is not a computationally expensive task and can be done on a personal computer running Python with some basic packages like BeautifulSoup and Selenium.
+As the WUR server is not available for students at the time of writing (10 September 2020), the deep learning model for description recognition will be trained on \href{https://colab.research.google.com/}{Google Colab Pro}. 
+By storing and reloading the model at each instance, the model can be trained for multiple epochs, even if the connections times-out.
+As the dataset will be initialised at every instance, the same seed will be set to ensure the training, validation, and testing data stays the same
+If the model is trained enough and the results are sufficient, the model will be deployed on a personal laptop to crawl through the web pages and store sentences that contain description data.
+A possible risk is that the trained model will not generalise well and fails to recognize description sentences.
+In this case new data needs to be scraped manually to make sure the model will generalise better.
 \subsection{Natural Language Processing Model}
 The database part needs to be finished before the NLP model can be trained.
-However, as also indicated, pipeline that process and load the data can already be built with some preliminary results from the web crawler.
-Both models (metric and normal softmax) will be trained on the WUR server is this is possible. 
-Otherwise both models will be trained on Google Colab Pro.
+A pipeline that processes and loads the data can already be built with preliminary results from the web crawler.
+Both models (metric and softmax) will be trained on the WUR server if this is possible. 
+Otherwise, both models will be trained on Google Colab Pro.
 
 
 \begin{figure} [t]
