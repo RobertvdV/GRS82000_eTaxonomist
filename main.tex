@@ -173,13 +173,11 @@ It has yet to be seen which species/query is the best combination and yields the
 When the right species/query combination is found, it can be used to iterate over the species names and return relevant web pages from the search engines.
 The text from the returned pages can be used to see if sentences are descriptions data and if yes, it would be stored under the queried species as a description of that species.
 %Before using the trained model, the retrieved text from the web page needs to be cleaned and the text will be broken down into single sentences.
-Some websites will use text information from other websites and maybe alter the text slightly. 
-In this case both, text spans will be detected by the model. 
-Using the last hidden state of the model and creating a cosine matrix similarity for all the data per species, the double sentences can be dropped, even if some different tokens used.
+Some websites will use text information from other websites and maybe alter the text slightly. In this case both, text spans will be detected by the model. 
+The double sentences can be dropped by using the last hidden state of the model and creating a cosine matrix similarity for all the data per species, even if some different tokens are used.
 Checking for sentence similarity will ensure the train and test data for the following models are disjoint.
 For extracting semantic triples from the data, the sentences that are qualified as descriptions will be used.
-A rule-based system needs to be set up based on the dependencies or the part-of-speech values. 
-Extracting semantic triples and feeding them to the next model will remove all bias and similarity in the sentences (artefacts, misspelt words etc.\footnote{It has yet yo be seen if there are any.}.
+A rule-based system needs to be set up based on the dependencies or the part-of-speech values. Extracting semantic triples and feeding them to the next model will remove all bias and similarity in the sentences (artefacts, misspelt words etc.\footnote{It has yet yo be seen if there are any.}.
 An example of this can be found in Figure \ref{fig:PoS_example}.
 
 \begin{figure} [t]
@@ -199,17 +197,17 @@ The last linear layer should be changed to one with an output of the species use
 %The model will be very expensive to train which such a large amount of output classes; It start with random guesses out of the 20,000 labels and needs to 'learn' the correct classes based on the loss that is returned.
 %Another downside of the softmax activation is that is does not try to keep different labels as far apart as possible.
 %With a fixed amount of classes this is not a problem.
-The second approach will be metric learning.
-The goal of deep metric learning to minimize the distance if it is looking at the same label and maximize the distance if it is looking at two different labels.
-As deep metric learning, like ordinary deep learning models, uses activation the non-linearity can be captured.
-Nowadays a popular deep learning model for metric learning is a so called 'Siamese network' \autocite{kaya_deep_2019}, and this model will also be used in this research.
+The second approach will be metric learning that uses distances (e.g. Euclidean) between labels.
+Deep metric learning minimises the distance if it looks at the same label and maximises the distance between two different labels.
+Deep metric learning, like ordinary deep learning models, uses activation functions to capture non-linearity.
+Nowadays, a popular deep learning model for metric learning is a so-called 'Siamese network' \autocite{kaya_deep_2019}, and this model will also be used in this research.
 It involves two identical networks that are combined into one single loss output.
 The output will produce a single distance cost function between two input labels.
-In this research the triplet loss \autocite{schroff_facenet_2015} will be used.
-Triplet loss uses an anchor label, and tries to push a similar label towards the anchor, but also pushed a dissimilar label away from the item.
+In this research, triplet loss \autocite{schroff_facenet_2015} will be used.
+Triplet loss uses an anchor label, tries to push a similar label towards the anchor, and pushes a different label away from the anchor.
 This will result in a large distance for different labels.
-For the deep learning network bases, the same basis BERT network as for the web crawler will be used.
-As the last hidden state of BERT already contains a matrix, this last hidden state could be used as features for the loss function to compute the distance between two matrices.
+For the deep metric learning network, a pre-trained BERT basis will again be used.
+As the last hidden state of BERT already contains a matrix, this last hidden state could be used as a feature for the loss function to compute the distance between two matrices.
 It has to be seen which model will perform better (accuracy/timewise), the metric model or the model that uses a soft max activation output layer. 
 To retrieve the the focus words used for making a prediction different attribution methods can be used.
 \textcite{vig_multiscale_2019} developed an open package that can be used to visualize the attention in transformer networks like BERT.
