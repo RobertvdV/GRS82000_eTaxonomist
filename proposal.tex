@@ -1,0 +1,65 @@
+\documentclass{article}
+\usepackage{inputenc}
+\emergencystretch=2em
+\usepackage[breaklinks]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=magenta,
+    citecolor=black}
+\usepackage[english]{babel}
+%\usepackage{biblatex}
+\usepackage[backend=biber, style=apa]{biblatex}
+\usepackage{svg}
+\usepackage{graphicx}
+\usepackage[labelfont=bf]{caption}
+\usepackage[left]{lineno} % For line numbers
+%\renewcommand{\baselinestretch}{2.0}
+%\linenumbers
+
+
+\addbibresource{references.bib}
+\title{A Step Towards Explainable AI: Infer Species Names Based on Partial Descriptions in Natural Language} 
+
+\author{Robert Vlasakker, van de}
+\date{August 2021}
+
+\begin{document}
+\graphicspath{ {./figures/} }
+
+\maketitle
+
+\section{Introduction}
+Deep neural networks (DNNs) allows for remarkable performance in applications: from the automatic classification of text and images, natural language processing to reinforcement learning and outperform most classic machine learning approaches \autocite{he_delving_2015, brown_language_2020}
+because of their performance DNNs are already found quite often variety of products and services.
+Key to their success is the end-to-end training.
+However, end-to-end training also results in DNNs that are difficult to explain.
+Because parameters of DNNs are tuned on the input data, the reasoning behind the intermediate results remains a mystery \autocite{li_interpretable_2021, losch_interpretability_2019}.
+When the reasoning behind DNNs' behaviour is better understood, the insights could improve their performance \autocite{amershi_modeltracker_2015}, and the models can be expanded to more fields \autocite{lei_opening_2018}.
+
+In the taxonomy, new species are now described by experts in the field.
+Estimated is that 50\% of the species are yet to be discovered, and many species will go extinct before every described \autocite{lees_species_2015}.
+Scalable technologies that can help monitor diversity and help discover new species are more needed than ever.
+Deep learning models can help discover new species, automate and speed up this process.
+It is important to better understand the reasoning of a deep learning model in sensitive fields like taxonomy, financial classification or autonomous driving, the black box behaviour of DNNs could raise issues as it hampers the trustworthiness of the models \autocite{carvalho_machine_2019}.
+
+Unlike classic machine learning models, deep learning models can automatically extract features needed for detection or classification.
+Domain knowledge, in combination with careful engineering to extract the necessary features for the detection or classification, is no longer needed \autocite{lecun_deep_2015}.
+To extract the features of the input data, deep learning models use multiple neurons that take the input, process it to a slightly more abstract representation and pass it through the next neuron.
+Provided enough neurons are 'stacked' upon each other, very complex features can be extracted and correctly detected or classified by such a network.
+Stacking multiple neurons on top of each other often results in millions of parameters in most recent deep learning models (or even billions in the case of GPT-3).
+All of these neurons use non-linear activation functions that decrease the interpretability of the network.
+While this automatic features extracting is very convenient in the case of taxonomy, is will become difficult to track the reasons for species classifications.
+Different algorithms and techniques have been proposed to increase the interpretation of the models, like feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, by changing jittering test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
+While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
+
+Previously mentioned algorithms and techniques rely on posthoc explanations, they try to interpret an already trained DNN and try to explain its decisions a posteriori.
+They try to assign meaning to features \autocite{fleet_visualizing_2014} or try to identify important features via attributions \autocite{zintgraf_visualizing_2017, selvaraju_grad-cam_2017}.
+By creating a semantic bottleneck in the network architecture and keep this bottleneck interpretable for humans, a more explainable AI might be created \autocite{ishikawa_contextual_2021, losch_interpretability_2019}.
+
+
+
+
+\printbibliography
+\end{document}
