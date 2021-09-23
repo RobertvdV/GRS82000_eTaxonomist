@@ -25,7 +25,7 @@
 
 
 \addbibresource{references.bib}
-\title{A Step Towards Explainable AI: Infer Species Based on Descriptions in Natural Language} 
+\title{A Step Towards Explainable AI: Infer Species Names Based on Partial Descriptions in Natural Language} 
 
 \author{Robert Vlasakker, van de}
 \date{August 2021}
@@ -50,7 +50,7 @@
 Deep learning allows for incredible applications from the automatic classification of text and images, natural language processing to reinforcement learning.
 Deep learning models have already surpassed human experts in many cases, especially in computer vision \autocite{he_delving_2015}.
 In natural language processing (NLP), auto-regressive models like GPT-3 (Generative Pre-trained Transformer 3) can produce text that barely can be distinguished from a text created by real humans \autocite{brown_language_2020}.
-Because of their success, deep learning models are already found quite often in consumer-grade electronics, like smartphones and used many of different applications like the \href{https://www.inaturalist.org/}{iNaturalist} application.
+Because of their success, deep learning models are already found quite often in consumer-grade electronics, like smartphones and used many of different applications like the \href{https://www.inaturalist.org/}{iNaturalist} application that can automatically classify species based on an image.
 %With the \href{https://www.inaturalist.org/}{iNaturalist} model, species can automatically be recognized just by taking a picture of species \autocite{radford_learning_2021}.
 Deep learning models also make their way into business services and solutions.
 Microsoft acquired an exclusive licensing on GPT-3 on 22 September 2020 and will integrate the model into their products and services.
@@ -62,12 +62,12 @@ While this automatic feature extraction is very convenient, it reduces the inter
 To extract the features of the input data, deep learning models use multiple simple neurons that take the input, process it to a slightly more abstract representation and pass it through the next neuron.
 Provided enough neurons are 'stacked' upon each other, very complex features can be extracted and correctly detected or classified by such a network.
 At each passing, the data becomes a bit more abstract and less interpretable.
-Stacking multiple neurons on top of each often results in millions of parameters in most recent deep learning models (or even billions in the case of GPT-3).
+Stacking multiple neurons on top of each other often results in millions of parameters in most recent deep learning models (or even billions in the case of GPT-3).
 All of these neurons use non-linear activation functions that increase the overall complexity of the network.
 The parameters can be seen as the model's coefficients and are initially chosen by the designer or randomly initialised by the model.
 They get updated by the model as it 'learns'\footnote{The learning method varies across different deep learning models, but is based on derivatives.} from the data.
 After training, the parameters of the model can no longer be  easily interpreted.
-This behaviour is often referred to as a 'back box', which means that the reasoning behind the result is tough to understand or is lacking at all.
+This behaviour is often referred to as a 'black box', which means that the reasoning behind the result is tough to understand or is lacking at all.
 With sensitive fields, like health care, financial classification or autonomous driving, this black box behaviour could raise issues as it hampers the trustworthiness of the models \autocite{carvalho_machine_2019}.
 The increasing complexity already resulted in several regulations, where the European General Data Protection Regulation (GDPR) is probably the most famous one.
 It is essential to keep the models comprehensible for humans as their decision will impact human lives.
