@@ -11,6 +11,7 @@
 \usepackage[english]{babel}
 %\usepackage{biblatex}
 \usepackage[backend=biber, style=apa]{biblatex}
+\setlength\bibitemsep{\baselineskip}
 \usepackage{svg}
 \usepackage{graphicx}
 \usepackage[labelfont=bf]{caption}
@@ -34,7 +35,7 @@
 Deep neural networks (DNNs) allows for remarkable performance in applications: from the automatic classification of text and images, natural language processing to reinforcement learning and outperform most classic machine learning approaches \autocite{he_delving_2015, brown_language_2020}
 because of their performance DNNs are already found quite often variety of products and services.
 Key to their success is the end-to-end training.
-However, end-to-end training also results in DNNs that are difficult to explain.
+However, the end-to-end training also results in DNNs that are difficult to explain.
 Because parameters of DNNs are tuned on the input data, the reasoning behind the intermediate results remains a mystery \autocite{li_interpretable_2021, losch_interpretability_2019}.
 When the reasoning behind DNNs' behaviour is better understood, the insights could improve their performance \autocite{amershi_modeltracker_2015}, and the models can be expanded to more fields \autocite{lei_opening_2018}.
 
@@ -42,24 +43,187 @@ In the taxonomy, new species are now described by experts in the field.
 Estimated is that 50\% of the species are yet to be discovered, and many species will go extinct before every described \autocite{lees_species_2015}.
 Scalable technologies that can help monitor diversity and help discover new species are more needed than ever.
 Deep learning models can help discover new species, automate and speed up this process.
-It is important to better understand the reasoning of a deep learning model in sensitive fields like taxonomy, financial classification or autonomous driving, the black box behaviour of DNNs could raise issues as it hampers the trustworthiness of the models \autocite{carvalho_machine_2019}.
+It is important to better understand the reasoning of a deep learning model in sensitive fields like taxonomy; the black box behaviour of DNNs could raise issues as it hampers the trustworthiness of the models \autocite{carvalho_machine_2019}.
 
 Unlike classic machine learning models, deep learning models can automatically extract features needed for detection or classification.
 Domain knowledge, in combination with careful engineering to extract the necessary features for the detection or classification, is no longer needed \autocite{lecun_deep_2015}.
 To extract the features of the input data, deep learning models use multiple neurons that take the input, process it to a slightly more abstract representation and pass it through the next neuron.
 Provided enough neurons are 'stacked' upon each other, very complex features can be extracted and correctly detected or classified by such a network.
-Stacking multiple neurons on top of each other often results in millions of parameters in most recent deep learning models (or even billions in the case of GPT-3).
+Stacking multiple neurons on top of each other often results in millions of parameters in most recent deep learning models.
 All of these neurons use non-linear activation functions that decrease the interpretability of the network.
-While this automatic features extracting is very convenient in the case of taxonomy, is will become difficult to track the reasons for species classifications.
+While this automatic features extracting is very convenient in the case of taxonomy, is will become difficult to track the models reasons for species classifications.
+
 Different algorithms and techniques have been proposed to increase the interpretation of the models, like feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, by changing jittering test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
-While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
-
-Previously mentioned algorithms and techniques rely on posthoc explanations, they try to interpret an already trained DNN and try to explain its decisions a posteriori.
+These algorithms and techniques all rely on posthoc explanations, they try to interpret an already trained DNN and try to explain its decisions a posteriori.
 They try to assign meaning to features \autocite{fleet_visualizing_2014} or try to identify important features via attributions \autocite{zintgraf_visualizing_2017, selvaraju_grad-cam_2017}.
-By creating a semantic bottleneck in the network architecture and keep this bottleneck interpretable for humans, a more explainable AI might be created \autocite{ishikawa_contextual_2021, losch_interpretability_2019}.
+An a priori approach is designing an architecture network with a layer that is interpretable, a semantic bottleneck \autocite{bucher_semantic_2019}. 
+This way a models reasoning for species prediction might be tracked by investigation the semantic bottleneck layer. \autocite{ishikawa_contextual_2021, losch_interpretability_2019}.
+While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
+By extending the concept of a semantic bottleneck, and split the DNN into two separate agents that are completely disjoint a more explainable AI might be created.
+
+A normal classification convolution neural network (CNN) takes an image and predicts a species.
+By splitting this network into two parts and connect them using natural language this interpretability problem might be solved.
+The first model will be a visual-language hybrid model, that takes an image with a species as input and outputs descriptions in natural language about that species.
+The second model will be a pure NLP model.
+This model takes the output of the first model and tries to identify the species based on the partial description.
+This will keep the intermediate results easily interpretable for humans.
+For both models to work, a large labelled database with species and their descriptions is needed. 
+Unfortunately, such a database does not yet exist and needs to be created for this research to happen.
+This dataset needs as many unique descriptions as possible for each species, so for both a taxonomist and an NLP model, it would be possible to infer the species name based on provided descriptions.
+The next step is building, training and validating the NLP model that can reason like a taxonomist.
+This pure NLP model will be trained independently from the visual-language hybrid model as it needs to be trained purely on the natural language. 
+The NLP model needs to make predictions on partial descriptions, but in the meantime, it should be clear which parts of the description data is used to make to prediction so the reasoning can be evaluated.
+The next step is building, training and validating the visual-language hybrid model using zero-shot transferring based on \textcite{radford_learning_2021}.
+This visual-language hybrid and the combination of the two models and their interpretability will be part of other researches.
+
+\section{Objective}
+This led to the following objectives for this research:
+\noindent 
+\begin{itemize}
+    
+    \item \emph{How can a high-quality database be created that contains species names and contains a combination of unique descriptions per species?}
+    
+    \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
+
+    \item \emph{How can the natural language model be interpreted to clarify which focus points are used for the prediction?}
+
+\end{itemize}
+
+The first objective is to create a high quality database with species and their desciptions.
+If the description is unavailable on a species level, the descriptions will be stored per genus or even per family.
+The descriptions are as much as possible stored per attribute instead of entire text spans.
+In this research, two ways of storing the attributes will be explored, (1) storage per sentence and (2) storage as a semantic triple (object, predicate, object).
+With the first, the sentences need be to cleaned and can be stored directly in the database.
+With the second, a knowledge graph needs to be built.
+The information needs to be extracted from the scraped sentences.
+
+The second objective will be creating an NLP model that can infer species names based on description data. 
+The data fed to the model will consist of description data from the database created in the first objective. 
+Based on the first results, this will either be descriptions sentences or semantic triples.
+For this objective, two different deep learning models will be explored.
+The fist is a basic network with several linear layers that end in a softmax activation function.
+The second one is a metric deep learning model.
+
+The third objective is to maintain traceability throughout the deep learning models mentioned in objective two.
+It should be tractable which description data points are essential for inferring a particular species by the pure NLP model.
+
+\section{Approach} 
+\subsection{Creation of the Dataset}
+The World Wide Web has potentially an endless amount of species descriptions available.
+However, this data is not structured and is certainly not in one place on the internet.
+A web crawler that can automatically query species description pages from search engines and then search those queried pages for description sentences can automatically fill an extensive database with species names and descriptions. 
+Description sentences can be theoretically limitless, e.g. for a Brown Bear description text could be: "The fur is brown", "The brown bear has brown fur".
+Sentences can also have a more difficult semantic, e.g. "The fur of the Brown bear is similar to that of the Grizzly bear".
+It will not be feasible to use a classic machine learning approach that requires a rule-based match system for the sentence classification. 
+A deep learning model that can automatically extract the features and classify the text is needed.
+However, to properly train a deep learning model that can classify text data, a large, accurate and consistent labelled dataset is needed \autocite{munappy_data_2019}.
+
+Several structured web sources like \href{http://www.Wikipedia.com}{Wikipedia}, \href{https://birdsoftheworld.org}{Birds of the World} and \href{http://powo.science.kew.org/}{Plants of the World Online} will be used to create this dataset.
+These websites do not contain labels but do contain paragraph titles like 'Habitat', 'Characteristics'. 
+These titles can be used as labels to label the scraped text (true in the case of 'Characteristics' and false in the case of 'Habitat').
+To compensate for text parts that are not  descriptions, but will be labelled as such, a loss of \textcite{reed_training_2015} will be implemented: \( Softloss(q, t) =  \sum_{L}^{k=1} [\beta t _k + (1- \beta )q _k]log(q _k) \).
+This will make the model loss flexible in case the model is sure about a prediction.
+Random Wikipedia pages will be used to increase the number of negatives for the database.
+This would help the model recognizing non-description text better.
+A deep learning model for text classification can be trained if enough data is gathered from structured sources.
+This model will aim to assign labels to sentences, paragraphs or even complete documents. 
+
+Using a pre-trained model with word embeddings can help models achieve better results than models trained from scratch \autocite{mikolov_distributed_2013}.
+Using a pre-trained model is called transfer learning and could speed up the training process and increase the accuracy of the deep learning model.
+BERT (Bidirectional Encoder Representations from Transformers) \autocite{devlin_bert_2019} is a pre-trained language model, and using transfer learning can be used for this task; BERT is already trained on a large corpus of English words.
+As text classification with two different outputs is a relatively simple task, a smaller and faster version of BERT, called distillBERT will be used \autocite{sanh_distilbert_2020}.
+\textcite{sun_how_2020} already investigated the best way to fine-tune BERT for text classification. 
+Their results will be used to build a model in PyTorch \autocite{paszke_pytorch_2019}.
+In their best runs they used one dropout layer (0.1) and two linear layers. 
+Their dropout layer and first linear layer (768\footnote{The output from the last hidden layer of BERT is a tensor of 768.}, 512) will be kept the same.
+The last linear layer will have its output changed to two as there are two different classes.
+The final activation function will be a log softmax function\footnote{In certain situation the log softmax is proven to be numerically more stable than softmax, by taken the exponent of the value it can be converted to normal prediction values.}
+
+If the results from the BERT descriptions classification model are proven to be sufficient, it can be used in the web crawler.
+Websites can be queried using different search engines like \href{www.google.com}{Google} and \href{www.bing.com}{Microsoft Bing}.
+Queries could be constructed by using the species name plus "description" or "diagnosis". 
+It has yet to be seen which species/query is the best combination and yields the most relevant results.
+When the right species/query combination is found, it can be used to iterate over the species names and return relevant web pages from the search engines.
+The text from the returned pages can be used to see if sentences are descriptions data and if yes, it would be stored under the queried species as a description of that species.
+%Before using the trained model, the retrieved text from the web page needs to be cleaned and the text will be broken down into single sentences.
+Some websites will use text information from other websites and maybe alter the text slightly. In this case both, text spans will be detected by the model. 
+The double sentences can be dropped by using the last hidden state of the model and creating a cosine matrix similarity for all the data per species, even if some different tokens are used.
+Checking for sentence similarity will ensure the train and test data for the following models are disjoint.
+
+For extracting semantic triples from the data, the sentences that are qualified as descriptions will be used.
+A rule-based system needs to be set up based on the dependencies or the part-of-speech values. Extracting semantic triples and feeding them to the next model will remove all bias and similarity in the sentences (artefacts, misspelt words etc.\footnote{It has yet yo be seen if there are any.}.
+An example of this can be found in Figure \ref{fig:PoS_example}.
+
+\begin{figure} [t]
+    \centering
+    \vspace{-2.0cm}
+    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1.6\textwidth]{PoS_example.svg}}
+    \caption{An example of part of speech and dependency parsing for the sentence: "The Brown Bear has large claws, and its fur is brown.". The arrows contain the dependency tags and the words contain the part of speech tags.}
+    \label{fig:PoS_example}
+\end{figure}
+
+%As the labels are based on the paragraphs titles, all the text inside a paragraph would get the same label. 
+\subsection{Infer Species on Partial Descriptions}
+For species prediction based on partial description data, two approaches will be explored.
+The first approach will be similar to that of the model used for description classification.
+The last linear layer should be changed to one with an output of the species used for training (e.g. 20,000).
+%However, with so much classes the softmax activation function in combination with a cross entropy loss function might not be suitable.
+%The model will be very expensive to train which such a large amount of output classes; It start with random guesses out of the 20,000 labels and needs to 'learn' the correct classes based on the loss that is returned.
+%Another downside of the softmax activation is that is does not try to keep different labels as far apart as possible.
+%With a fixed amount of classes this is not a problem.
+The second approach will be metric learning that uses distances (e.g. Euclidean) between labels.
+Deep metric learning minimises the distance if it looks at the same label and maximises the distance between two different labels.
+Deep metric learning, like ordinary deep learning models, uses activation functions to capture non-linearity.
+Nowadays, a popular deep learning model for metric learning is a so-called 'Siamese network' \autocite{kaya_deep_2019}, and this model will also be used in this research.
+It involves two identical networks that are combined into one single loss output.
+The output will produce a single distance cost function between two input labels.
+In this research, triplet loss \autocite{schroff_facenet_2015} will be used.
+Triplet loss uses an anchor label, tries to push a similar label towards the anchor, and pushes a different label away from the anchor.
+This will result in a large distance for different labels.
+For the deep metric learning network, a pre-trained BERT basis will again be used.
+As the last hidden state of BERT already contains a matrix, this last hidden state could be used as a feature for the loss function to compute the distance between two matrices.
+It has to be seen which model will perform better (accuracy/timewise), the metric model or the model that uses a soft max activation output layer. 
+
+Different attribution methods can be used to retrieve the focus words used for making a prediction. 
+\textcite{vig_multiscale_2019} developed an open package that visualise the attention in transformer networks like BERT.
+Simple visualization like occlusions sensitivity heat maps can track the change in the prediction by removing words one by one \autocite{fleet_visualizing_2014}.
+The benefit of occluding is that it can be done posthoc on a trained model.
+Another approach is using the gradients of the network, like SmoothGrad \autocite{smilkov_smoothgrad_2017} or using the integrated gradients \autocite{sundararajan_axiomatic_2017}.
+With SmoothGrad, noise is added to the data multiple times, and the average gradients are calculated, while with integrated gradients, one searches for the parts where the derivative has the steepest slope (i.e. the most information is added).
+It has to be seen which approach gives the best results in retrieving the keywords used for the prediction.
+
+%\newpage
+%\begin{landscape}
+\section{Feasibility}
+In Figure \ref{fig:time_schedule}, the schedule can be found. 
+As the workload of this thesis is relatively heavy, the start is on 15 July 2021.
+Another research is also dependent on some data that will be created in this research.
+By bringing the starting date forward, the other researchers can use the data earlier.
+\subsection{Web Crawler}
+The first step is to create a web crawler pipeline. 
+For this, a lot of data needs to be scraped from structured sources.
+This is not a computationally expensive task and can be done on a personal computer running Python with some basic packages like BeautifulSoup and Selenium.
+As the WUR server is not available for students at the time of writing (10 September 2020), the deep learning model for description recognition will be trained on \href{https://colab.research.google.com/}{Google Colab Pro}. 
+By storing and reloading the model at each instance, the model can be trained for multiple epochs, even if the connections times-out.
+As the dataset will be initialised at every instance, the same seed will be set to ensure the training, validation, and testing data stays the same
+If the model is trained enough and the results are sufficient, the model will be deployed on a personal laptop to crawl through the web pages and store sentences that contain description data.
+A possible risk is that the trained model will not generalise well and fails to recognize description sentences.
+In this case new data needs to be scraped manually to make sure the model will generalise better.
+\subsection{Natural Language Processing Model}
+The database part needs to be finished before the NLP model can be trained.
+A pipeline that processes and loads the data can already be built with preliminary results from the web crawler.
+Both models (metric and softmax) will be trained on the WUR server if this is possible. 
+Otherwise, both models will be trained on Google Colab Pro.
 
 
-
-
+\begin{figure} [t]
+    \centering
+    \vspace{-2.5cm}
+    \hspace{-1.3cm}
+    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1.6\textwidth]{schedule.svg}}
+    \caption{Time Schedule}
+    \label{fig:time_schedule}
+\end{figure}
+\newpage
 \printbibliography
 \end{document}
