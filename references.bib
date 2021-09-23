@@ -1,4 +1,47 @@
 
+@article{selvaraju_grad-cam_2017,
+	title = {Grad-{CAM}: Visual Explanations From Deep Networks via Gradient-Based Localization},
+	abstract = {We propose a technique for producing ‘visual explanations’ for decisions from a large class of Convolutional Neural Network ({CNN})-based models, making them more transparent. Our approach – Gradient-weighted Class Activation Mapping (Grad-{CAM}), uses the gradients of any target concept (say logits for ‘dog’ or even a caption), ﬂowing into the ﬁnal convolutional layer to produce a coarse localization map highlighting the important regions in the image for predicting the concept. Unlike previous approaches, {GradCAM} is applicable to a wide variety of {CNN} model-families: (1) {CNNs} with fully-connected layers (e.g. {VGG}), (2) {CNNs} used for structured outputs (e.g. captioning), (3) {CNNs} used in tasks with multi-modal inputs (e.g. visual question answering) or reinforcement learning, without architectural changes or re-training. We combine Grad-{CAM} with existing ﬁne-grained visualizations to create a high-resolution class-discriminative visualization, Guided Grad-{CAM}, and apply it to image classiﬁcation, image captioning, and visual question answering ({VQA}) models, including {ResNet}-based architectures. In the context of image classiﬁcation models, our visualizations (a) lend insights into failure modes of these models (showing that seemingly unreasonable predictions have reasonable explanations), (b) outperform previous methods on the {ILSVRC}-15 weakly-supervised localization task, (c) are more faithful to the underlying model, and (d) help achieve model generalization by identifying dataset bias. For image captioning and {VQA}, our visualizations show even non-attention based models can localize inputs. Finally, we design and conduct human studies to measure if Grad-{CAM} explanations help users establish appropriate trust in predictions from deep networks and show that Grad-{CAM} helps untrained users successfully discern a ‘stronger’ deep network from a ‘weaker’ one even when both make identical predictions. Our code is available at https: //github.com/ramprs/grad-cam/ along with a demo on {CloudCV} [2]1 and video at youtu.be/{COjUB}9Izk6E.},
+	pages = {9},
+	author = {Selvaraju, Ramprasaath R and Cogswell, Michael and Das, Abhishek and Vedantam, Ramakrishna and Parikh, Devi and Batra, Dhruv},
+	date = {2017},
+	langid = {english},
+}
+
+@incollection{fleet_visualizing_2014,
+	location = {Cham},
+	title = {Visualizing and Understanding Convolutional Networks},
+	volume = {8689},
+	isbn = {978-3-319-10589-5 978-3-319-10590-1},
+	url = {http://link.springer.com/10.1007/978-3-319-10590-1_53},
+	abstract = {Large Convolutional Network models have recently demonstrated impressive classiﬁcation performance on the {ImageNet} benchmark Krizhevsky et al. [18]. However there is no clear understanding of why they perform so well, or how they might be improved. In this paper we explore both issues. We introduce a novel visualization technique that gives insight into the function of intermediate feature layers and the operation of the classiﬁer. Used in a diagnostic role, these visualizations allow us to ﬁnd model architectures that outperform Krizhevsky et al. on the {ImageNet} classiﬁcation benchmark. We also perform an ablation study to discover the performance contribution from diﬀerent model layers. We show our {ImageNet} model generalizes well to other datasets: when the softmax classiﬁer is retrained, it convincingly beats the current state-ofthe-art results on Caltech-101 and Caltech-256 datasets.},
+	pages = {818--833},
+	booktitle = {Computer Vision – {ECCV} 2014},
+	publisher = {Springer International Publishing},
+	author = {Zeiler, Matthew D. and Fergus, Rob},
+	editor = {Fleet, David and Pajdla, Tomas and Schiele, Bernt and Tuytelaars, Tinne},
+	urldate = {2021-09-23},
+	date = {2014},
+	langid = {english},
+	doi = {10.1007/978-3-319-10590-1_53},
+	note = {Series Title: Lecture Notes in Computer Science},
+}
+
+@article{zintgraf_visualizing_2017,
+	title = {Visualizing Deep Neural Network Decisions: Prediction Difference Analysis},
+	url = {http://arxiv.org/abs/1702.04595},
+	shorttitle = {Visualizing Deep Neural Network Decisions},
+	abstract = {This article presents the prediction difference analysis method for visualizing the response of a deep neural network to a speciﬁc input. When classifying images, the method highlights areas in a given input image that provide evidence for or against a certain class. It overcomes several shortcoming of previous methods and provides great additional insight into the decision making process of classiﬁers. Making neural network decisions interpretable through visualization is important both to improve models and to accelerate the adoption of black-box classiﬁers in application areas such as medicine. We illustrate the method in experiments on natural images ({ImageNet} data), as well as medical images ({MRI} brain scans).},
+	journaltitle = {{arXiv}:1702.04595 [cs]},
+	author = {Zintgraf, Luisa M. and Cohen, Taco S. and Adel, Tameem and Welling, Max},
+	urldate = {2021-09-23},
+	date = {2017-02-15},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1702.04595},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition},
+}
+
 @article{smilkov_smoothgrad_2017,
 	title = {{SmoothGrad}: removing noise by adding noise},
 	url = {http://arxiv.org/abs/1706.03825},
@@ -14,7 +57,7 @@
 	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Statistics - Machine Learning},
 }
 
-@incollection{fleet_visualizing_2014,
+@incollection{fleet_visualizing_2014-1,
 	location = {Cham},
 	title = {Visualizing and Understanding Convolutional Networks},
 	volume = {8689},
