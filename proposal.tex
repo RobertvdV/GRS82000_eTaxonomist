@@ -110,8 +110,7 @@ However, DNNs are quite rigid and their black box behaviour could raise issues a
 %However, DNNs are quite rigid and often act as black boxes.
 %We first need to learn DNNs to reason like taxonomists. 
 It is essential to get more insights into the reasoning of a deep learning model in sensitive fields like taxonomy.
-This way, we can learn a DNN to reason like a experienced taxonomist when describing new species.
-
+This way, we can learn a DNN to reason like an experienced taxonomist when its describing existing and new species.
 
 Deep neural networks (DNNs) allow for remarkable performance in applications: from the automatic classification of text and images, natural language processing (NLP) to reinforcement learning.
 DNNs outperform most classic machine learning approaches \autocite{he_delving_2015, brown_language_2020}.
@@ -129,13 +128,13 @@ However, end-to-end training also results in DNNs that are rigid, difficult to i
 To extract the features from the input data, deep learning models use multiple neurons that take the input, process it to a slightly more abstract representation and pass it through the next layer of neurons \autocite{schmidhuber_deep_2015}.
 Provided enough layers are stacked upon each other, very complex features can be extracted and correctly detected or classified by such a network.
 %However, this means that well represented classes' features are extracted more, then less represented classes. 
-Because the networks parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019} and they do not perform well on long-tailed datasets, like most real-real world dataset \autocite{van_horn_inaturalist_2018}.
+Because the networks parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019} and they do not perform well on long-tailed datasets, like most real-world dataset \autocite{van_horn_inaturalist_2018}.
 Stacking multiple layers of neurons on top of each other often results in millions of parameters and all of these neurons use non-linear activation functions that decrease the interpretability of the network.
 In case long-tailed datasets the parameters do not get optimised well for less represented classes as the neurons cannot extract the necessary features.
 While this automatic feature extraction is very convenient, it will become difficult to track models' reasons and it can hamper performance.
 
-A more explainable AI might be created by extending the concept of the semantic bottleneck layer from \textcite{ishikawa_contextual_2021} and splitting a regular convolution neural network (CNN) for image classification into two separate models that communicate using natural language.
-The first model will describe species features present in the image and the second model will take these descriptions and tries to infer a species.
+A more explainable artificial intelligence (AI) might be created by extending the concept of the semantic bottleneck layer from \textcite{ishikawa_contextual_2021} and splitting a regular convolution neural network (CNN) for image classification into two separate models that communicate using natural language.
+The first model will describe species features present in the image and the second model will take these descriptions and tries to infer the species.
 %This semantic bottleneck layer is an intermediate layer that is intepretable for humans\autocite{bucher_semantic_2019}.
 %By splitting a regular classification convolution neural network (CNN) into two parts that communicate using natural language this interpretability and rigidity problem might be solved.
 This way a DNNs reasoning for species classification can be tracked, mistakes can be spotted and the models performance can be improved.
@@ -157,13 +156,13 @@ The second model will take the intermediate results to make a final prediction.
 By using their architecture a less rigid, more explainable DNN might be created.
 The first model will be a visual-language model that extracts the species attributes from an image and describes its results in natural language. 
 The second model is a pure natural language processing (NLP) model, that takes the descriptions and predicts a (new) species.
-This way the models reasoning for species predictions might be tracked by investigating the intermediate results \autocite{ishikawa_contextual_2021}.
+This way a models reasoning for species predictions might be tracked by investigating the intermediate results \autocite{ishikawa_contextual_2021}.
 This allows taxonomist to track a models reason for predicting an existing species or why the model predicts a not yet discovered species.
 
 The vision hybrid model will be based on the findings of \textcite{radford_learning_2021} and \textcite{huang_interpretable_2020}.
 Their findings allow the first model to learn to extract information from images by looking at raw text data that comes with image captions and describe objects present in those images.
-This visual-language hybrid model will be able to use zero-shot transfer (ZLS) to describe learned or new distinctive species features in natural language.
-The NLP model will take these features in natural language and tries to predict to which species this combination of descriptive features belongs.
+This visual-language hybrid model will be able to use zero-shot transfer (ZLS) to describe learned or new distinctive species attributes in natural language.
+The NLP model will take these attributes in natural language and tries to predict to which species this combination of descriptive features belongs.
 
 For the training of both models, an extensive labelled database with species and their descriptions is needed. 
 Unfortunately, such a database does not yet exist and needs to be created for this research to happen.
