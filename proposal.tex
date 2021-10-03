@@ -25,6 +25,7 @@
 \usepackage{wrapfig} % Picture container
 \usepackage{titlesec} % Remove chapter header
 \renewcommand{\familydefault}{\sfdefault} % Set default f
+\usepackage{comment}
 
 % COLORS
 %\usepackage{xcolor} 
@@ -99,14 +100,86 @@
 \graphicspath{ {./figures/} }
 
 \renewcommand{\thesection}{\arabic{section}}
+
+
 \section{Introduction}
+Estimated is that 50\% of the species are yet to be discovered, and many species will go extinct before ever being described \autocite{lees_species_2015}.
+Scalable technologies that can help monitor diversity and help discover new species are more needed than ever.
+Deep neural networks (DNNs) can help discover new species, automate and speed up this process \autocite{van_horn_inaturalist_2018}.
+However, DNNs are quite rigid and their black box behaviour could raise issues as it hampers the trustworthiness of the models \autocite{carvalho_machine_2019}.
+%However, DNNs are quite rigid and often act as black boxes.
+%We first need to learn DNNs to reason like taxonomists. 
+It is essential to get more insights into the reasoning of a deep learning model in sensitive fields like taxonomy.
+This way, we can learn a DNN to reason like a experienced taxonomist when describing new species.
+
+
+Deep neural networks (DNNs) allow for remarkable performance in applications: from the automatic classification of text and images, natural language processing (NLP) to reinforcement learning.
+DNNs outperform most classic machine learning approaches \autocite{he_delving_2015, brown_language_2020}.
+The key to their success is end-to-end training.
+Unlike classic machine learning models, deep learning models can automatically extract features needed for detection or classification.
+Domain knowledge, in combination with careful engineering to extract the necessary features for the detection or classification, is no longer needed \autocite{lecun_deep_2015}.
+However, end-to-end training also results in DNNs that are rigid, difficult to interpret and explain.
+
+%Because the networks parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019} and they do not perform well on long-tailed datasets, like most real-real world dataset \autocite{van_horn_inaturalist_2018}.
+%This limits their capabilities in automatic classification of species.
+%When the reason behind DNNs' behaviour is better understood, the insights could improve their performance \autocite{amershi_modeltracker_2015}.% and the models can be expanded to more fields \autocite{lei_opening_2018}.
+
+%Unlike classic machine learning models, deep learning models can automatically extract features needed for detection or classification.
+%Domain knowledge, in combination with careful engineering to extract the necessary features for the detection or classification, is no longer needed \autocite{lecun_deep_2015}.
+To extract the features from the input data, deep learning models use multiple neurons that take the input, process it to a slightly more abstract representation and pass it through the next layer of neurons \autocite{schmidhuber_deep_2015}.
+Provided enough layers are stacked upon each other, very complex features can be extracted and correctly detected or classified by such a network.
+%However, this means that well represented classes' features are extracted more, then less represented classes. 
+Because the networks parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019} and they do not perform well on long-tailed datasets, like most real-real world dataset \autocite{van_horn_inaturalist_2018}.
+Stacking multiple layers of neurons on top of each other often results in millions of parameters and all of these neurons use non-linear activation functions that decrease the interpretability of the network.
+In case long-tailed datasets the parameters do not get optimised well for less represented classes as the neurons cannot extract the necessary features.
+While this automatic feature extraction is very convenient, it will become difficult to track models' reasons and it can hamper performance.
+
+A more explainable AI might be created by extending the concept of the semantic bottleneck layer from \textcite{ishikawa_contextual_2021} and splitting a regular convolution neural network (CNN) for image classification into two separate models that communicate using natural language.
+The first model will describe species features present in the image and the second model will take these descriptions and tries to infer a species.
+%This semantic bottleneck layer is an intermediate layer that is intepretable for humans\autocite{bucher_semantic_2019}.
+%By splitting a regular classification convolution neural network (CNN) into two parts that communicate using natural language this interpretability and rigidity problem might be solved.
+This way a DNNs reasoning for species classification can be tracked, mistakes can be spotted and the models performance can be improved.
+
+
+
+\section{Motivation}
+Different algorithms and techniques have been proposed to increase the interpretability of the models.
+Common approaches are feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, adding jittering to test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
+These algorithms and techniques all rely on posthoc explanations; they try to interpret an already trained DNN and explain its decisions a posteriori.
+They try to identify important features via attributions \autocite{zintgraf_visualizing_2017, selvaraju_grad-cam_2017} or assign meaning to features \autocite{fleet_visualizing_2014}.
+While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
+These approaches might explain some of the inner workings of a DNN, but they do not help reason a DNN like a taxonomist and the intermediate results still remain difficult to interpret. 
+
+An a priori approach entails designing an architecture network with a bottleneck layer \autocite{bucher_semantic_2019}. 
+\textcite{ishikawa_contextual_2021} extended this bottleneck layer architecture by splitting the model at the semantic layer.
+First a model is trained that can predict semantic attributes.
+The second model will take the intermediate results to make a final prediction.
+By using their architecture a less rigid, more explainable DNN might be created.
+The first model will be a visual-language model that extracts the species attributes from an image and describes its results in natural language. 
+The second model is a pure natural language processing (NLP) model, that takes the descriptions and predicts a (new) species.
+This way the models reasoning for species predictions might be tracked by investigating the intermediate results \autocite{ishikawa_contextual_2021}.
+This allows taxonomist to track a models reason for predicting an existing species or why the model predicts a not yet discovered species.
+
+The vision hybrid model will be based on the findings of \textcite{radford_learning_2021} and \textcite{huang_interpretable_2020}.
+Their findings allow the first model to learn to extract information from images by looking at raw text data that comes with image captions and describe objects present in those images.
+This visual-language hybrid model will be able to use zero-shot transfer (ZLS) to describe learned or new distinctive species features in natural language.
+The NLP model will take these features in natural language and tries to predict to which species this combination of descriptive features belongs.
+
+For the training of both models, an extensive labelled database with species and their descriptions is needed. 
+Unfortunately, such a database does not yet exist and needs to be created for this research to happen.
+This dataset needs as many unique descriptions as possible for each species, so for both a taxonomist and the NLP model, it would be possible to infer the species name based on provided descriptions.
+The NLP model needs to make predictions on partial descriptions, but in the meantime, it should be clear which parts of the description data is used to make to prediction so the reasoning can be evaluated.
+This research will focus on the creation and curation of the dataset containing species and training and evaluating the NLP model.
+
+
+\begin{comment}
 Deep neural networks (DNNs) allow for remarkable performance in applications: from the automatic classification of text and images, natural language processing (NLP) to reinforcement learning.
 DNNs outperform most classic machine learning approaches \autocite{he_delving_2015, brown_language_2020}.
 Because of their performance, DNNs are already found quite often in a variety of products and services.
 The key to their success is end-to-end training; from feature extracting to the desired result.
 However, end-to-end training also results in DNNs that are difficult to interpret and explain.
 Because the networks parameters are updated based on its input data, the reasoning behind the intermediate results remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019}.
-When the reason behind DNNs' behaviour is better understood, the insights could improve their performance \autocite{amershi_modeltracker_2015}, and the models can be expanded to more fields \autocite{lei_opening_2018}.
+When the reason behind DNNs' behaviour is better understood, the insights could improve their trustworthiness, performance \autocite{amershi_modeltracker_2015}, and the models can be expanded to more fields \autocite{lei_opening_2018}.
 
 In the taxonomy, experts describe new species in the field.
 Estimated is that 50\% of the species are yet to be discovered, and many species will go extinct before ever being described \autocite{lees_species_2015}.
@@ -149,6 +222,11 @@ This NLP model will be trained independently from the visual-language hybrid mod
 The NLP model needs to make predictions on partial descriptions, but in the meantime, it should be clear which parts of the description data is used to make to prediction so the reasoning can be evaluated.
 The next step is building, training and validating the visual-language hybrid model using zero-shot transferring based on \textcite{radford_learning_2021}.
 This visual-language hybrid model and the combination of the two models and their interpretability will be part of other researches.
+\end{comment}
+
+
+
+
 
 \section{Objective}
 These aforementioned problems led to the following objectives for this research:
@@ -159,7 +237,7 @@ These aforementioned problems led to the following objectives for this research:
     
     \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
 
-    \item \emph{How can the natural language model be interpreted to clarify which focus points are used for the prediction?}
+    \item \emph{What interpretation techniques can be used with the natural language model to clarify which focus points are used for the predictions?}
 
 \end{itemize}
 
@@ -174,8 +252,6 @@ The first is a network with several linear layers that end in a softmax activati
 The second is a metric deep learning model that does not output a probability but a distance value per input.
 
 The third and final objective is to maintain traceability throughout the deep learning models mentioned in objective two; which description data points are essential for inferring a species?
-
-
 \section{Approach} 
 \subsection{Creation of the Dataset}
 The World Wide Web has potentially an endless amount of species descriptions available.
@@ -240,7 +316,7 @@ An example of a processed sentence with the SpaCy package can be found in Figure
 
 %As the labels are based on the paragraphs titles, all the text inside a paragraph would get the same label. 
 \subsection{Infer Species on Partial Descriptions}
-The input data is text data, using a pre-trained model provides better results \autocite{devlin_bert_2019, sanh_distilbert_2020, mikolov_distributed_2013}.
+As the input data is text data, using a pre-trained model provides better results \autocite{devlin_bert_2019, sanh_distilbert_2020, mikolov_distributed_2013}.
 For both architecture bases, a version (distilled or full version of BERT) will be used.
 The first approach will make use of a soft max activation function as last layer.
 With the first model, the hidden state layer will be connected to one or several linear layers and will end in a softmax activation function.
@@ -257,8 +333,8 @@ This network involves three identical networks that are combined into one single
 The output will produce a single distance cost function between three input labels.
 Triplet loss \autocite{schroff_facenet_2015} will be used to compute the loss between the labels.
 Triplet loss uses an anchor label, tries to push a similar label towards the anchor, and pushes a different label away, resulting in larger distances for different labels.
-As the last hidden state of BERT already contains a matrix, this last hidden state could be used as a feature for the loss function to compute the distance between two matrices.
-\textcite{musgrave_pytorch_2020} provide an open-source library built on PyTorch that provides an straightforward implementation of deep metric learning miners and algorithms.
+As the last hidden state of BERT already contains a matrix, this last hidden state will be used as a feature for the loss function to compute the distance between two matrices.
+\textcite{musgrave_pytorch_2020} provide an open-source library built on PyTorch that provides a straightforward implementation of deep metric learning miners and algorithms.
 It has to be seen which model will perform better (accuracy/timewise), the metric model or the model that uses a softmax activation output layer. 
 
 For retrieving focus words used for making species predictions, different techniques can be used.
@@ -315,4 +391,5 @@ This will take more time as each the GPU are shared across multiple users and ev
 
 
 \printbibliography
+
 \end{document}
