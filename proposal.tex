@@ -150,19 +150,22 @@ This way, DNNs reasonings for species classification can be tracked, mistakes ca
     \label{fig:intro}
 \end{figure}
 
-
-Many species look alike.
-They are difficult to distinguish, to describe and are easily missclassified.
-While DNNs can help automate and improve this classification process, they still rely on large amounts of training samples \autocite{van_horn_inaturalist_2018}.
-As most species datasets are long-tailed, these training samples are lacking for many species.
-We need a better understanding of an DNN to make it less rigid and more explainable so we can validate and improve the results \autocite{amershi_modeltracker_2015}.
+Many studies have already stipulated the importance of biodiversity for human life \autocite{pimentel_economic_1997, gowdy_value_1997, raffaelli_links_2010, joppa_biodiversity_2011, pimm_how_2018}.
+With the current extinction rate, over 50\% of the species will be gone before ever discovered \autocite{lees_species_2015}.
+Protecting biodiversity is now more needed than ever.
+However, we cannot conserve undiscovered species; we first need to describe them to protect them \autocite{joppa_biodiversity_2011}.
+DNNs can help discover new species and speed up this identification process \autocite{van_horn_inaturalist_2018}.
+However, many species look alike.
+They are difficult to distinguish and are easily miss-classified, especially with less abundant species.
+We need a better understanding of how a DNN identifies and classifies species. 
+This way, a less rigid DNN can be created, results of the DNN can be interpreted more easily, and the results can be improved.
 
 Different algorithms and techniques have been proposed to increase the interpretability of the models.
 Common approaches are feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, adding jittering to test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
 These algorithms and techniques all rely on posthoc explanations; they try to interpret an already trained DNN and explain its decisions a posteriori.
 They try to identify important features via attributions \autocite{zintgraf_visualizing_2017, selvaraju_grad-cam_2017} or assign meaning to features \autocite{fleet_visualizing_2014}.
 While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
-These approaches might explain some of the inner workings of a DNN, but they do not help reason a DNN like a taxonomist, and the intermediate results still remain challenging to interpret. 
+These approaches might explain some of the inner workings of a DNN, but they do not help reason a DNN like a taxonomist, the models remain rigid, and the intermediate results still remain challenging to interpret. 
 
 An a priori approach entails designing an architecture network with a semantic bottleneck layer that is interpretable for humans \autocite{bucher_semantic_2019}. 
 \textcite{ishikawa_contextual_2021} extended this bottleneck layer architecture by training a model that first learns the intermediate results.
@@ -174,9 +177,9 @@ The first model will be a visual-language model that extracts the species attrib
 This vision hybrid model will be based on the researches of \textcite{radford_learning_2021} and \textcite{huang_interpretable_2020}.
 Their findings allow the first model to learn to extract information from images by looking at raw text data that comes with image captions and describe objects present in those images.
 This visual-language hybrid model will describe learned species attributes and use zero-shot learning to describe unseen (new) distinctive species attributes.
+By first describing traits, less abundant species can benefit from more abundant species if they share common traits.
 The second model is a pure natural language processing (NLP) model that takes the partial descriptions and infer the species.
-This way, a models reasoning for species predictions might be tracked by investigating the intermediate results \autocite{ishikawa_contextual_2021}.
-This allows taxonomists to track a model's reason for predicting an existing species or predicting a not yet discovered species.
+This way, a models reasoning for species predictions might be tracked by investigating the intermediate results \autocite{ishikawa_contextual_2021} and the final model results will be less rigid.
 
 For the training of both models, an extensive labelled database with species and their descriptions is needed. 
 Unfortunately, such a database does not yet exist and needs to be created for this research to happen.
@@ -237,7 +240,7 @@ The next step is building, training and validating the visual-language hybrid mo
 This visual-language hybrid model and the combination of the two models and their interpretability will be part of other researches.
 \end{comment}
 \section{Objective}
-These aforementioned problems led to the following objectives for this research:
+These aforementioned problems led to the following research questions for this research:
 \noindent 
 \begin{itemize}
     
@@ -245,7 +248,7 @@ These aforementioned problems led to the following objectives for this research:
     
     \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
 
-    \item \emph{What interpretation technique can be used with the natural language model to clarify which focus points are used for the predictions and how can it be used?}
+    \item \emph{Which interpretation technique can be used with the natural language model to clarify which focus points are used for the predictions and how can it be used?}
 
 \end{itemize}
 
@@ -266,7 +269,7 @@ The third and final objective is to maintain traceability throughout the deep le
     \centering
     \vspace{-2cm}
     \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth]{workflow.pdf}}
-    \caption{A simplified workflow. Text data is used to train a model to recognize species description. In this case the paragraph titles are used as labels. The model is deployed in a web crawler that searches the web for species description. These data are then used to train the NLP model independently of the visual-language hybrid model.}
+    \caption{A simplified workflow. Text data is used to train a model to recognize species description. In this case the paragraph titles are used as labels. The model is deployed in a web crawler that searches the web for species descriptions. These data are then used to train the NLP model independently of the visual-language hybrid model. The NLP model will focus on important words to recognise the species.}
     \label{fig:workflow}
 \end{figure}
 
@@ -301,9 +304,9 @@ Their findings will be used to build a model in PyTorch \autocite{paszke_pytorch
 %Their dropout layer and first linear layer (768\footnote{The output from the last hidden layer of BERT is a tensor of 768.}, 512) will be kept the same.
 %The last linear layer will have its output changed to two as there are two different classes.
 %The final activation function will be a log softmax function\footnote{In certain situation the log softmax is proven to be numerically more stable than softmax, by taken the exponent of the value it can be converted to normal prediction values.}
-The model will be evaluated based on left out test set and a precision/recall plot will be used to assess the accuracy model on a test set. 
-When the f1 score is at least 0.95, the model will be evaluated based on left-out, smaller structured datasets like \href{http://www.llifle.com/}{LLifle} and \href{https://www.worldagroforestry.org/}{AgroForestry} to see how well the model generalises.
-When the results of the left-out datasets reach at least a f1 score of 0,90 the model will be deemed sufficient for the web crawler.
+The model will be evaluated based on a left out test set and a precision/recall plot will be used to assess the accuracy model on the test set. 
+When the model reaches a f1 score of at least 0.95, the model will be evaluated based on left-out, smaller structured datasets like \href{http://www.llifle.com/}{LLifle} and \href{https://www.worldagroforestry.org/}{AgroForestry} to see how well the model generalises.
+When the results of the left-out datasets have at least a f1 score of 0,90 the model will be deemed sufficient for the web crawler.
 %To additionally asses the model, descriptions that are close to the threshold value of 0.5 will be labelled manually to assess the model.
 
 When the results from the distilBERT descriptions classification model are proven to be sufficient, it will be used in the web crawler.
@@ -323,7 +326,7 @@ The duplicate sentences can be dropped using the last hidden state of the model 
 The web crawler will be run for two weeks or whenever 75,000 species have at least 20 different descriptions or chunks.
 If the 75,000 species are reached first, the remaining species that do not have 20 different descriptions will not be used.
 If after two weeks of web crawling there are not 75,000 species with a description, the species that do have 20 descriptions will be used.
-The remaining species description will be appended to the species corresponding family.
+The remaining species description will be appended to the species' corresponding family.
 
 For extracting subject-predicate-object expressions from the data, the sentences that are qualified as descriptions will be used.
 The sentences first need to be processed in a pre-trained NLP pipeline that can extract part-of-speech and dependencies.
@@ -366,9 +369,9 @@ As the last hidden state of BERT already contains a matrix, this last hidden sta
 
 %The goal for both models is not to reach a good accuracy, but to see if the predictions make sense, and to see on which points to model focuses.
 
-There is no way to check the final results of the model as there is no ground truth data.
-We can first statistically and visually asses the most important words used for the predictions. 
-E.g. does the model focuses on punctuation or does it focuses on important verbs, nouns, adjectives or combinations of one of these.
+There is no possibility to check the final results of the model as there is no ground truth data.
+The first step is to statistically and visually asses the most important words used for the predictions. 
+E.g. does the model focuses on punctuation or does it focuses on verbs, nouns, adjectives or combinations of one of these.
 For retrieving focus words used for making species predictions, different techniques can be used.
 \textcite{vig_multiscale_2019} developed an open package that visualises the attentions in transformer networks like BERT.
 Simple visualisation like occlusions sensitivity heat maps can track the change in the prediction by removing words one by one \autocite{fleet_visualizing_2014}.
@@ -389,9 +392,9 @@ For example, if the input text corresponds to the description of a Black Spruce 
 
 \begin{figure} [t]
     \centering
-    \vspace{1cm}
+    \vspace{-2cm}
     \hspace{-1.3cm}
-    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1.25\textwidth]{schedule.svg}}
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth]{schedule.pdf}}
     \caption{Time Schedule}
     \label{fig:time_schedule}
 \end{figure}
@@ -401,6 +404,7 @@ The start of this thesis is on July 15 2021.
 Other research is also dependent on some data that will be created in this research.
 By bringing the starting date forward, the other researchers can use the data earlier.
 
+
 \subsection{Web Crawler}
 The first step is to create a web crawler pipeline. 
 For this, data needs to be scraped from structured sources.
@@ -409,6 +413,7 @@ However, training the model that can recognise description spans is computationa
 As the WUR server is not available for students at the time of writing (\thedate), the deep learning model for description recognition will be trained on \href{https://colab.research.google.com/}{Google Colab Pro}. 
 The model can be trained for multiple epochs by storing and reloading the model at each instance, even if the connection times out.
 The dataset will be initialised at every instance, the same seed will be set to ensure the training, validation, and testing data stays the same.
+
 
 The model will be deployed on a personal laptop to crawl through the web pages and store sentences that contain description data.
 A possible risk is that the trained model will not generalise well and fails to recognise description sentences.
@@ -430,6 +435,8 @@ However, a pipeline that processes and loads the data can already be built with 
 Both models (metric and softmax) will be trained on the WUR server.
 Otherwise, both models will be trained on Google Colab Pro.
 This will take more time as each the GPU are shared across multiple users and every instance the data  and model have to be loaded.
+
+\thispagestyle{empty} % Remove pages numbering 
 
 There is no ground truth data available for the NLP model that has to infer species based on partial descriptions.
 A classic split in train and test data will not work. 
