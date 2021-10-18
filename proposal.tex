@@ -145,7 +145,7 @@ This way, DNNs reasonings for species classification can be tracked, mistakes ca
 \begin{figure} [t]
     \centering
     \vspace{0cm}
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth]{intrduction_overview.pdf}}
+    \makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{architecture.pdf}}
     \caption{The proposed architecture by \textcite{ishikawa_contextual_2021} for species classification. The model input is an image. The first model will describe the attributes present in the image in natural language. The second model will take the output of the first model and will make a prediction. The intermediate results remain interpretable by using natural language.}
     \label{fig:intro}
 \end{figure}
@@ -248,7 +248,7 @@ These aforementioned problems led to the following research questions for this r
     
     \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
 
-    \item \emph{Which interpretation technique can be used with the natural language model to clarify which focus points are used for the predictions and how can it be used?}
+    \item \emph{What interpretation techniques can be used with the natural language model to clarify which focus points are used for the predictions?}
 
 \end{itemize}
 
@@ -264,12 +264,13 @@ The second is a metric deep learning model that does not output a probability bu
 
 The third and final objective is to maintain traceability throughout the deep learning models mentioned in objective two; which description data points are essential for inferring a species?
 \section{Approach} 
+\thispagestyle{empty} % Remove pages numbering 
 
 \begin{figure} [t]
     \centering
     \vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth]{workflow.pdf}}
-    \caption{A simplified workflow. Text data is used to train a model to recognize species description. In this case the paragraph titles are used as labels. The model is deployed in a web crawler that searches the web for species descriptions. These data are then used to train the NLP model independently of the visual-language hybrid model. The NLP model will focus on important words to recognise the species.}
+    \makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{workflow.pdf}}
+    \caption{The proposed workflow: text data is used to train a model to recognize species descriptions. The paragraph titles are used as labels and the text are used as data. The model is deployed in a web crawler that searches the web for species descriptions. These description are then stored in a database with the species name as label, and the description as data. This database is used to train NLP model independently of the visual-language hybrid model. The species will be used as labels, and the descriptions will be used as data.}
     \label{fig:workflow}
 \end{figure}
 
@@ -340,8 +341,8 @@ An example of a processed sentence with the SpaCy package can be found in Figure
 \begin{figure} [t]
     \centering
     \vspace{0cm}
-    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1.25\textwidth]{PoS_example.svg}}
-    \caption{An example of part of speech and dependency parsing for the sentence: "The Brown bear has long and sharp claws.". The arrows contain the dependency tags and the words contain the part of speech tags.}
+    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1.0\textwidth]{PoS_example.svg}}
+    \caption{An example of part of speech and dependency parsing for the sentence: "The Brown bear has brown fur.". The arrows contain the dependency tags and the words contain the part of speech tags.}
     \label{fig:PoS_example}
 \end{figure}
 
@@ -369,9 +370,12 @@ As the last hidden state of BERT already contains a matrix, this last hidden sta
 
 %The goal for both models is not to reach a good accuracy, but to see if the predictions make sense, and to see on which points to model focuses.
 
+\subsection{Evaluation}
 There is no possibility to check the final results of the model as there is no ground truth data.
-The first step is to statistically and visually asses the most important words used for the predictions. 
-E.g. does the model focuses on punctuation or does it focuses on verbs, nouns, adjectives or combinations of one of these.
+It is not possible to leave out a part of the test data as the model might fail in recognising the species.
+Leaving out an entire species is also not an option; the model cannot predict the species in that case.
+
+The first step towards the validation is retrieving the keywords.
 For retrieving focus words used for making species predictions, different techniques can be used.
 \textcite{vig_multiscale_2019} developed an open package that visualises the attentions in transformer networks like BERT.
 Simple visualisation like occlusions sensitivity heat maps can track the change in the prediction by removing words one by one \autocite{fleet_visualizing_2014}.
@@ -382,19 +386,29 @@ With integrated gradients, one searches for the parts where the derivative has t
 Integrated gradients can be implemented very quickly by calling the gradients operator in PyTorch.
 All these examples can be done a posteriori and do not require any modifications to the network architecture.
 
-When the model uses important key words in the prediction, a small survey with an expert like a botanist to validate the models results is an option.
-The model will be fed a custom text span that corresponds to a species seen by the network.
-The botanist will be presented the same text span and has to predict the species.
-Both results will be compared, in case the results differ, the botanist can see if the model made a decent prediction.
-For example, if the input text corresponds to the description of a Black Spruce (Picea mariana), but it predicts a different Spruce (Pinaceae) the models made a decent prediction. 
+The second step is to statistically find the most important words used for the predictions. 
+E.g. does the model focuses on punctuation or does it focuses on verbs, nouns, adjectives or combinations of one of these.
+By processing the text spans with a pretrained NLP pipeline, like the pipelines from \textcite{honnibal_spacy_2020}, the part of speech tags can be extracted.
+This can be combined with the integrated gradients approach and retrieve the part of speech tags that add the most information.
+
+Finally, if the model seems to focus on verb, nouns, adjectives or a combination of one these, some proxy variables can be constructed to evaluate the NLP model.
+These variables need to correspond to a species seen by the model, but the variable cannot match the training text.
+The proxy variables do need to have high correlations with the text spans.
+This way, it would be possible for the model to infer the correct species.
+%\thispagestyle{empty} % Remove pages numbering 
+When the proxy variables are successful, a small survey with an expert like a botanist to validate the models results will be conducted.
+%The model will be fed a custom text span that corresponds to a species seen by the network.
+%The botanist will be presented the same text span and has to predict the species.
+%Both results will be compared, in case the results differ, the botanist can see if the model made a decent prediction.
+With a botanist the model will not only be evaluated on accuracy, but for example, if the input text corresponds to the description of a Black Spruce (Picea mariana), but it predicts a different Spruce (Pinaceae) the models made a decent prediction. 
 
 \section{Feasibility \& Limitations}
 
 \begin{figure} [t]
     \centering
-    \vspace{-2cm}
-    \hspace{-1.3cm}
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth]{schedule.pdf}}
+    %\vspace{-2cm}
+    %\hspace{-1.3cm}
+    \makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{schedule.pdf}}
     \caption{Time Schedule}
     \label{fig:time_schedule}
 \end{figure}
@@ -427,6 +441,10 @@ Data will be limited to plants and birds species and especially species availabl
 When scraping the data, the crawler will start with the plant species that have a description available in the PoWO database. 
 If the web scraper takes longer then 2 weeks and will be cut of, at least the species with a high description probability have been queried and searched by the model.
 
+Extracting the subject-predicate-object expressions might also be difficult. 
+The example sentence in Figure \ref{fig:PoS_example} is really easy.
+If the PoS tagging takes too much time, this will be skipped and the raw sentence data will be used to infer species.
+
 
 \subsection{Natural Language Processing Model}
 The processes in this research are dependent on each other.
@@ -436,7 +454,7 @@ Both models (metric and softmax) will be trained on the WUR server.
 Otherwise, both models will be trained on Google Colab Pro.
 This will take more time as each the GPU are shared across multiple users and every instance the data  and model have to be loaded.
 
-\thispagestyle{empty} % Remove pages numbering 
+
 
 There is no ground truth data available for the NLP model that has to infer species based on partial descriptions.
 A classic split in train and test data will not work. 
