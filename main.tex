@@ -101,6 +101,19 @@
  \end{titlingpage}
 \graphicspath{ {./figures/} }
 
+
+
+\thispagestyle{empty}
+\tableofcontents
+\thispagestyle{empty}
+\listoffigures
+\thispagestyle{empty}
+\listoftables
+\thispagestyle{empty}
+\newpage
+
+
+
 \renewcommand{\thesection}{\arabic{section}}
 \section{Introduction}
 Estimated is that 50\% of the species are yet to be discovered, and many species will go extinct before ever being described \autocite{lees_species_2015}.
@@ -124,11 +137,11 @@ Stacking multiple layers of neurons on top of each other often results in millio
 In long-tailed datasets, the parameters are not well optimised for less represented classes as the neurons cannot extract the necessary features.
 While this automatic feature extraction is very convenient, it will become difficult to track models' reasons, and it can hamper performance.
 
-\begin{figure} [h]
+\begin{figure} [htbp]
     \centering
     \vspace{0cm}
     \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{architecture.pdf}}
-    \caption{The proposed architecture by \textcite{ishikawa_contextual_2021} for species classification. The model input is an image. The first model will describe the attributes present in the image in natural language. The second model will take the output of the first model and will make a prediction. The intermediate results remain interpretable by using natural language.}
+    \caption[Proposed architecture]{The proposed architecture by \textcite{ishikawa_contextual_2021} for species classification. The model input is an image. The first model will describe the attributes present in the image in natural language. The second model will take the output of the first model and will make a prediction. The intermediate results remain interpretable by using natural language.}
     \label{fig:intro}
 \end{figure}
 
@@ -173,17 +186,43 @@ Unfortunately, such a database does not yet exist and needs to be created for th
 This dataset needs as many unique descriptions as possible for each species, so for both a taxonomist and the NLP model, it would be possible to infer the species name based on provided descriptions.
 The NLP model needs to make predictions on partial descriptions, but in the meantime, it should be clear which parts of the description data is used to make to prediction so the reasoning can be evaluated.
 This research will focus on creating and curating the dataset containing species and their descriptions and the training and evaluation of the NLP model.
+
+\newpage
+\section{Objective}
+These aforementioned problems led to the following research questions for this research:
+\noindent 
+\begin{itemize}
+    
+    \item \emph{How can a high-quality database be created containing species names and a combination of unique descriptions per species?}
+    
+    \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
+
+    \item \emph{What interpretation techniques can be used with the natural language model to clarify which focus points are used for the predictions?}
+
+\end{itemize}
+
+The first objective is to create a high-quality database with species and their descriptions.
+If the description is unavailable on a species level, the descriptions will be stored per genus or even per family.
+The descriptions are preferably stored per attribute rather than entire text spans.
+In this research, two ways of storing the attributes will be explored, (1) storage per sentence and (2) storage as a \href{https://www.ontotext.com/knowledgehub/fundamentals/what-is-a-knowledge-graph/}{semantic triple (object, predicate, object)}.
+The second objective will be creating an NLP model that can infer species names based on description data. 
+For this objective, two different deep learning models will be explored.
+The first is a network with several linear layers that end in a softmax activation function.
+The second is a metric deep learning model that does not output a probability but a distance value per input.
+The third and final objective is to maintain traceability throughout the deep learning models mentioned in objective two; which description data points are essential for inferring a species?
+
+
 \newpage
 \section{Approach}
 
 In Figure \ref{fig:workflow} a simplified version of the workflow can be found.
 This chapter will give a detailed description of the steps.
 
-\begin{figure} [t]
+\begin{figure} [htbp]
     \centering
-    \vspace{-2cm}
+    %\vspace{-2cm}
     \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{workflow.pdf}}
-    \caption{A simplified workflow. Text data is used to train a model to recognize species description. In this case the paragraph titles are used as labels. The model is deployed in a web crawler that searches the web for species descriptions. These data are then used to train the NLP model independently of the visual-language hybrid model. The NLP model will focus on important words to recognise the species.}
+    \caption[Workflow]{A simplified workflow. Text data is used to train a model to recognize species description. In this case the paragraph titles are used as labels. The model is deployed in a web crawler that searches the web for species descriptions. These data are then used to train the NLP model independently of the visual-language hybrid model. The NLP model will focus on important words to recognise the species.}
     \label{fig:workflow}
 \end{figure}
 
@@ -287,17 +326,21 @@ To correct for missclassified labels, a modified version of Equation \ref{eq:sof
 \begin{equation} \label{eq:softloss_ifthen}
 (\hat{\gamma}^{(i)} >= \beta \rightarrow \hat{\gamma}^{(i)} = \gamma^{(i)}) \wedge ( \leftharpoondown \hat{\gamma}^{(i)} = \hat{\gamma}^{(i)})
 \end{equation}
-This is the loss function from \textcite{reed_training_2015}, only notated in an If-Then statement to compensate for the miss labelled sentences of the external datasets, as losses are no longer calculated in these cases.
+This is the loss function from \textcite{reed_training_2015}, only notated in an If-Then statement to compensate for the miss labelled sentences of the external datasets.
 
 \subsubsection{Web Crawler Deployment}
 We deploy the classification model in a web crawler.
 This web crawler can automatically query search engines with a predefined list of birds and plants.
 The list for plants is based on the \href{https://www.ipni.org/}{International Plant Name Index} (IPNI) and the list for birds is based on the database of \href{https://birdsoftheworld.org/bow/home}{Birds of the World} (BoW).
 The IPNI database contains over 1,3 million plant species and the BoW database contains over ten thousand birds.
-The plant species are sorted based on their number of descriptions in the PoWO dataset.
+We sort the plant species based on their number of description in the PoWO dataset that is used to train the classifier.
+The IPNI database is large, and there is a high chance that not all species in this database can be queried within the time-frame of this research.
 Plant species with a description have a higher chance of being described somewhere else on the web as the PoWO dataset is closely linked to the IPNI database.
+This way we make sure that plant that will be queried have a high chance to contain a description somewhere on the web.
+This is not an issue for the bird species; the BoW only contains 10k+ described birds.
 
-The web crawler with query the search engines resulting in a list URLs with possible species descriptions.
+The web crawler queries the search engines. 
+This results in a list URLs with possible species descriptions.
 We use five different ways of constructing a query:
 \begin{itemize}
     \item "Species"
@@ -306,25 +349,31 @@ We use five different ways of constructing a query:
     \item "Species+attributes"
     \item "Species+captions"
 \end{itemize}
-The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity (see Section \ref{Sentence Similarity} about Sentence Similarity).
+Each query will return a list of candidate URLs and are appended to a list for a single species.
+The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentencen to drop duplicartes (see Section \ref{Sentence Similarity} about Sentence Similarity).
 The URLs are checked for text data without any markup, like raw text data and PDF files.
 Finally the header of the URL is checked against the queried species to make sure that the page really contains information about the queried species.
+Not every query will return correct websites, i.e. websites about the queried species.
+This way we prevent accidentally storing description data for the wrong species.
 
 If the URL meets all criteria, the raw text is retrieved and broken down into single sentences. 
 This makes sure the descriptions will be stored as much as possible per unique species trait.
-The text is cleaned using several regular expressions.
-We use a pretrained senticizer from \textcite{wolf_huggingfaces_2020} to split the text into single sentences.
+The text is cleaned using several regular expressions. % LINK TO THE EXPRESSIONS
+We use a pretrained sentecizer from \textcite{wolf_huggingfaces_2020} to split the text into single sentences.
 Every sentence is checked against the train description classifier.
 If a description is recognised by the model, the sentence is stored.
+We use a threshold of 0.5 to determine if a sentence is a description or otherwise.
+In Figures \ref{fig:webcrawler_sents_nopred} and \ref{fig:webcrawler_sents_pred} a small example can be found how the web crawler will process web pages and stores relevant information. 
+Figure \ref{fig:webcrawler_sents_nopred} contains the original text before processing and in \ref{fig:webcrawler_sents_pred} the original text is processed into single sentences and each sentence is classified.
 
 
-\begin{figure} [h]
+\begin{figure} [htbp]
      \centering
      \begin{subfigure}[b]{1.00\textwidth}
          \centering
          %\hspace{-1.0cm}
          \frame{\includegraphics[width=\textwidth]{web_crawler_example_sents.pdf}}
-         \caption{The raw text span from a web page. This a small portion of a web page about Bombax ceiba (source: \href{http://www.llifle.com/Encyclopedia/TREES/Family/Bombacaceae/31994/Bombax_ceiba}{Llilfe.com/Bomax\_ceiba}).}
+         \caption[Raw text span example]{The raw text span from a web page. This a small portion of a web page about Bombax ceiba (source: \href{http://www.llifle.com/Encyclopedia/TREES/Family/Bombacaceae/31994/Bombax_ceiba}{Llilfe.com/Bomax\_ceiba}).}
          \label{fig:webcrawler_sents_nopred}
      \end{subfigure}
      \vfill
@@ -332,20 +381,23 @@ If a description is recognised by the model, the sentence is stored.
          \centering
          %\hspace{-0.5cm}
          \frame{\includegraphics[width=\textwidth]{web_crawler_example_sents_preds.pdf}}
-         \caption{The cleaned and classified text. The text is coloured by the prediction value (high value is dark green, a low value near white). The prediction value of each sentence can be found at the end of the sentence.}
+         \caption[Cleaned and classified text span example]{The cleaned and classified text. The text is coloured by the prediction value (high value is dark green, a low value near white). The prediction value of each sentence can be found at the end of the sentence.}
          \label{fig:webcrawler_sents_pred}
      \end{subfigure}
-     \caption{A small example how the web crawler processes and classifies data from a web page. The raw text span is cleaned from brackets, sources and other textual punctuation. After cleaning the text is split into single sentence. Each sentence is classified by the model.}
+     \caption[Example of the web crawler process]{A small example how the web crawler processes and classifies data from a web page. The raw text span is cleaned from brackets, sources and other textual punctuation. After cleaning the text is split into single sentence. Each sentence is classified by the model. Sentences that reach or exceed the threshold of 0.5 are stored.}
 \end{figure}
 
-The next text is a smaller part of a random web page.
-"The red cotton tree (Bombax ceiba) is a medium- to large-sized tropical tree that usually grows to an average of 20-25 meters, with old trees up to 60 meters in wet tropical weather. It has a straight tall trunk buttressed at base that bears conical spines to deter animal attacks. Its leaves are deciduous in winter. Crimson red flowers with five petals appear in the spring before the new foliage and are one reason that the tree is widely planted. It produces a capsule which, when ripe, contains white fibres, like cotton, which has been used as a substitute for cotton (hence its common name)."
-The web crawler will first clean this text, then split it into single sentences and classify them.
+\subsubsection{Storage Preprocessing} \label{Preprocessing}
+Before storage the sentences are processed.
+Description sentences often name the species in the description, e.g. "Fagus sylvatica is a large tree, capable of reaching heights of up to 50 m (160 ft) tall." (source: \href{https://en.wikipedia.org/wiki/Fagus_sylvatica}{Wikipedia/wiki/Fagus\_sylvatica}).
+Species names are replaced by the word "the species". 
+In the example above the sentence is stored as: "The species is a large tree, capable of reaching heights of up to 50 m (160 ft) tall."
+This way the NLP model will not have access to (parts of) the labels of the input data. In Figure \ref{fig:webcrawler_sents_nopred} and Figure \ref{fig:webcrawler_sents_pred} and example of a piece of text before and after processing can be found.
 
 \subsubsection{Sentence Similarity} \label{Sentence Similarity}
 There is a change that different web pages use the a common source for describing a species.
 By checking for similar sentence within the same species we make sure the same sentence is not appended twice to the dataset and the train and test set are completely disjoint.
-Like \textcite{reimers_sentence-bert_2019} we use the last hidden state of BERT (distilBERT) in our case and compute the cosine similarity to measure the distance between text spans.
+Like \textcite{reimers_sentence-bert_2019} we use the last hidden state of BERT (distilBERT in our case) and compute the cosine similarity to measure the distance between text spans.
 Fortunately, this last hidden state is the output of a base BERT architecture.
 However, the last hidden state output contain a matrix of 512 x 768. 
 It is not feasibly to compute the cosine similarity distance for multiple matrices of this size.
@@ -359,23 +411,37 @@ We sum the matrix along the first axis, resulting in a matrix.
 The size of this matrix is the number of sentences time 768.
 Each sentence is represented by a vector of size 768
 Finally we calculate the cosine similarity between the sentences and drop sentences that exceed the threshold of 0.99.
+In Figure \ref{fig:similarity_matrix} a comparison of a few sentences can be found.
 
-\subsubsection{Storage Preprocessing}
-Before storage the sentences are processed.
-Description sentences often name the species in the description, e.g. "Fagus sylvatica is a large tree, capable of reaching heights of up to 50 m (160 ft) tall." (source: \href{https://en.wikipedia.org/wiki/Fagus_sylvatica}{Wikipedia/wiki/Fagus\_sylvatica}).
-Species names are replaced by the word "the species". 
-In the example above the sentence is stored as: "The species is a large tree, capable of reaching heights of up to 50 m (160 ft) tall."
-This way the NLP model will not have access to (parts of) the labels of the input data.
+\begin{figure} [htbp]
+    \centering
+    \vspace{0cm}
+    \hspace{-1cm}
+    %\textbf{Similarity Matrix}
+    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1\textwidth]{similarity_matrix.svg}}
+    \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
+    %In this example the following sentences are compared.
+     %0 - "The European robin has a orange plumage."
+     %1 - "Black bill, plumage orange."
+     %2 - "The bear is large and the claws are sharp."
+     %3 - "Bill black; plumage orange."
+     %4 - "The bill is black and the plumage is orange."
+     %5 - "The bear is large, and the claws are sharp."
+    In this case the sentences "Bill black; plumage orange." and "Black bill, pluamge orange." reach a similarity score of 0.98. The word order and the punctuation is slightly different. In this case both sentences are stored in the database as it is highly likely they come from different souces. However in the case of "The bear is large and the claws are sharp." and "The bear is large, and the claws are sharp." the sentences are completely similar except for the punctuation. The sentences reach a similarity score of 1 (although this will be because of rounding). In the second case the sentences will come from a the same source and one of them will not be stored.}
+    \label{fig:similarity_matrix}
+\end{figure}
 
 Some databases store their description as one long sentence, describing multiple attributes in a single sentence e.g. "Leaves 5–9-foliolate; leaflets narrowly elliptic-obovate, entire, acuminate, 7–20 x 1.8–6.5 cm, glabrous; petiole 5.5 - 25 cm long, at the apex expanded into an almost circular disk." (source: \href{http://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:1166232-2}{PoWO/Ceiba\_pentandra}). 
 This sentence is describing the leaves and the attributes in the same sentence 
 
 \subsection{Inferring Species}
+For inferring species on partial descriptions, we explore two different ways of inferring species.
+Both model will use a base version of BERT \autocite{devlin_bert_2019}
 \subsection{Retrieving Keywords}
-We use the integrated gradients from \autocite{sundararajan_axiomatic_2017} to retrieve the most important keywords.
+We use the integrated gradients from \textcite{sundararajan_axiomatic_2017} to retrieve the most important keywords.
 Integrated gradients are best used (1) to identify feature importance, in our case: which are the most important words used for a prediction and (2) to identify data skew, in our case this can be very important. %%% Add something about this.
 
-Our code to calculate the integrated gradients is based on \textcite{gardner_allennlp_2017} and especially this part of their  \href{https://github.com/allenai/allennlp/tree/master/allennlp/interpret}{repository}.
+Our code to calculate the integrated gradients is based on \textcite{gardner_allennlp_2017} and especially this  \href{https://github.com/allenai/allennlp/tree/master/allennlp/interpret}{this part} of their repository.
 We use a zero input embedding as a baseline.
 All irrelevant words will correspond to the baseline in this case.
 We simply append all the the gradients in a simple loop.
@@ -395,7 +461,7 @@ We calculate the gradients for every input token and visualise the gradients per
     \centering
     \vspace{0cm}
     \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=\textwidth]{histogram_text_length.svg}}
-    \caption{The text length distribution before tokenization. The text spans are randomly split into chunks between 10 words and their length, with a maximum of 512 words to prevent truncation. Text spans with a length below 10 words are not split, resulting in some text lengths below 10. There are some text length with the maximum value of 512. This count is barely visible in the plot, so the x-axis limit is set to a max text length of 250.}
+    \caption[Text length distribution for training web crawler model]{The text length distribution before tokenization. The text spans are randomly split into chunks between 10 words and their length, with a maximum of 512 words to prevent truncation. Text spans with a length below 10 words are not split, resulting in some text lengths below 10. There are some text length with the maximum value of 512. This count is barely visible in the plot, so the x-axis limit is set to a max text length of 250.}
     \label{fig:text_length_distribution}
 \end{figure}
 
@@ -412,7 +478,7 @@ The model reaches an high precision, recall and f1-score for both the "Non-Descr
 
 \begin{table}[h]
 \centering
-\caption{The precision-recall report for the test set for the binary classification model on descriptions. 10\% of the data is left out for testing. The model is trained for 35 epochs.}
+\caption[Precision-recall report for test data]{The precision-recall report for the test set for the binary classification model on descriptions. 10\% of the data is left out for testing. The model is trained for 35 epochs.}
 \label{tab:precision_recall_descriptionsmodel}
 \begin{tabular}{@{}lcccr@{}}
 \cmidrule(l){2-5}
@@ -446,7 +512,7 @@ Both the ROC curve area and the AP reaches 99\% indicating the binary classifier
          \caption{The Precision-Recall curve for the test data.}
          \label{fig:precision_recall_curve_test}
      \end{subfigure}
-     \caption{The ROC and the precision-recall curve for the left out test set. The models seems to perform excellent in both cases. The model is evaluated on a test set that contains 10\% of the data. The Area Under the Curve (AUC) reaches 99\% and the the Average Precision (AP) reaches 99\%.}
+     \caption[ROC and precision recall curves for test set]{The ROC and the precision-recall curve for the left out test set. The models seems to perform excellent in both cases. The model is evaluated on a test set that contains 10\% of the data. The Area Under the Curve (AUC) reaches 99\% and the the Average Precision (AP) reaches 99\%.}
 \end{figure}
 The model is evaluated on two additional datasets, the \href{http://www.llifle.com/}{LLifle} dataset and the  \href{https://www.worldagroforestry.org/}{AgroForestry} dataset
 These datasets are completely left out of the training/testing fase of the model.
@@ -461,7 +527,7 @@ The ROC curve area reaches 99\%, the same performance as on the test set (visual
 The AP reaches 96\%.
 \begin{table}[h]
     \centering
-    \caption{The precision-recall report for the binary classification model tested on two external datasets (LLifle and AgroForestry).}
+    \caption[Precision-recall report for left out datasets]{The precision-recall report for the binary classification model tested on two external datasets (LLifle and AgroForestry).}
     \label{tab:precision_recall_descriptionsmodel_external}
     \begin{tabular}{@{}lcccr@{}}
     \cmidrule(l){2-5}
@@ -491,7 +557,7 @@ The AP reaches 96\%.
          \caption{The Precision-Recall curve for the left out data.}
          \label{fig:precision_recall_curve_test_external}
      \end{subfigure}
-     \caption{The ROC and the precision-recall curve for the left out external datasets. The models seems to perform reasonable in both cases. The Area Under the Curve (AUC) reaches 99\% and the the Average Precision (AP) reaches 96\%. In both plots the blue dashed line indicates a baseline classifier.}
+     \caption[ROC and precision recall curves for left out datasets]{The ROC and the precision-recall curve for the left out external datasets. The models seems to perform reasonable in both cases. The Area Under the Curve (AUC) reaches 99\% and the the Average Precision (AP) reaches 96\%. In both plots the blue dashed line indicates a baseline classifier.}
 \end{figure}
 
 \subsubsection{Web Crawler}
@@ -500,6 +566,9 @@ The AP reaches 96\%.
 
 \subsection{Species Classification}
 \subsection{Key Words}
+
+\section{Conclusion}
+\section{Discussion}
 
 \printbibliography
 \end{document}
