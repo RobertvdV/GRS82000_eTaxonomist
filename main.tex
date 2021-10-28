@@ -37,6 +37,9 @@
 %\sethlcolor{color1}\hl{Its trunk bears spikes to deter attacks by animals. <0.35> }
 %\sethlcolor{color2}\hl{Branches usually in whorls of 3. <1.0> }
 
+
+
+
 \addbibresource{references.bib}
 % Note: Fill these in with correct data, they are used throughout the document
 \title{A Step Towards Explainable AI: Infer Species Names Based on Partial Descriptions in Natural Language}
@@ -113,9 +116,10 @@
 \newpage
 
 
-
 \renewcommand{\thesection}{\arabic{section}}
 \section{Introduction}
+\markboth{Introduction}{Introduction}
+
 Estimated is that 50\% of the species are yet to be discovered, and many species will go extinct before ever being described \autocite{lees_species_2015}.
 Scalable technologies that can help monitor diversity and help discover new species are more needed than ever.
 Deep neural networks (DNNs) can help discover new species, automate and speed up this process \autocite{van_horn_inaturalist_2018}.
@@ -148,8 +152,9 @@ While this automatic feature extraction is very convenient, it will become diffi
 A more explainable, less rigid, artificial intelligence (AI) might be created by extending the concept of the semantic bottleneck layer from \textcite{ishikawa_contextual_2021} and splitting a regular convolution neural network (CNN) for image classification into two separate models that communicate using natural language.
 The first model will describe species features present in the image, and the second model will take these descriptions and tries to infer the species (see Figure \ref{fig:intro}).
 This way, DNNs reasonings for species classification can be tracked, mistakes can be spotted, and the models' performance can be improved.
+\newpage
 
-
+\section{Research needs}
 Many studies have already stipulated the importance of biodiversity for human life \autocite{pimentel_economic_1997, gowdy_value_1997, raffaelli_links_2010, joppa_biodiversity_2011, pimm_how_2018}.
 With the current extinction rate, over 50\% of the species will be gone before ever discovered \autocite{lees_species_2015}.
 Protecting biodiversity is now more needed than ever.
@@ -189,6 +194,7 @@ This research will focus on creating and curating the dataset containing species
 
 \newpage
 \section{Objective}
+\markboth{Objective}{Objective}
 These aforementioned problems led to the following research questions for this research:
 \noindent 
 \begin{itemize}
@@ -213,8 +219,8 @@ The third and final objective is to maintain traceability throughout the deep le
 
 
 \newpage
-\section{Approach}
-
+\section{Methodology}
+\markboth{Approach}{Approach}
 In Figure \ref{fig:workflow} a simplified version of the workflow can be found.
 This chapter will give a detailed description of the steps.
 
@@ -232,17 +238,17 @@ This makes the internet suitable for harvesting training data.
 However, description sentences can be theoretically limitless, e.g. for a Brown Bear description text could be: "The fur is brown", "The brown bear has brown fur".
 Sentences can have a more difficult semantic, e.g. "The fur of the Brown bear is similar to that of the Grizzly bear".
 A classic machine learning approach that requires a rule-based match system for sentence classification is not possible. 
-We trained a DNN that can classify text into description or non-description.
+We train a DNN that can classify text into description or non-description.
 To properly train a deep learning model that can classify text data, a large, accurate and consistent labelled dataset is needed \autocite{munappy_data_2019}.
 
 \subsubsection{Training Data}
-We create this dataset by scraping web pages from structured sources.
+We create this large dataset by scraping web pages from structured sources.
 These sources (Wikipedia, Plant of the World Online (PoWO), Birds of the Word(BoW)), have a rich scholarly content about species.
 These websites divide their information into paragraphs such as "Introduction", "Appearance", "Characteristics", "Habit".
 These paragraph titles are used as labels and the text inside is used as data.
 In our case we stored text from paragraphs with titles like:  "Introduction" and "Habit" as negative values and "Introduction" and "Appearance" as positive values, making this a two class classification problem. 
-Wikipedia is also used to gather additional negative values, as this Wikipedia also contains a lot of pages without any species information.
-This allows the model to better classify text not related to species descriptions.
+Random pages from Wikipedia that are not about species are also used to gather additional negative values.
+We hypothesised that the model will be better in classifying text not related to species descriptions.
 
 
 %BERT models use two specials tokens.
@@ -251,20 +257,13 @@ This allows the model to better classify text not related to species description
 %The second token is \verb|[SEP]|, which stand for "Separation". 
 
 \subsubsection{BERT for Classification}
+As a base for the text classification model, We used a distilled version of the Bidirectional Encoder Representations from Transformers (BERT) \autocite{devlin_bert_2019}, called distilBERT \autocite{sanh_distilbert_2020}. 
+This version is 60\% faster, has 40\% less parameters and still reaches 97\% on general language understanding.
 Using a pre-trained model can provide significantly improvements over models trained from scratch \autocite{mikolov_distributed_2013}.
 The use of a pre-trained model is called transfer learning and could speed up the training process and increase the accuracy of the deep learning model.
-The Bidirectional Encoder Representations from Transformers (BERT) by \textcite{devlin_bert_2019} is already trained on a large corpus of English words and can be used freely.
-As a base, We used a distilled version of BERT \autocite{devlin_bert_2019}, called distilBERT \autocite{sanh_distilbert_2020}. 
-This version is 60\% faster, has 40\% less parameters and still reaches 97\% on general language understanding.
-\textcite{sun_how_2020} already investigated how to fine-tune BERT for text classification and we used their findings in this research.
-
-BERT can be fine-tuned further by updating the inner parameters of BERT during training. 
-This can be useful if BERT is utilised in the non-general domain \autocite{devlin_bert_2019, sun_how_2020, sanh_distilbert_2020}, which is the case with description data.
-However, we decided not to fine-tune the inner workings of BERT for two reasons: 
-(1) We used additional Wikipedia to increase the text data with negatives values.
-These random Wikipedia pages are highly likely to contain information from the general
-domain, resulting in a  data distribution close(r) to the general domain.
-(2) A two class-classification problem is a relatively simple task, updating the inner parameters during training cost additional time and computing power, while only resulting a small accuracy increase.
+Both distillBERT and BERT are already trained on a large corpus of English words and can be used freely.
+\textcite{sun_how_2020} already investigated how to fine-tune BERT for text classification.
+We use their findings on the full BERT model, to fine-tune the distilBERT model for description text classification
 
 Like \textcite{sun_how_2020} we first fit a fully connected linear layer with an input size of 768 and an output size of 512 on top of the BERT architecture. 
 This linear layer is followed by a dropout layer (0.1) to enable some regularization.
@@ -272,6 +271,14 @@ The next fully connected linear layer has a input size of 512 and an output size
 The final activation layer is a log-likelihood (log-softmax) activation function.
 The log-softmax will slightly increase the error factor of the model, punishing mistakes a bit higher.
 By taking the exponent, the standard likelihood (softmax) probabilities can be computed.
+
+The basis distillBERT architecture can be fine-tuned further by updating the inner parameter of the transformer layers during training. 
+This can be useful if BERT is utilised in the non-general domain \autocite{devlin_bert_2019, sun_how_2020, sanh_distilbert_2020}, which is the case with description data.
+However, we decided not to fine-tune the inner workings of BERT for two reasons: 
+(1) We used additional Wikipedia to increase the text data with negatives values.
+These random Wikipedia pages are highly likely to contain information from the general
+domain, resulting in a  data distribution close(r) to the general domain.
+(2) A binary classification problem is a relatively simple task; updating the inner parameters during training cost additional time and computing power, while only resulting a small accuracy increase.
 
 Instead of a cross entropy loss, we use a loss from \textcite{reed_training_2015}:
 \begin{equation} \label{eq:softloss}
@@ -344,13 +351,14 @@ This results in a list URLs with possible species descriptions.
 We use five different ways of constructing a query:
 \begin{itemize}
     \item "Species"
-    \item "Species+description"
-    \item "Species+diagnosis"
-    \item "Species+attributes"
-    \item "Species+captions"
+    \item "Species"+description
+    \item "Species"+diagnosis
+    \item "Species"+attributes
+    \item "Species"+captions
 \end{itemize}
+We wrap quotations around the species to force the search engine to only return the exact species name. This way search engines cannot return any results that it deems similar.
 Each query will return a list of candidate URLs and are appended to a list for a single species.
-The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentencen to drop duplicartes (see Section \ref{Sentence Similarity} about Sentence Similarity).
+The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentence to drop duplicates (see Section \ref{Sentence Similarity} about Sentence Similarity).
 The URLs are checked for text data without any markup, like raw text data and PDF files.
 Finally the header of the URL is checked against the queried species to make sure that the page really contains information about the queried species.
 Not every query will return correct websites, i.e. websites about the queried species.
@@ -367,7 +375,7 @@ In Figures \ref{fig:webcrawler_sents_nopred} and \ref{fig:webcrawler_sents_pred}
 Figure \ref{fig:webcrawler_sents_nopred} contains the original text before processing and in \ref{fig:webcrawler_sents_pred} the original text is processed into single sentences and each sentence is classified.
 
 
-\begin{figure} [htbp]
+\begin{figure} [t]
      \centering
      \begin{subfigure}[b]{1.00\textwidth}
          \centering
@@ -407,12 +415,11 @@ We first create a new dictionary that corresponds to the dictionary initialised 
 We tokenize all the sentences we are comparing and append the tokens and masking to the correct key.
 After all the sentences have been processed, we reformat the dictionary into a single tensor and push it trough the model.
 This will result in a tensor of the number of sentences times 512 times 768. 
-We sum the matrix along the first axis, resulting in a matrix.
+We sum the 3D matrix along the first axis, resulting in a 2D matrix.
 The size of this matrix is the number of sentences time 768.
 Each sentence is represented by a vector of size 768
 Finally we calculate the cosine similarity between the sentences and drop sentences that exceed the threshold of 0.99.
 In Figure \ref{fig:similarity_matrix} a comparison of a few sentences can be found.
-
 \begin{figure} [htbp]
     \centering
     \vspace{0cm}
@@ -427,12 +434,39 @@ In Figure \ref{fig:similarity_matrix} a comparison of a few sentences can be fou
      %3 - "Bill black; plumage orange."
      %4 - "The bill is black and the plumage is orange."
      %5 - "The bear is large, and the claws are sharp."
-    In this case the sentences "Bill black; plumage orange." and "Black bill, pluamge orange." reach a similarity score of 0.98. The word order and the punctuation is slightly different. In this case both sentences are stored in the database as it is highly likely they come from different souces. However in the case of "The bear is large and the claws are sharp." and "The bear is large, and the claws are sharp." the sentences are completely similar except for the punctuation. The sentences reach a similarity score of 1 (although this will be because of rounding). In the second case the sentences will come from a the same source and one of them will not be stored.}
+    In this case the sentences "Bill black; plumage orange." and "Black bill, plumage orange." reach a similarity score of 0.98. The word order and the punctuation is slightly different. In this case both sentences are stored in the database as it is highly likely they come from different sources. However in the case of "The bear is large and the claws are sharp." and "The bear is large, and the claws are sharp." the sentences are completely similar except for the punctuation. The sentences reach a similarity score of 1 (although this will be because of rounding). In the second case the sentences will come from a the same source and one of them will not be stored.}
     \label{fig:similarity_matrix}
 \end{figure}
 
 Some databases store their description as one long sentence, describing multiple attributes in a single sentence e.g. "Leaves 5–9-foliolate; leaflets narrowly elliptic-obovate, entire, acuminate, 7–20 x 1.8–6.5 cm, glabrous; petiole 5.5 - 25 cm long, at the apex expanded into an almost circular disk." (source: \href{http://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:1166232-2}{PoWO/Ceiba\_pentandra}). 
-This sentence is describing the leaves and the attributes in the same sentence 
+This sentence is describing the leaves and the attributes in the same sentence. 
+
+\subsubsection{Part of Speech}
+Creating a knowledge graph of the scraped data will results in a clean database.
+This database will only contain objects, relations and subjects. 
+When feeding this data to the model it cannot be become dependent on artefacts such as word order, incorrect punctuation etc.
+For PoS extracting we use the library of \autocite{honnibal_spacy_2020}.
+This is a pretrained NLP model that can extract PoS tags and their dependencies.
+In Figure \ref{fig:PoS_example}, an example of PoS tagging and dependency parsing can be found.
+\begin{figure} [htb]
+    \centering
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        %\vspace{0cm}
+        \includesvg[inkscapelatex=false, width=\textwidth]{PoS_example.svg}
+        \caption[Example of part of speech tagging]{An example of part of speech and dependency parsing. The arrows contain the dependency tags and the words contain the part of speech tags.}
+        \label{fig:PoS_example}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        %\vspace{-2cm}
+        \includegraphics[width=\textwidth]{kn_example.pdf}
+        \caption[Example of a knowledge graph]{The sentence  results in three nodes (subject/object) and two edges (relations). The circles contain the objects/subjects and the arrows represent the relations.}
+        \label{fig:graph_example}    
+    \end{subfigure}
+    \caption[Part of Speech tagging and knowledge graph]{A small example for the sentence "The Brown bear has brown fur.". The sentence is first broken down with the NLP pipeline of \textcite{honnibal_spacy_2020}. The extracted PoS tags and dependency tags are then used to construct the semantic triple containing three nodes and two edges. In this case the first node is the normal subject (nsubj) combined witht the compound. The root verb of this subject is the relation and the direct object (dobj) of the verb is the object of the first semantic triple. For the last relation and node, the adjective modifier (amod) of the last node (fur) is used as object. In this case the relation is dependent on the PoS tag of the adjective modifier.}
+\end{figure}
 
 \subsection{Inferring Species}
 For inferring species on partial descriptions, we explore two different ways of inferring species.
@@ -444,16 +478,39 @@ Integrated gradients are best used (1) to identify feature importance, in our ca
 Our code to calculate the integrated gradients is based on \textcite{gardner_allennlp_2017} and especially this  \href{https://github.com/allenai/allennlp/tree/master/allennlp/interpret}{this part} of their repository.
 We use a zero input embedding as a baseline.
 All irrelevant words will correspond to the baseline in this case.
-We simply append all the the gradients in a simple loop.
-For this we use 20 steps to calculate the gradients as this is the minimum that \textcite{sundararajan_axiomatic_2017} that could approximate the gradients by 5\%\footnote{The gradients are calculated from 0,00 to almost, but not exactly 1,00. As we are using 20 steps to calculate the gradients, we approximate the gradients by 5\% (\(\frac{1}{20} * 100 = 5\)). By increasing the number of steps, a better approximation of the gradients can be calculated. However, the computation time scales linearly with the number of steps.}.
-We calculate the gradients for every input token and visualise the gradients per token.
-
-
+We simply compute all the the gradients in a simple loop for a text span:
+\begin{equation}
+    x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x')
+\end{equation}
+In this case (
+For this we first use 20 steps to calculate the gradients as this is the minimum that \textcite{sundararajan_axiomatic_2017} found that could approximate the gradients by 5\%\footnote{The gradients are calculated from 0,00 to almost, but not exactly 1,00. As we are using 20 steps to calculate the gradients, we approximate the gradients by 5\% (\(\frac{1}{20} * 100 = 5\)). By increasing the number of steps, a better approximation of the gradients can be calculated. However, the computation time scales linearly with the number of steps.}.
+We calculate the gradients for every input token and sum the gradients.
+This leads to the following equation that approximates the gradients:
+\begin{equation} \label{eq:integrad}
+    {IntegratedGrads_i^{approx}} (x) ::= (x_i - x'_i) *  \sum\nolimits_{k=1}^{m}  \frac{\partial F(x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x') }{\partial x_i} 
+\end{equation}
+\(i\) = feature (token/word)\newline
+\(x\) = input (text span tokenized)\newline
+\(x'\) = baseline (zero input embedding)\newline
+\(k\) = scaled feature perturbation constant\newline
+\(m\) = number of steps\newline
+\((x - x')\) = difference from the baseline. \newline
+\newline
+By combining Equation \ref{eq:integrad} with PoS tagging and dependency parsing, we can extract the relevant PoS tags used for the prediction.
+However, using a tokenizer can split certain words.
+For example, for the sentence "The plant has 7 antheriferous stamens." we would expect nine token (beginning, words, point and ending).
+Applying the BERT tokenizer on this sentence results in thirteen tokens:
+%\newline
+"\verb|[CLS] the plant has 7 ant ##her ##iferous st ##amen ##s. [SEP]|".
+%\newline
+We average the gradients if a word get split by the tokenizer.
+In this example, both \verb|antheriferous| and \verb|stamens| will consist of three integrated gradients. 
 
 
 
 \newpage
 \section{Results}
+\markboth{Results}{Results}
 \subsection{Extensive dataset}
 \subsubsection{Description Classification}
 
@@ -568,6 +625,8 @@ The AP reaches 96\%.
 \subsection{Key Words}
 
 \section{Conclusion}
+By training a deep learning classification model a large dataset that contains species and their descriptions can be created. 
+
 \section{Discussion}
 
 \printbibliography
