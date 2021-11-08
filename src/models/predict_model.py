@@ -102,17 +102,17 @@ def load_simBERT():
             # Distil Bert model
             self.bert = bert
 
-        #define the forward pass
+        # Define the forward pass
         def forward(self, **kwargs):
 
-            #pass the inputs to the model BERT  
+            # Pass the inputs to the model BERT  
             cls_hs = self.bert(**kwargs)
             hidden_state = cls_hs.last_hidden_state
 
             return hidden_state
         
     model = BERT(bert)
-    # push the model to GPU
+    # Push the model to GPU
     model = model.to(device)
     # Eval mode
     model.eval()
