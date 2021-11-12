@@ -39,17 +39,16 @@
 
 
 
-
 \addbibresource{references.bib}
 % Note: Fill these in with correct data, they are used throughout the document
 \title{A Step Towards Explainable AI: Infer Species Names Based on Partial Descriptions in Natural Language}
 \author{Robert van de Vlasakker}
 % This can be left as-is to automatically update
 \date{\today}
-\geometry{top=2.25cm, 
-            bottom=2.91cm,
-            inner=2.91cm,
-            outer=2.91cm,
+\geometry{top=3cm, 
+            bottom=3cm,
+            inner=3cm,
+            outer=3cm,
             foot=0cm,
             includeheadfoot} % First page margins
 \titleformat{\chapter}[display]
@@ -127,6 +126,17 @@ However, DNNs are quite rigid, and their black-box behaviour could raise issues 
 It is essential to get more insights into the reasoning of a deep learning model in sensitive fields like taxonomy.
 This way, we can learn a DNN to reason like an experienced taxonomist when describing existing and new species.
 
+Many studies have already stipulated the importance of biodiversity for human life \autocite{pimentel_economic_1997, gowdy_value_1997, raffaelli_links_2010, joppa_biodiversity_2011, pimm_how_2018}.
+With the current extinction rate, over 50\% of the species will be gone before ever discovered \autocite{lees_species_2015}.
+Protecting biodiversity is now more needed than ever.
+However, we cannot conserve undiscovered species; we first need to describe them to protect them \autocite{joppa_biodiversity_2011}.
+This is where DNN come in place.
+DNNs can help discover new species and speed up this identification process \autocite{van_horn_inaturalist_2018}.
+However, many species look alike.
+They are difficult to distinguish and are easily miss-classified, especially with less abundant species.
+We need a better understanding of how a DNN identifies and classifies species. 
+This way, a less rigid DNN can be created, results of the DNN can be interpreted more easily, and the results can be improved.
+
 Deep neural networks (DNNs) allow for remarkable performance in applications: from the automatic classification of text and images, natural language processing (NLP), to reinforcement learning.
 DNNs outperform most classic machine learning approaches \autocite{he_delving_2015, brown_language_2020}.
 The key to their success is end-to-end training.
@@ -136,12 +146,27 @@ However, end-to-end training also results in DNNs that are rigid, difficult to i
 To extract the features from the input data, deep learning models use multiple neurons that take the input, process it to a slightly more abstract representation and pass it through the next layer of neurons \autocite{schmidhuber_deep_2015}.
 Provided enough layers are stacked upon each other, very complex features can be extracted and correctly detected or classified by such a network.
 
-Because the network's parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019}, and they do not perform well on long-tailed datasets, like most real-world datasets \autocite{van_horn_inaturalist_2018}.
+Because the network's parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019}, and they do not perform well on long-tailed datasets\footnote{Long-tailed datasets are skewed datasets. A lot of samples are available for a few species and most species only are represented in the dataset only by a few species.}, like most real-world datasets \autocite{van_horn_inaturalist_2018}.
 Stacking multiple layers of neurons on top of each other often results in millions of parameters, and all of these neurons use non-linear activation functions that decrease the interpretability of the network.
 In long-tailed datasets, the parameters are not well optimised for less represented classes as the neurons cannot extract the necessary features.
 While this automatic feature extraction is very convenient, it will become difficult to track models' reasons, and it can hamper performance.
 
-\begin{figure} [htbp]
+Different algorithms and techniques have been proposed to increase the interpretability of the models.
+Common approaches are feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, adding jittering to test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
+These algorithms and techniques all rely on posthoc explanations; they try to interpret an already trained DNN and explain its decisions a posteriori.
+They try to identify important features via attributions \autocite{zintgraf_visualizing_2017, selvaraju_grad-cam_2017} or assign meaning to features \autocite{fleet_visualizing_2014}.
+While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
+These approaches might explain some of the inner workings of a DNN, but they do not help reason a DNN like a taxonomiss.
+The models remain rigid, the intermediate results still remain challenging to interpret.
+Designing models that are inherently interpretable by design are better solution as these model do not give a false sense of trustworthiness \autocite{rudin_stop_2019}.
+
+An a priori approach entails designing an architecture network with a semantic bottleneck layer that is interpretable for humans \autocite{bucher_semantic_2019}. 
+The DNN is still trained end-to-end, but humans can inspect this semantic bottleneck layer to check the intermediate results.
+\textcite{ishikawa_contextual_2021} extended this bottleneck layer architecture by training a model that first learns the intermediate results.
+First, a model is trained that can predict semantic attributes.
+The second model will take the intermediate results to make a final prediction.
+
+\begin{figure} [tbp]
     \centering
     \vspace{0cm}
     \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{architecture.pdf}}
@@ -151,51 +176,36 @@ While this automatic feature extraction is very convenient, it will become diffi
 
 A more explainable, less rigid, artificial intelligence (AI) might be created by extending the concept of the semantic bottleneck layer from \textcite{ishikawa_contextual_2021} and splitting a regular convolution neural network (CNN) for image classification into two separate models that communicate using natural language.
 The first model will describe species features present in the image, and the second model will take these descriptions and tries to infer the species (see Figure \ref{fig:intro}).
-This way, DNNs reasonings for species classification can be tracked, mistakes can be spotted, and the models' performance can be improved.
-\newpage
-
-\section{Research needs}
-Many studies have already stipulated the importance of biodiversity for human life \autocite{pimentel_economic_1997, gowdy_value_1997, raffaelli_links_2010, joppa_biodiversity_2011, pimm_how_2018}.
-With the current extinction rate, over 50\% of the species will be gone before ever discovered \autocite{lees_species_2015}.
-Protecting biodiversity is now more needed than ever.
-However, we cannot conserve undiscovered species; we first need to describe them to protect them \autocite{joppa_biodiversity_2011}.
-DNNs can help discover new species and speed up this identification process \autocite{van_horn_inaturalist_2018}.
-However, many species look alike.
-They are difficult to distinguish and are easily miss-classified, especially with less abundant species.
-We need a better understanding of how a DNN identifies and classifies species. 
-This way, a less rigid DNN can be created, results of the DNN can be interpreted more easily, and the results can be improved.
-
-Different algorithms and techniques have been proposed to increase the interpretability of the models.
-Common approaches are feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, adding jittering to test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
-These algorithms and techniques all rely on posthoc explanations; they try to interpret an already trained DNN and explain its decisions a posteriori.
-They try to identify important features via attributions \autocite{zintgraf_visualizing_2017, selvaraju_grad-cam_2017} or assign meaning to features \autocite{fleet_visualizing_2014}.
-While some advances have been made in model understanding, giant leaps forward in the field of explainable AI remain limited \autocite{lipton_mythos_2017, li_interpretable_2021}.
-These approaches might explain some of the inner workings of a DNN, but they do not help reason a DNN like a taxonomist, the models remain rigid, and the intermediate results still remain challenging to interpret. 
-
-An a priori approach entails designing an architecture network with a semantic bottleneck layer that is interpretable for humans \autocite{bucher_semantic_2019}. 
-\textcite{ishikawa_contextual_2021} extended this bottleneck layer architecture by training a model that first learns the intermediate results.
-First, a model is trained that can predict semantic attributes.
-The second model will take the intermediate results to make a final prediction.
-By using their architecture, a less rigid, more explainable AI for species classification might be created.
+This way, DNNs reasoning for species classification can be tracked, mistakes can be spotted, and the models' performance can be improved.
 
 The first model will be a visual-language model that extracts the species attributes from an image and describes its results in natural language. 
 This vision hybrid model will be based on the researches of \textcite{radford_learning_2021} and \textcite{huang_interpretable_2020}.
 Their findings allow the first model to learn to extract information from images by looking at raw text data that comes with image captions and describe objects present in those images.
-This visual-language hybrid model will describe learned species attributes and use zero-shot learning to describe unseen (new) distinctive species attributes.
+This visual-language hybrid model will describe learned species attributes and use zero-shot learning to describe unseen (new) distinctive species traits.
 By first describing traits, less abundant species can benefit from more abundant species if they share common traits.
+This allows to model to perform better on long-tailed species datasets \autocite{van_horn_inaturalist_2018}.
+Each species present in the dataset will be described equally well, because the DNN can learn traits from more abundant species.
+
 The second model is a pure natural language processing (NLP) model that takes the partial descriptions and infer the species.
 This way, a models reasoning for species predictions might be tracked by investigating the intermediate results \autocite{ishikawa_contextual_2021} and the final model results will be less rigid.
 
-For the training of both models, an extensive labelled database with species and their descriptions is needed. 
+For the training of both models, an extensive labelled database with species and their descriptions is needed.
 Unfortunately, such a database does not yet exist and needs to be created for this research to happen.
 This dataset needs as many unique descriptions as possible for each species, so for both a taxonomist and the NLP model, it would be possible to infer the species name based on provided descriptions.
 The NLP model needs to make predictions on partial descriptions, but in the meantime, it should be clear which parts of the description data is used to make to prediction so the reasoning can be evaluated.
 This research will focus on creating and curating the dataset containing species and their descriptions and the training and evaluation of the NLP model.
 
-\newpage
-\section{Objective}
-\markboth{Objective}{Objective}
-These aforementioned problems led to the following research questions for this research:
+The first objective is to create a high-quality database with species and their descriptions.
+%If the description is unavailable on a species level, the descriptions will be stored per genus or even per family.
+%The descriptions are preferably stored per attribute rather than entire text spans.
+%In this research, two ways of storing the attributes will be explored, (1) storage per sentence and (2) storage as a \href{https://www.ontotext.com/knowledgehub/fundamentals/what-is-a-knowledge-graph/}{semantic triple (object, predicate, object)}.
+The second objective will be creating an NLP model that can infer species names based on description data. 
+%For this objective, two different deep learning models will be explored.
+%The first is a network with several linear layers that end in a softmax activation function.
+%The second is a metric deep learning model that does not output a probability but a distance value per input.
+The third and final objective is to maintain traceability throughout the deep learning models mentioned in objective two; which description data points are essential for inferring a species?
+These aforementioned objective are defined into three research questions:
+
 \noindent 
 \begin{itemize}
     
@@ -206,16 +216,6 @@ These aforementioned problems led to the following research questions for this r
     \item \emph{What interpretation techniques can be used with the natural language model to clarify which focus points are used for the predictions?}
 
 \end{itemize}
-
-The first objective is to create a high-quality database with species and their descriptions.
-If the description is unavailable on a species level, the descriptions will be stored per genus or even per family.
-The descriptions are preferably stored per attribute rather than entire text spans.
-In this research, two ways of storing the attributes will be explored, (1) storage per sentence and (2) storage as a \href{https://www.ontotext.com/knowledgehub/fundamentals/what-is-a-knowledge-graph/}{semantic triple (object, predicate, object)}.
-The second objective will be creating an NLP model that can infer species names based on description data. 
-For this objective, two different deep learning models will be explored.
-The first is a network with several linear layers that end in a softmax activation function.
-The second is a metric deep learning model that does not output a probability but a distance value per input.
-The third and final objective is to maintain traceability throughout the deep learning models mentioned in objective two; which description data points are essential for inferring a species?
 
 
 \newpage
@@ -241,7 +241,8 @@ A classic machine learning approach that requires a rule-based match system for 
 We train a DNN that can classify text into description or non-description.
 To properly train a deep learning model that can classify text data, a large, accurate and consistent labelled dataset is needed \autocite{munappy_data_2019}.
 
-\subsubsection{Training Data}
+\subsubsection{Training a Model for Text Classification}
+Like mentioned earlier, the internet has a vast amount of free data available that can be easily harvested.
 We create this large dataset by scraping web pages from structured sources.
 These sources (Wikipedia, Plant of the World Online (PoWO), Birds of the Word(BoW)), have a rich scholarly content about species.
 These websites divide their information into paragraphs such as "Introduction", "Appearance", "Characteristics", "Habit".
@@ -250,13 +251,12 @@ In our case we stored text from paragraphs with titles like:  "Introduction" and
 Random pages from Wikipedia that are not about species are also used to gather additional negative values.
 We hypothesised that the model will be better in classifying text not related to species descriptions.
 
-
 %BERT models use two specials tokens.
 %This first token is always \verb|[CLS]|, which stands for "Classification".
 %Using \verb|[CLS]|, the model knows the sequence is used for classification.
 %The second token is \verb|[SEP]|, which stand for "Separation". 
 
-\subsubsection{BERT for Classification}
+\subsubsection{Architecture}
 As a base for the text classification model, We used a distilled version of the Bidirectional Encoder Representations from Transformers (BERT) \autocite{devlin_bert_2019}, called distilBERT \autocite{sanh_distilbert_2020}. 
 This version is 60\% faster, has 40\% less parameters and still reaches 97\% on general language understanding.
 Using a pre-trained model can provide significantly improvements over models trained from scratch \autocite{mikolov_distributed_2013}.
@@ -280,11 +280,11 @@ These random Wikipedia pages are highly likely to contain information from the g
 domain, resulting in a  data distribution close(r) to the general domain.
 (2) A binary classification problem is a relatively simple task; updating the inner parameters during training cost additional time and computing power, while only resulting a small accuracy increase.
 
-Instead of a cross entropy loss, we use a loss from \textcite{reed_training_2015}:
+Using natural language in combination with the soft loss function from \textcite{reed_training_2015}, allows the model for semi-supervised learning.
+This combination has the advantage that it is now very easy to scale natural language training as we do not need annotated datasets.
 \begin{equation} \label{eq:softloss}
  SoftLoss(q, t) = \sum_{k=1}^{L}[\beta t _k + (1- \beta )q _k]log(q _k)
 \end{equation}
-This allows the model for semi-supervised learning.
 Not all data will be labelled correctly as the paragraph titles are used as labels.
 E.g. some species description might be located in the paragraph "Introduction" and some general information might be in the paragraph "Characteristics".
 This softloss is based on a normal cross entropy loss.
@@ -295,7 +295,7 @@ This text is likely to be found in a paragraph about descriptions.
 However, the text can also occur in the introduction paragraph about an European robin or it could be part of an image caption of an entirely different paragraph. 
 In second case the text will be miss classified. 
 By implementing the semi-supervised loss function of \textcite{reed_training_2015}, this will be prevented to a certain extent.
-If the model prediction reaches the set threshold, the prediction is seen a description label, but if the model prediction are below the threshold, the loss will be calculated accordingly.
+If the model prediction reaches the set threshold, the prediction is seen a description label, but if the model prediction is below the threshold, the loss will be calculated accordingly.
 In this thesis we use a \(\beta\) of 0.80. 
 
 To prepare the text spans, we use the tokenizer of \textcite{wolf_huggingfaces_2020}.
@@ -314,16 +314,15 @@ E.g. by tokenizing the text "This is a test.", the tokenizer returns the followi
 During the training the text is also padded to the maximum of 512 tokens and the attention masks are randomised between 0 and 1.
 
 
-\subsubsection{Training BERT for Text Classification}
+\subsubsection{Training \& Evaluation}
 We train the model on a Google Colab instance.
-We used the Adam optimiser \autocite{kingma_adam_2017}.
+We use the Adam optimiser \autocite{kingma_adam_2017}.
 The Adam optimiser has shown good performance when fine-tuning BERT for text classification \autocite{you_large_2020}.
 The hyperparameters were set based on the paper of \textcite{sun_how_2020}.
 The learning rate was set to 3e-5 and the batch size was set to 32.
 During the training the gradients are clipped to prevent the gradients from becoming to large.
-The model was trained for 35 epochs.
+we train the model for 35 epochs.
 
-\subsubsection{Evaluation BERT for Text Classification}
 As the dataset is will be unbalanced it will be evaluated with a precision-recall summary, receiver operating characteristics (ROC) and a precision-recall curve.
 The precision-recall summary and curves give more reliable results with an unbalanced dataset.
 When the model reaches an f1-score of at least 0.9, the model is tested on two additional left out databases, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
@@ -335,13 +334,14 @@ To correct for missclassified labels, a modified version of Equation \ref{eq:sof
 \end{equation}
 This is the loss function from \textcite{reed_training_2015}, only notated in an If-Then statement to compensate for the miss labelled sentences of the external datasets.
 
-\subsubsection{Web Crawler Deployment}
+\subsubsection{Gathering \& Storing Description Data}
 We deploy the classification model in a web crawler.
 This web crawler can automatically query search engines with a predefined list of birds and plants.
 The list for plants is based on the \href{https://www.ipni.org/}{International Plant Name Index} (IPNI) and the list for birds is based on the database of \href{https://birdsoftheworld.org/bow/home}{Birds of the World} (BoW).
 The IPNI database contains over 1,3 million plant species and the BoW database contains over ten thousand birds.
 We sort the plant species based on their number of description in the PoWO dataset that is used to train the classifier.
-The IPNI database is large, and there is a high chance that not all species in this database can be queried within the time-frame of this research.
+The IPNI database is large, containing all 1,3+ million known plant species.
+There is a high chance that not all species in this database can be queried within the time-frame of this research.
 Plant species with a description have a higher chance of being described somewhere else on the web as the PoWO dataset is closely linked to the IPNI database.
 This way we make sure that plant that will be queried have a high chance to contain a description somewhere on the web.
 This is not an issue for the bird species; the BoW only contains 10k+ described birds.
@@ -358,8 +358,9 @@ We use five different ways of constructing a query:
 \end{itemize}
 We wrap quotations around the species to force the search engine to only return the exact species name. This way search engines cannot return any results that it deems similar.
 Each query will return a list of candidate URLs and are appended to a list for a single species.
-The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentence to drop duplicates (see Section \ref{Sentence Similarity} about Sentence Similarity).
-The URLs are checked for text data without any markup, like raw text data and PDF files.
+The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentence to drop duplicates.
+The URLs are checked for text data without any markup, like raw text data and PDF files, and these types are skipped.
+PDF files and text files are read line by line and not as a single text span. 
 Finally the header of the URL is checked against the queried species to make sure that the page really contains information about the queried species.
 Not every query will return correct websites, i.e. websites about the queried species.
 This way we prevent accidentally storing description data for the wrong species.
@@ -371,7 +372,7 @@ We use a pretrained sentecizer from \textcite{wolf_huggingfaces_2020} to split t
 Every sentence is checked against the train description classifier.
 If a description is recognised by the model, the sentence is stored.
 We use a threshold of 0.5 to determine if a sentence is a description or otherwise.
-In Figures \ref{fig:webcrawler_sents_nopred} and \ref{fig:webcrawler_sents_pred} a small example can be found how the web crawler will process web pages and stores relevant information. 
+In Figure \ref{fig:webcrawler_sents} a small example can be found how the web crawler will process web pages and stores relevant information. 
 Figure \ref{fig:webcrawler_sents_nopred} contains the original text before processing and in \ref{fig:webcrawler_sents_pred} the original text is processed into single sentences and each sentence is classified.
 
 
@@ -393,16 +394,14 @@ Figure \ref{fig:webcrawler_sents_nopred} contains the original text before proce
          \label{fig:webcrawler_sents_pred}
      \end{subfigure}
      \caption[Example of the web crawler process]{A small example how the web crawler processes and classifies data from a web page. The raw text span is cleaned from brackets, sources and other textual punctuation. After cleaning the text is split into single sentence. Each sentence is classified by the model. Sentences that reach or exceed the threshold of 0.5 are stored.}
+     \label{fig:webcrawler_sents}
 \end{figure}
-
-\subsubsection{Storage Preprocessing} \label{Preprocessing}
-Before storage the sentences are processed.
 Description sentences often name the species in the description, e.g. "Fagus sylvatica is a large tree, capable of reaching heights of up to 50 m (160 ft) tall." (source: \href{https://en.wikipedia.org/wiki/Fagus_sylvatica}{Wikipedia/wiki/Fagus\_sylvatica}).
 Species names are replaced by the word "the species". 
-In the example above the sentence is stored as: "The species is a large tree, capable of reaching heights of up to 50 m (160 ft) tall."
+In the example above in Figure \ref{fig:webcrawler_sents} the sentence is stored as: "The species is a large tree, capable of reaching heights of up to 50 m (160 ft) tall."
 This way the NLP model will not have access to (parts of) the labels of the input data. In Figure \ref{fig:webcrawler_sents_nopred} and Figure \ref{fig:webcrawler_sents_pred} and example of a piece of text before and after processing can be found.
 
-\subsubsection{Sentence Similarity} \label{Sentence Similarity}
+\subsubsection{Sentence Similarity}
 There is a change that different web pages use the a common source for describing a species.
 By checking for similar sentence within the same species we make sure the same sentence is not appended twice to the dataset and the train and test set are completely disjoint.
 Like \textcite{reimers_sentence-bert_2019} we use the last hidden state of BERT (distilBERT in our case) and compute the cosine similarity to measure the distance between text spans.
@@ -410,7 +409,6 @@ Fortunately, this last hidden state is the output of a base BERT architecture.
 However, the last hidden state output contain a matrix of 512 x 768. 
 It is not feasibly to compute the cosine similarity distance for multiple matrices of this size.
 By using a mean-pooling operation we create a vector of size 768 for every text span and compute the cosine distance for these text spans.
-
 We first create a new dictionary that corresponds to the dictionary initialised by the tokenizer, \verb|{'input_ids': [], 'attention_mask': []}|.
 We tokenize all the sentences we are comparing and append the tokens and masking to the correct key.
 After all the sentences have been processed, we reformat the dictionary into a single tensor and push it trough the model.
@@ -419,13 +417,13 @@ We sum the 3D matrix along the first axis, resulting in a 2D matrix.
 The size of this matrix is the number of sentences time 768.
 Each sentence is represented by a vector of size 768
 Finally we calculate the cosine similarity between the sentences and drop sentences that exceed the threshold of 0.99.
-In Figure \ref{fig:similarity_matrix} a comparison of a few sentences can be found.
+In Figure \ref{fig:similarity_matrix} a comparison of a few fictional sentences can be found.
 \begin{figure} [htbp]
     \centering
     \vspace{0cm}
     \hspace{-1cm}
     %\textbf{Similarity Matrix}
-    \makebox[\textwidth][c]{\includesvg[inkscapelatex=false, width=1\textwidth]{similarity_matrix.svg}}
+    \makebox[\textwidth][c]{\includegraphics[width=0.7\textwidth]{similarity_matrix.pdf}}
     \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
     %In this example the following sentences are compared.
      %0 - "The European robin has a orange plumage."
@@ -438,35 +436,56 @@ In Figure \ref{fig:similarity_matrix} a comparison of a few sentences can be fou
     \label{fig:similarity_matrix}
 \end{figure}
 
-Some databases store their description as one long sentence, describing multiple attributes in a single sentence e.g. "Leaves 5–9-foliolate; leaflets narrowly elliptic-obovate, entire, acuminate, 7–20 x 1.8–6.5 cm, glabrous; petiole 5.5 - 25 cm long, at the apex expanded into an almost circular disk." (source: \href{http://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:1166232-2}{PoWO/Ceiba\_pentandra}). 
-This sentence is describing the leaves and the attributes in the same sentence. 
+%Some databases store their description as one long sentence, describing multiple attributes in a single sentence e.g. "Leaves 5–9-foliolate; leaflets narrowly elliptic-obovate, entire, acuminate, 7–20 x 1.8–6.5 cm, glabrous; petiole 5.5 - 25 cm long, at the apex expanded into an almost circular disk." (source: \href{http://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:1166232-2}{PoWO/Ceiba\_pentandra}). 
+%This sentence is describing the leaves and the attributes in the same sentence. 
 
-\subsubsection{Part of Speech}
+\subsubsection{Knowledge Graph}
+A knowledge graph (KG) is a graph that contains interlinked descriptions, information has a formal structure that allows both people and computer to process the data unambiguously \autocite{petkova_crafting_2020}.
+If we apply this to species descriptions we would expect the end up with a single graph per species, that contain descriptive information about that species in a semantic way.
+These graphs can also be linked if species share common traits.
 Creating a knowledge graph of the scraped data will results in a clean database.
-This database will only contain objects, relations and subjects. 
+This database will only contain subjects, relations and objects, also known as semantic triples. 
 When feeding this data to the model it cannot be become dependent on artefacts such as word order, incorrect punctuation etc.
-For PoS extracting we use the library of \autocite{honnibal_spacy_2020}.
-This is a pretrained NLP model that can extract PoS tags and their dependencies.
-In Figure \ref{fig:PoS_example}, an example of PoS tagging and dependency parsing can be found.
-\begin{figure} [htb]
+
+
+\begin{figure} [h!tb]
     \centering
     \begin{subfigure}[b]{1.0\textwidth}
         \centering
         %\vspace{0cm}
         \includesvg[inkscapelatex=false, width=\textwidth]{PoS_example.svg}
-        \caption[Example of part of speech tagging]{An example of part of speech and dependency parsing. The arrows contain the dependency tags and the words contain the part of speech tags.}
+        \caption[Example of part of speech tagging (1)]{An example of part of speech and dependency parsing for the sentence "The Brown bear has brown fur.". The arrows contain the dependency tags and the words contain the part of speech tags.}
         \label{fig:PoS_example}
+    \end{subfigure}
+    \vfill
+    \centering
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        %\vspace{0cm}
+        \includesvg[inkscapelatex=false, width=\textwidth]{PoS_example2.svg}
+        \caption[Example of part of speech tagging (2)]{An example of part of speech and dependency parsing for the sentence "The claws are sharp.". The arrows contain the dependency tags and the words contain the part of speech tags.}
+        \label{fig:PoS_example2}
     \end{subfigure}
     \vfill
     \begin{subfigure}[b]{1.0\textwidth}
         \centering
         %\vspace{-2cm}
         \includegraphics[width=\textwidth]{kn_example.pdf}
-        \caption[Example of a knowledge graph]{The sentence  results in three nodes (subject/object) and two edges (relations). The circles contain the objects/subjects and the arrows represent the relations.}
+        \caption[Example of a knowledge graph]{The sentences result in five nodes (subject/object) and four edges (relations). The circles contain the objects/subjects and the arrows represent the relations.}
         \label{fig:graph_example}    
     \end{subfigure}
-    \caption[Part of Speech tagging and knowledge graph]{A small example for the sentence "The Brown bear has brown fur.". The sentence is first broken down with the NLP pipeline of \textcite{honnibal_spacy_2020}. The extracted PoS tags and dependency tags are then used to construct the semantic triple containing three nodes and two edges. In this case the first node is the normal subject (nsubj) combined witht the compound. The root verb of this subject is the relation and the direct object (dobj) of the verb is the object of the first semantic triple. For the last relation and node, the adjective modifier (amod) of the last node (fur) is used as object. In this case the relation is dependent on the PoS tag of the adjective modifier.}
+    \caption[Part of Speech tagging and knowledge graph]{The sentences are first broken down with the NLP pipeline of \textcite{honnibal_spacy_2020}. The extracted PoS tags and dependency tags are then used to construct the semantic triples In first case the first node is the normal subject (nsubj) combined witht the compound. The root verb of this subject is the relation and the direct object (dobj) of the verb is the object of the first semantic triple. For the last relation and node, the adjective modifier (amod) of the last node (fur) is used as object. In this case the relation is dependent on the PoS tag of the adjective modifier. In the last case the claws are a normal subject, but are treated as an object.}
+    \label{fig:pos_pipeline}
 \end{figure}
+We use PoS tagging and dependency parsing to create a clean knowledge graph.
+For PoS extracting we use the library of \textcite{honnibal_spacy_2020}.
+This is a pretrained NLP model that can extract PoS tags and their dependencies.
+We set up a rule-based system to extract data from the sentences.
+In Figure \ref{fig:pos_pipeline} two example sentences can be found that are processed using PoS tagging and dependency parsing with the pretrained pipelines of \textcite{honnibal_spacy_2020}.
+We have the benefit that we already know the broad subject of every sentence, which is the species.
+Most researches do not have this and also need to determine the subject of every sentence \autocite{hutchison_knowledge_2013} like we do in \ref{fig:PoS_example}.
+We know that every sentence describes the queries species, this means that we can have the species as starting node, even when the subject is not the species itself, see Figure \ref{fig:PoS_example2}.
+By processing this in a rule-base system we create a knowledge graph like shown in Figure \ref{fig:graph_example}.
 
 \subsection{Inferring Species}
 For inferring species on partial descriptions, we explore two different ways of inferring species.
@@ -482,10 +501,9 @@ We simply compute all the the gradients in a simple loop for a text span:
 \begin{equation}
     x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x')
 \end{equation}
-In this case (
-For this we first use 20 steps to calculate the gradients as this is the minimum that \textcite{sundararajan_axiomatic_2017} found that could approximate the gradients by 5\%\footnote{The gradients are calculated from 0,00 to almost, but not exactly 1,00. As we are using 20 steps to calculate the gradients, we approximate the gradients by 5\% (\(\frac{1}{20} * 100 = 5\)). By increasing the number of steps, a better approximation of the gradients can be calculated. However, the computation time scales linearly with the number of steps.}.
+For this we use 20 steps to calculate the gradients as this is the minimum that \textcite{sundararajan_axiomatic_2017} found that could approximate the gradients by 5\%\footnote{The gradients are calculated from 0,00 to almost, but not exactly 1,00. As we are using 20 steps to calculate the gradients, we approximate the gradients by 5\% (\(\frac{1}{20} * 100 = 5\)). By increasing the number of steps, a better approximation of the gradients can be calculated. However, the computation time scales linearly with the number of steps.}.
 We calculate the gradients for every input token and sum the gradients.
-This leads to the following equation that approximates the gradients:
+This leads to the following equation that approximates the gradients \autocite{sundararajan_axiomatic_2017}:
 \begin{equation} \label{eq:integrad}
     {IntegratedGrads_i^{approx}} (x) ::= (x_i - x'_i) *  \sum\nolimits_{k=1}^{m}  \frac{\partial F(x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x') }{\partial x_i} 
 \end{equation}
@@ -496,14 +514,14 @@ This leads to the following equation that approximates the gradients:
 \(m\) = number of steps\newline
 \((x - x')\) = difference from the baseline. \newline
 \newline
-By combining Equation \ref{eq:integrad} with PoS tagging and dependency parsing, we can extract the relevant PoS tags used for the prediction.
+By combining Equation \ref{eq:integrad} with PoS tagging and, we can extract the relevant PoS tags used for the prediction.
 However, using a tokenizer can split certain words.
 For example, for the sentence "The plant has 7 antheriferous stamens." we would expect nine token (beginning, words, point and ending).
 Applying the BERT tokenizer on this sentence results in thirteen tokens:
 %\newline
 "\verb|[CLS] the plant has 7 ant ##her ##iferous st ##amen ##s. [SEP]|".
 %\newline
-We average the gradients if a word get split by the tokenizer.
+if this happens we sum the gradients, because the sum of the gradients should equal 1.
 In this example, both \verb|antheriferous| and \verb|stamens| will consist of three integrated gradients. 
 
 
@@ -512,7 +530,7 @@ In this example, both \verb|antheriferous| and \verb|stamens| will consist of th
 \section{Results}
 \markboth{Results}{Results}
 \subsection{Extensive dataset}
-\subsubsection{Description Classification}
+\subsubsection{Description Classification Model}
 
 \begin{figure} [t]
     \centering
@@ -617,8 +635,7 @@ The AP reaches 96\%.
      \caption[ROC and precision recall curves for left out datasets]{The ROC and the precision-recall curve for the left out external datasets. The models seems to perform reasonable in both cases. The Area Under the Curve (AUC) reaches 99\% and the the Average Precision (AP) reaches 96\%. In both plots the blue dashed line indicates a baseline classifier.}
 \end{figure}
 
-\subsubsection{Web Crawler}
-
+\subsubsection{Database}
 \subsubsection{Sentence Similarity}
 
 \subsection{Species Classification}
