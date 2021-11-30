@@ -18,7 +18,14 @@
 \usepackage[labelfont=bf]{caption}
 \usepackage{booktabs}
 %\usepackage[table,xcdraw]{xcolor}
+% TOC DEPTH
+\setcounter{tocdepth}{3}
+% PARAGRAPH DEPTH
+\setcounter{secnumdepth}{4}
+% Fat caption numbers
 \usepackage{caption}
+% Footnote indentation
+\usepackage[hang,flushmargin]{footmisc} 
 \usepackage{subcaption}
 \usepackage[left]{lineno} % For line numbers
 %\renewcommand{\baselinestretch}{2.0}
@@ -55,11 +62,39 @@
             includeheadfoot} % First page margins
 \titleformat{\chapter}[display]
   {\normalfont\bfseries}{}{0pt}{\Large}
-
+  
+\pagenumbering{roman}
 \begin{document}
  \begin{titlingpage}
-
-
+\newgeometry{top=1.25cm,bottom=0.96cm,inner=1.91cm,outer=1.91cm,foot=0cm}
+{\Large Geo-information Science and Remote Sensing}\vspace{0.9cm}
+  
+  {\Large Thesis Report GIRS-2020-xx}\vspace{0.9cm}
+  
+  \hrule\vspace{1.1cm}
+  
+  {\bfseries \centering \Large \thetitle}
+  
+  {\bfseries \itshape (Subtitle)}\vspace{2.0cm}
+  
+  % Note: Remove the ``draft'' from \includegraphics to actually include an image, and adjust the vspace (padding) if you want to use a differently sized image
+  \begin{wrapfigure}{r}{0.55\textwidth}
+    \vspace{1cm}
+    \includegraphics[height=9.5cm]{figures/picture.png}
+  \end{wrapfigure}
+  
+  {\Large \theauthor}\vspace{6.0cm}
+  
+  \rotatebox{90}{\Large \thedate}\vspace{1.5cm}
+  
+  % This is the vector version of the new WUR logo; due to layout changes it visually looks larger than the old one
+  \sloppypar{\hspace{-2cm}\includegraphics[width=13cm]{figures/WUR_RGB_standard.eps}}
+  
+  % Note: this image is not stretched out like it is in the MS Word template
+  \sloppypar{\noindent\makebox[\textwidth]{\hspace*{\dimexpr\evensidemargin-\oddsidemargin}\includegraphics[width=\paperwidth]{figures/image2.jpeg}}}
+  
+  %%%%%% PAGE II 
+  \restoregeometry
   %\newgeometry{top=1.25cm,bottom=1.25cm,inner=0.66cm,outer=0.53cm,foot=1.19cm,includeheadfoot} % Subsequent page margins
   % Note: this uses the MS Word template margins, you might want to increase them a bit for printing (e.g. inner=1.91cm,outer=1.91cm)
   \thispagestyle{empty}
@@ -72,11 +107,11 @@
   \newline
   %{\bfseries \itshape Subtitle}\vspace{2.7cm}
   
-  {\Large \theauthor}\vspace{0.8cm}
+  {\Large \theauthor}\vspace{0.25cm}
   
   {Registration number 920523897020}\vspace{2.5cm}
   
-  {\large \underline{Supervisors}:}\vspace{1.1cm}
+  {\large \underline{Supervisors}:}\vspace{.25cm}
   
   {Diego Marcos}
   
@@ -93,7 +128,7 @@
     {\thedate}
   
     {Wageningen, The Netherlands}
-  \end{center}\vspace{6cm}
+  \end{center}\vspace{5cm}
 
     Thesis code number: GRS-80400
   
@@ -118,6 +153,7 @@
 
 
 \renewcommand{\thesection}{\arabic{section}}
+\pagenumbering{arabic}
 \section{Introduction}
 \markboth{Introduction}{Introduction}
 
@@ -513,7 +549,7 @@ To extract the most relevant we try different posthoc exploratory techniques and
 For retrieving key words from the description data we try several different posthoc explanation techniques. We implement all techniques with the Captum library from \textcite{kokhlikyan_captum_2020}.
 \begin{itemize}
     \item Layer Integrated Gradients (LIG), based on the paper of \textcite{sundararajan_axiomatic_2017}. We use LIG with 20 steps and with 100 steps.
-    \item Occlusions, based on \textcite{fleet_visualizing_2014}. Although this is originally used for explaining CNNs it can also be used to explain NLP models. We use two different version of occlusion, (1) with a window and stride of both 1. In this case each word will be replaced with a tensor of zeros to check the prediction changes of the model. (2) a window of 3\footnote{The windows is 1-dimensional in this case as the input vector is a tensor of the tokenised text.} and a stride of 2.
+    \item Occlusions, based on the paper of \textcite{fleet_visualizing_2014}. Although this is originally used for explaining CNNs it can also be used to explain NLP models. We use two different version of occlusion, (1) with a window and stride of both 1. (2) a window of 3\footnote{The windows is 1-dimensional in this case as the input vector is a tensor of the tokenised text.} and a stride of 2. In both cases the word(s) will be replaced with a tensor of zeros to check the prediction changes of the model. 
     \item Shapley Value Sampling (SVS) based on the papers of \textcite{castro_polynomial_2009, strumbelj_efficient_2010}. We use the Captum default of 25 samples.
     \item Layer Activation (LA), which simple computes the activation of the internal BERT embeddings for the inputs.
     \item Layer Gradient X Activation (LGXA), which is the element-wise multiplication of the gradients and the layers activation for a giver target with respect to the layer.
@@ -522,8 +558,8 @@ For retrieving key words from the description data we try several different post
 For comparing the techniques, we use the \href{http://www.vision.caltech.edu/visipedia/CUB-200-2011.html}{Caltech-UCSD Birds 200 dataset} (CUB-200) \autocite{welinder_caltech-ucsd_2010}.
 The CUB-200 is a dataset with 200 bird species from Northern America.
 Each bird is represented by approximately 60 images. 
-Each of these images is hand annotated with traits that are present on the images.
-We only use the text file with information if a certain trait is present on an image and concatenate this information for all the bird species.
+Each of these images is hand annotated with traits that are possibly (0, not present, to 5 present) present in the images.
+We only extract information with the highest certainty (5) and concatenate the information on species level.
 
 We train a model on a subset on the BOW dataset, but we make sure all the CUB species are present in the training data.
 The CUB birds are intersected with the BOW birds, this resulted in 94 common birds \footnote{The BOW dataset contains all described birds, some birds species have a different writing in the CUB data.}.
@@ -532,12 +568,19 @@ We do not split the model into train and test data, as evaluating with a test se
 We use the same hyperparameters and architecture as we did for training the binary classification model (see \ref{par:Architecture}.
 We only change the last linear output layer so it matches the number of species that are used during training.
 
-We first match each text chunk against a bird glossary.
-We use \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{W/Glossary/Birds} to construct this bird glossary list.
-Each text chunk is matched against the bird glossary, if the chunk is a match we extract the most relevant words according to the aforementioned techniques.
-The CUB-200 dataset is also matched against the bird glossary, so we can compare traits that are described in both datasets.
-The most important word, together with the trait from the glossary is matched against the CUB-200 dataset to see which explanatory technique performs the best.
-Text similarity with the CUB-200 dataset is used as a metric to compare the different techniques.
+We first match each text chunk against a bird glossary to remove irrelevant sentences.
+We use \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds} to construct this bird glossary list.
+The CUB dataset only contains visual traits, where our scraped dataset can also contain behaviour traits, voice features etc.
+By matching both sets against a common bird glossary list, we also do not have to compare all text chunks at once and we can skip irrelevant chunks.
+Comparing all chunks would result in an enormous list of large vectors, and would probably not computationally feasible.
+Instead, per species, we intersect each text chunk and CUB-200 trait, and compute the similarity for each attribution.
+This will result in several similarity values per attribution depending on the CUB-200 dataset.
+For example, if the the result of the SVS is "wing blackish" for the Common raven (Corvus corax) and the wings have 3 different descriptions in the CUB-200 dataset, the result will be 3 different similarity values for the SVS.
+%Each text chunk is matched against the bird glossary, if the chunk is a match we extract the most relevant words according to the aforementioned techniques.
+%The CUB-200 dataset is also matched against the bird glossary, so we can compare traits that are described in both datasets.
+%The most important word, together with the trait from the glossary is matched against the CUB-200 dataset to see which explanatory technique performs the best.
+%Text similarity with the CUB-200 dataset is used as a metric to compare the different techniques.
+
 To compute the text similarity we use an untrained version of distillBERT and the cosine similarity.
 For each bird, we select each trait of the text chunk and CUB dataset.
 This will result in a list of text chunks for text chunks and for the CUB dataset.
@@ -552,8 +595,27 @@ After this we simple compute the cosine similarity of each text chunk against al
 \begin{equation}
 \cos ({\bf A},{\bf B})= {{\bf A} {\bf B} \over \|{\bf A}\| \|{\bf B}\|} = \frac{ \sum_{i=1}^{n}{{\bf A}_i{\bf B}_i} }{ \sqrt{\sum_{i=1}^{n}{({\bf A}_i)^2}} \sqrt{\sum_{i=1}^{n}{({\bf B}_i)^2}} }
 \end{equation}
-Where~$A$ is the vector of text chunk 1 and~$B$ the vector of text chunk 2.
-Finally we statistically assess which of the exploratory techniques delivers the best performance.
+Where~$A$ is the vector of text chunk 1 and~$B$ the vector of text chunk 2. 
+In Figure \ref{fig:similarity_matrix} a comparison of a few fictional text chunks can be found. 
+Finally we assess which of the exploratory technique delivers the best performance and select this for the larger dataset.
+\begin{figure} [htbp]
+    \centering
+    \vspace{0cm}
+    %\hspace{-1cm}
+    %\textbf{Similarity Matrix}
+    \makebox[\textwidth][c]{\includegraphics[width=0.7\textwidth]{similarity_matrix.pdf}}
+    \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
+    In this case reconstructed text chunks from the CUB-200 dataset are shown on the y-axis and reconstructed text chunks from scraped data is shown on the x-axis. In this case 'Bill color yellow', and 'Bill yellow' is almost the same, hence the high similarity score of 0.91. Note that the similarity matrix does not necessarily have equal rows and columns.}
+    \label{fig:similarity_matrix}
+\end{figure}
+
+For each unique bird, part and attribution combination of the CUB-200 data and the data from the internet we compute a similarity matrix.
+We extract the highest value of each unique combination, resulting in a large array of similarity values per attribution.
+The harmonic mean is computed to get the best attribution method:
+\begin{equation}
+    H = \frac{n}{\sum\limits_{i=1}^n \frac1{x_i}}
+\end{equation}
+Where~$H$ is the harmonic mean,~$n$ is the number of samples and~$x$ is the similarity value. 
 
 
 
@@ -632,7 +694,7 @@ The model reaches an high precision, recall and f1-score for both the "Non-Descr
 % \usepackage{booktabs}
 \begin{table}[ht]
 \centering
-\caption[Precision-recall metrics for the test dataset and the two left out datasets]{The precision-recall metrics for the binary classification model tested on the test dataset and two external datasets (LLifle and AgroForestry).}
+\caption[Precision-recall metrics test and two left out datasets]{The precision-recall metrics for the binary classification model tested on the test dataset and two external datasets (LLifle and AgroForestry).}
 \label{tab:precision_recall_metrics}
 \begin{tabular}{@{}lcccccccc@{}}
 \cmidrule(l){2-9}
@@ -641,8 +703,8 @@ The model reaches an high precision, recall and f1-score for both the "Non-Descr
                  & 0.98 & 0.99   & 0.99 & 0.98   & 0.99 & 0.98   & 167,955 & 66,051 \\
 Description      & 0.97 & 0.83   & 0.95 & 0.90   & 0.96 & 0.86   & 57,864  & 8,785  \\ \midrule
 Accuracy         &      &        &      &        & 0.98 & 0.97   & 225,819 & 74,836 \\
-Macro Average    & 0.98 & 0.91   & 0.97 & 0.94   & 0.98 & 0.92   & 225,819 & 74,836 \\
-Weighted Average & 0.98 & 0.97   & 0.98 & 0.97   & 0.98 & 0.97   & 225,819 & 74,836 \\ \bottomrule
+M Average    & 0.98 & 0.91   & 0.97 & 0.94   & 0.98 & 0.92   & 225,819 & 74,836 \\
+W Average          & 0.98 & 0.97   & 0.98 & 0.97   & 0.98 & 0.97   & 225,819 & 74,836 \\ \bottomrule
 \end{tabular}
 \end{table}
 As the the classes are imbalanced in both cases we also evaluated the model with a precision-recall plot.
@@ -669,16 +731,50 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}.
 \end{figure}
 
 \subsubsection{Dataset results}
+%\textbf{URLs.}
+We ran the web crawler for a little more than two weeks\footnote{We ran the crawler with a minimum of a thousand species each run, because of this we ran the crawler a little longer then two weeks, resulting in a large even number.}.
+In these two weeks we managed to query 20,000 different plant species.
+Every species returned at least one URL.
+For 20,000 species there are 519,197 unique URLs returned from 27,612 unique base URLs (URL homepage).
+For 16,193 species the URL returned text that could by classified.
+3,807 species URLs did not return any useable text\footnote{The POWO website is excluded from the web crawler as this database is already available.}
+In Figure \ref{fig:URL_distribution}, the distributions can be found.
+
+\begin{figure}[h]
+ \centering
+ %\hspace{-0.5cm}
+ \includegraphics[width=\textwidth]{figures/URL_distribution.pdf}
+ \caption[The URL, base URL and URLs with text per Species]{The distribution of the unique URLs per species, base URLs per species and URLs with text per species.}
+ \label{fig:URL_distribution}
+\end{figure}
+
+ In Figure \ref{fig:URL_top20} the most returned base URLs can be found.
+Research.net is by far the most returned base URL when querying species, followed by Academia.edu and the international version of Wikipedia.com.
+
+\begin{figure}[h]
+ \centering
+ %\hspace{-0.5cm}
+ \includegraphics[width=\textwidth]{figures/URL_top20.pdf}
+ \caption[The top 20 returned base URLs]{The top 20 URLs that are returned the most.}
+ \label{fig:URL_top20}
+\end{figure}
+
+
+
+
 \subsection{Key Words Inference}
 \subsubsection{Similarity Results CUB}
 \subsection{Species Classification}
 \subsubsection{}
+
+\section{Discussion} \label{par:discussion}
+\subsubsection{Description Classifier}
+
 \section{Conclusion} \label{par:conclusion}
 A binary description classification model can be trained by using structured webpages. 
 By using the header as labels in combination with a semi-supervised loss, annotation can be prevented and the model can reach a high classification accuracy.
 
-\section{Discussion} \label{par:discussion}
-\subsubsection{Description Classifier}
+
 
 
 
