@@ -93,7 +93,7 @@ def load_simBERT():
     """
     
     device = 'cuda' if cuda.is_available() else 'cpu'
-    #bert = DistilBertModel.from_pretrained('distilbert-base-uncased')
+    bert = DistilBertModel.from_pretrained('distilbert-base-uncased')
     
     class BERT(nn.Module):
         def __init__(self, bert):
@@ -102,17 +102,17 @@ def load_simBERT():
             # Distil Bert model
             self.bert = bert
 
-        #define the forward pass
+        # Define the forward pass
         def forward(self, **kwargs):
 
-            #pass the inputs to the model BERT  
+            # Pass the inputs to the model BERT  
             cls_hs = self.bert(**kwargs)
             hidden_state = cls_hs.last_hidden_state
 
             return hidden_state
         
     model = BERT(bert)
-    # push the model to GPU
+    # Push the model to GPU
     model = model.to(device)
     # Eval mode
     model.eval()
@@ -143,7 +143,7 @@ def SpanPredictor(span, model, pred_values=False):
             return span_class
         
         
-def similarity_matrix(sentence_list, model):
+def similarity_matrix(sentence_list, SIMmodel):
     
     """
     Calculates a similarity cosine matrix based on a list of
@@ -168,7 +168,7 @@ def similarity_matrix(sentence_list, model):
     tokens['attention_mask'] = torch.stack(tokens['attention_mask'])
     
     # Get vectors
-    hiddenstates = sim_model(**tokens)
+    hiddenstates = SIMmodel(**tokens)
     # Sum along first axis
     summed_hs = torch.sum(hiddenstates, 1)
     # Detach
@@ -176,4 +176,148 @@ def similarity_matrix(sentence_list, model):
     # Get the matrix
     return summed_hs_np
 
+def load_CUB_Bert(location, modelname):
     
+    device = 'cuda' if cuda.is_available() else 'cpu'
+
+    class BERT(nn.Module):
+        def __init__(self, bert):
+
+            super(BERT, self).__init__()
+
+            # Distil Bert model
+            self.bert = bert
+            ## Additional layers
+            # Dropout layer
+            self.dropout = nn.Dropout(0.3)
+            # Relu 
+            self.relu =  nn.ReLU()
+            # Linear I 
+            self.fc1 = nn.Linear(768, 512)
+            # Linear II (Out)
+            #self.fc2 = nn.Linear(512, 170)
+            self.fc2 = nn.Linear(512, 2000)
+            # Softmax
+            self.softmax = nn.LogSoftmax(dim=1)
+
+
+        # Forward pass
+        def forward(self, **kwargs):
+
+            # Pass data trough bert and extract 
+            cls_hs = self.bert(**kwargs)
+            # Extract hidden state
+            hidden_state = cls_hs.last_hidden_state
+            # Only first is needed for classification
+            pooler = hidden_state[:, 0]
+
+            # Dense layer 1        
+            x = self.fc1(pooler)
+            # ReLU activation
+            x = self.relu(x)
+            # Drop out
+            x = self.dropout(x)
+            # Dense layer 2
+            x = self.fc2(x)
+            # Activation
+            x = self.softmax(x)
+
+            return x
+
+    # Load the entire model
+    model = BERT(bert)
+
+    # Load trained model (colab)
+    try:
+        try:
+            model_save_name = modelname
+            path = location + model_save_name
+            model.load_state_dict(torch.load(path))
+            print('Google Success')
+
+        except:
+            model_save_name = modelname
+            path = location + model_save_name
+            model.load_state_dict(torch.load(path, 
+                                             map_location=torch.device('cpu')))
+            print('Local Success')
+    except:
+        print('No pretrained model found.')
+
+    model.to(device)
+    model.eval()
+    model.zero_grad()
+    return model
+
+def load_PLANT_Bert(location, modelname):
+    
+    device = 'cuda' if cuda.is_available() else 'cpu'
+
+    class BERT(nn.Module):
+        def __init__(self, bert):
+
+            super(BERT, self).__init__()
+
+            # Distil Bert model
+            self.bert = bert
+            ## Additional layers
+            # Dropout layer
+            self.dropout = nn.Dropout(0.3)
+            # Relu 
+            self.relu =  nn.ReLU()
+            # Linear I 
+            self.fc1 = nn.Linear(768, 512)
+            # Linear II (Out)
+            #self.fc2 = nn.Linear(512, 170)
+            self.fc2 = nn.Linear(512, 14557)
+            # Softmax
+            self.softmax = nn.LogSoftmax(dim=1)
+
+
+        # Forward pass
+        def forward(self, **kwargs):
+
+            # Pass data trough bert and extract 
+            cls_hs = self.bert(**kwargs)
+            # Extract hidden state
+            hidden_state = cls_hs.last_hidden_state
+            # Only first is needed for classification
+            pooler = hidden_state[:, 0]
+
+            # Dense layer 1        
+            x = self.fc1(pooler)
+            # ReLU activation
+            x = self.relu(x)
+            # Drop out
+            x = self.dropout(x)
+            # Dense layer 2
+            x = self.fc2(x)
+            # Activation
+            x = self.softmax(x)
+
+            return x
+
+    # Load the entire model
+    model = BERT(bert)
+
+    # Load trained model (colab)
+    try:
+        try:
+            model_save_name = modelname
+            path = location + model_save_name
+            model.load_state_dict(torch.load(path))
+            print('Google Success')
+
+        except:
+            model_save_name = modelname
+            path = location + model_save_name
+            model.load_state_dict(torch.load(path, 
+                                             map_location=torch.device('cpu')))
+            print('Local Success')
+    except:
+        print('No pretrained model found.')
+
+    model.to(device)
+    model.eval()
+    model.zero_grad()
+    return model

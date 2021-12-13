@@ -190,7 +190,7 @@ def get_prediction_results(data_values, model,
     return report, misclass_list, y_onehot
 
 
-def similarity_matrix(sentence_list):
+def similarity_matrix(sentence_list, model):
     
     """
     Calculates a hidden state array per sententence based on a list of
@@ -215,13 +215,14 @@ def similarity_matrix(sentence_list):
     tokens['attention_mask'] = torch.stack(tokens['attention_mask'])
     
     # Get vectors
-    hiddenstates = sim_model(**tokens)
+    hiddenstates = model(**tokens)
     # Sum along first axis
     summed_hs = torch.sum(hiddenstates, 1)
     # Detach
     summed_hs_np = summed_hs.detach().numpy()
     # Get the matrix
-    return cosine_similarity(summed_hs_np, summed_hs_np).round(5)
+    #return cosine_similarity(summed_hs_np, summed_hs_np).round(5)
+    return summed_hs_np
 
 
 def name_cleaner(key, sentence, replacement):
