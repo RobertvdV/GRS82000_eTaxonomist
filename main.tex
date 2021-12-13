@@ -285,18 +285,25 @@ This chapter will give a detailed description of the steps.
 \subsection{Creating an Extensive Dataset} \label{par:dataset}
 The World Wide Web also has potentially an endless amount of species descriptions available.
 This makes the internet suitable for harvesting training data.
-However, description sentences can be theoretically limitless, e.g. for a Brown Bear description text could be: "The fur is brown", "The brown bear has brown fur".
+However, description sentences can be theoretically limitless, e.g. for a Brown bear (Ursus arctos) the description text could be: "The fur is brown", "The brown bear has brown fur".
+These are relatively simple sentences.
 Sentences can have a more difficult semantic, e.g. "The fur of the Brown bear is similar to that of the Grizzly bear".
-A classic machine learning approach that requires a rule-based match system for sentence classification is not possible. 
-We first train a DNN that can classify text into description or non-description.
+A classic machine learning approach that requires a rule-based match system for sentence classification is not feasible to harvest description data from the internet.
+Instead we train a DNN that can classify text into description or non-description.
 To properly train a deep learning model that can classify text data into description and non-description text, a large, accurate and consistent labelled dataset is needed \autocite{munappy_data_2019}.
 
 \subsubsection{Training a Model for Text Classification} \label{par:reedloss}
 %The internet has a vast amount of free data available that can be easily harvested.
 We create this large dataset by scraping web pages from structured sources.
-These sources (Wikipedia, Plant of the World Online (PoWO), Birds of the Word(BoW)), have a rich scholarly content about species.
+We select three large databases that are large and structured enough and have a rich scholarly content about species:
+\begin{itemize}
+    \item \href{www.wikipedia.com}{Wikipedia}
+    \item \href{https://birdsoftheworld.org/bow/home}{Birds of the World (BoW)}
+    \item \href{https://powo.science.kew.org/}{Plant of the World Online (PoWO)}
+\end{itemize}
+
 These websites divide their information into paragraphs such as "Introduction", "Appearance", "Characteristics", "Habit".
-These paragraph titles are used as labels and the text inside is used as training data.
+These paragraph titles are used as labels and the text inside are used as features.
 In our case we stored text from paragraphs with titles like:  "Introduction" and "Habit" as negative labels and "Introduction" and "Appearance" as positive values, making this a two class classification problem. 
 Random pages from Wikipedia that are not about species are also used to gather additional negative values.
 We hypothesise that the model will be better in classifying text not related to species descriptions.
@@ -305,14 +312,14 @@ We hypothesise that the model will be better in classifying text not related to 
 %Using \verb|[CLS]|, the model knows the sequence is used for classification.
 %The second token is \verb|[SEP]|, which stand for "Separation". 
 
-However, this will not result in a consistent dataset.
+This will not result in a consistent dataset.
 Not all data will be labelled correctly as the paragraph titles are used as labels.
 E.g. some species description might be located in the paragraph "Introduction" and some general information might be in the paragraph "Characteristics".
 Consider the text "The European robin is red-breasted with distinctive eyes.".
 This text is likely to be found in a paragraph about descriptions.
 However, the text can also occur in the introduction paragraph about an European robin or it could be part of an image caption of an entirely different paragraph. 
 In second cases the text will be miss classified with a binary cross entropy loss the model parameters will not be updated correctly. 
-By implementing the semi-supervised loss function of \textcite{reed_training_2015}, this will be prevented to a certain extent.
+By implementing the semi-supervised loss function from \textcite{reed_training_2015}, this will be prevented to a certain extent.
 Using natural language in combination with the soft loss function from \textcite{reed_training_2015}, allows the model for semi-supervised learning.
 This combination has the advantage that it is now very easy to scale natural language training as we do not need annotated datasets.
 If the predefined \(\beta\) reaches a threshold, the prediction is treated as correct and the loss is calculated accordingly.
@@ -338,9 +345,16 @@ We use their findings on the full BERT model, to fine-tune the distilBERT model 
 Like \textcite{sun_how_2020} we first fit a fully connected linear layer with an input size of 768 and an output size of 512 on top of the BERT architecture. 
 This linear layer is followed by a dropout layer (0.1) to enable some regularization.
 The next fully connected linear layer has a input size of 512 and an output size of 2, as we are predicting two classes.
-The final activation layer is a log-likelihood (log-softmax) activation function.
+The final output layer is a log-likelihood (log-softmax) function:
+\begin{equation} \label{eq:logsoftmax}
+    X = \log_{}(\frac{e^{z_i}}{\sum_{j=1}^K e^{z_j}})
+\end{equation}
 Using a log-softmax will slightly increase the error factor of the model over a normal softmax function, punishing mistakes a bit higher.
-By taking the exponent, the standard likelihood (softmax) probabilities can be computed.
+By taking the exponent, the standard likelihood (softmax) probabilities can be computed:
+\begin{equation}
+    P = e^{output} 
+\end{equation}
+Where~$P$ is the probility between 0 and 1.
 
 The basis distillBERT architecture can be fine-tuned further by updating the inner parameter of the transformer layers during training. 
 This can be useful if BERT is utilised in the non-general domain \autocite{devlin_bert_2019, sun_how_2020, sanh_distilbert_2020}, which is the case with description data.
@@ -359,11 +373,12 @@ We hypothesised that the model might be better in recognising shorter descriptio
 This way we enlarge the dataset, prevent loosing information with truncating spans larger then 512 tokens. 
 We use a minimum of 10 words to prevent the model fixating on specific words.
 
+
 The tokenizer of \textcite{wolf_huggingfaces_2020} returns a Python dictionary with the input ID's and the attention mask of the text.
 E.g. by tokenizing the text "This is a test.", the tokenizer returns the following:
-\verb|{'input_ids': [101, 2023, 2003, 1037, 3231, 1012, 102]|, 
-\verb|'attention_mask': [1, 1, 1, 1, 1, 1, 1]}|.
-\verb|[101]| indicates the start of a sequence and \verb|[102]| indicates the end of a sequence.
+~$'input\_ids': [101, 2023, 2003, 1037, 3231, 1012, 102]$, 
+~$'attention\_mask': [1, 1, 1, 1, 1, 1, 1]$.
+~$[101]$ indicates the start of a sequence and ~$[102]$ indicates the end of a sequence.
 During the training the text is also padded to the maximum of 512 tokens and the attention masks are randomised between 0 and 1.
 
 \subsubsection{Training \& Evaluation}
@@ -379,6 +394,7 @@ As the dataset is will be unbalanced it will be evaluated with a precision-recal
 The precision-recall summary and curves give more reliable results with an unbalanced dataset.
 When the model reaches an f1-score of at least 0.9 on the testset, the model is tested on two additional left out databases, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
 If the model reaches a f1-score on 0.8 on these external datasets, the model will be deployed in a web crawler.
+For calculating we use the Python page from \textcite{pedregosa_scikit-learn_2011}.
 Before the text of the external dataset is tokenized, it is first cleaned of references and footnotes.
 We no longer split the into random chunks, but we use a sentecizer of \textcite{honnibal_spacy_2020} to split the text into sentences.
 This is also how random text will be treated that is gathered by the web crawler.
@@ -583,7 +599,7 @@ We also make sure that all the bird of the CUB-200 dataset are present in the bi
 We random sample additional birds from the BOW dataset so the CUB birds make up about 10\% of the total data and resulting in 2,000 birds.
 We use the web crawler with the trained binary classifier for descriptions to enrich the BOW dataset with sentences from the internet.
 We do not split the model into train and test data, as evaluating with a test set has no use.
-We use the same hyperparameters and architecture as we did for training the binary classification model (see Section \ref{par:Architecture}.
+We use the same hyperparameters and architecture as we did for training the binary classification model (see Section \ref{par:Architecture}).
 We only change the last linear output layer so it matches the number of species that are used during training.
 After the model has been trained we compute the attribution value for every word per sentence with the aforementioned techniques.
 
@@ -629,12 +645,12 @@ After this we simple compute the cosine similarity of each text chunk against al
 Where~$A$ is the vector of text chunk 1 and~$B$ the vector of text chunk 2. 
 In Figure \ref{fig:similarity_matrix} a comparison of a few fictional text chunks can be found. 
 Finally we assess which of the exploratory technique delivers the best performance and select this for the larger dataset.
-\begin{figure} [htbp]
+\begin{figure} [h!]
     \centering
-    \hspace{-2cm}
+    %\hspace{-2cm}
     %\hspace{-1cm}
     %\textbf{Similarity Matrix}
-    \makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{similarity_matrix.pdf}}
+    \includegraphics[width=0.8\textwidth]{similarity_matrix.pdf}
     \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
     In this case reconstructed text chunks from the CUB-200 dataset are shown on the y-axis and reconstructed text chunks from scraped data is shown on the x-axis. In this case 'Bill color yellow', and 'Bill yellow' is almost the same, hence the high similarity score of 0.91. Note that the similarity matrix does not necessarily have equal rows and columns.}
     \label{fig:similarity_matrix}
@@ -702,13 +718,45 @@ Scraping the structured sources and using their paragraph titles resulted in 1,4
 Splitting the samples into text chunks resulted in 2,258,162 text chunks.
 1,678,830 chunks have a label that correspond to something different (label 0) 579,332 chunks have a label that corresponds to a description (label 1).
 In Figure \ref{fig:text_length_distribution} the text length distribution before and after splitting the original samples in random chunks can be found.
-\begin{figure} [bh]
-    \centering
-    \vspace{0cm}
-    \includegraphics[width=\textwidth]{figures/histogram_text_length.pdf}
-    \caption[Text length distribution for training web crawler model]{The result of scraping structured sources to train  a binary classification model for descriptions classification. In the first figure the text length distributions before splitting are shown. In the second figure the text length distributions after splitting are shown. The text spans are randomly split into chunks between 10 words and their length, with a maximum of 512 words to prevent truncation. Text spans with a length below 10 words are not split, resulting in some text lengths below 10.}
+As can be seen from Figures \ref{fig:text_length_1}, \ref{fig:text_length_3}, \ref{fig:text_length_2}, and \ref{fig:text_length_4}, all distributions of the text lengths are left-skewed. 
+
+\begin{figure} [h!]
+     \centering
+     \begin{subfigure}[b]{0.49\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{figures/histogram_text_length_1.pdf}
+         \caption{The text length of non-description data before splitting.}
+         \label{fig:text_length_1}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{histogram_text_length_3.pdf}
+         \caption{The text length of non-description data after splitting.}
+         \label{fig:text_length_3}
+     \end{subfigure}
+     \vfill
+     \begin{subfigure}[b]{0.49\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{histogram_text_length_2.pdf}
+         \caption{The text length of description data before splitting.}
+         \label{fig:text_length_2}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{histogram_text_length_4.pdf}
+         \caption{The text length of description data after splitting.}
+         \label{fig:text_length_4}
+     \end{subfigure}
+    \caption[Text length distribution for training web crawler model]{The result of scraping structured sources to train  a binary classification model for descriptions classification. The text spans are randomly split into chunks between 10 words and their length, with a maximum of 512 words to prevent truncation. Text spans with a length below 10 words are not split, resulting in some text lengths below 10. Note that outliers of the boxplots are not shown.}
     \label{fig:text_length_distribution}
 \end{figure}
+
 
 The model is evaluated on a left out test set of 5\% and is evaluated on two left-out datasets, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset
 The summary performance metrics can be found in Table \ref{tab:precision_recall_metrics}.
@@ -731,14 +779,14 @@ The model reaches an high precision, recall and f1-score for both the "Non-Descr
 \cmidrule(l){2-9}
  & \multicolumn{2}{c}{\textbf{Precision}} & \multicolumn{2}{c}{\textbf{Recall}} & \multicolumn{2}{c}{\textbf{f1-score}} & \multicolumn{2}{c}{\textbf{Support}} \\ \cmidrule(l){2-9} 
                  & Test & Extern & Test & Extern & Test & Extern & Test    & Extern \\ \midrule
-                 & 0.98 & 0.99   & 0.99 & 0.98   & 0.99 & 0.98   & 167,955 & 66,051 \\
-Description      & 0.97 & 0.83   & 0.95 & 0.90   & 0.96 & 0.86   & 57,864  & 8,785  \\ \midrule
-Accuracy         &      &        &      &        & 0.98 & 0.97   & 225,819 & 74,836 \\
-M Average        & 0.98 & 0.91   & 0.97 & 0.94   & 0.98 & 0.92   & 225,819 & 74,836 \\
-W Average        & 0.98 & 0.97   & 0.98 & 0.97   & 0.98 & 0.97   & 225,819 & 74,836 \\ \bottomrule
+Other            & 0.98 & 0.96   & 0.99 & 0.96   & 0.99 & 0.97   & 167,955 & 64,639 \\
+Description      & 0.97 & 0.83   & 0.95 & 0.77   & 0.96 & 0.83   & 57,864  & 10,197  \\ \midrule
+Accuracy         &      &        &      &        & 0.98 & 0.95   & 225,819 & 74,836 \\
+M Average        & 0.98 & 0.90   & 0.97 & 0.87   & 0.98 & 0.89   & 225,819 & 74,836 \\
+W Average        & 0.98 & 0.95   & 0.98 & 0.95   & 0.98 & 0.95   & 225,819 & 74,836 \\ \bottomrule
 \end{tabular}
 \end{table}
-As the the classes are imbalanced in both cases we  evaluated the model with a precision-recall plot.
+As the the classes are imbalanced in both cases we  evaluated the model with a precision-recall plot and not with an receiver operator curve (ROC) figure, as an precision recall curves give a better overview when it comes to imbalanced datasets \autocite{saito_precision-recall_2015}.
 The results of this plot can be found in Figure \ref{fig:precision-recall}, Figure \ref{fig:precision_recall_curve_test} contains the precision-recall plot for the test set and Figure \ref{fig:precision_recall_curve_test_external} contains the precision-recall plot for the left out datasets.
 \begin{figure} [h!]
      \centering
@@ -757,7 +805,7 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}, Figu
          \caption{The Precision-Recall curve for the left out data.}
          \label{fig:precision_recall_curve_test_external}
      \end{subfigure}
-     \caption[Precision recall curves for test and left-out datasets]{The precision-recall curve for the test dataset and the left out datasets. The model seems to perform reasonable in both cases. The the Average Precision (AP) reaches 99\% in the case of the test dataset and the AP reaches 96\% in the case of the left-out dataset. In both plots the blue dashed line indicates a baseline classifier.}
+     \caption[Precision recall curves for test and left-out datasets]{The precision-recall curve for the test dataset and the left out datasets. The model seems to perform reasonable in both cases. The the Average Precision (AP) reaches 99\% in the case of the test dataset and the AP reaches 87\% in the case of the left-out datasets. The area under the curve (AUC) reaches 99.49\% for the test set and 93.14\% for the left-out datasets.}
      \label{fig:precision-recall}
 \end{figure}
 
@@ -786,13 +834,46 @@ For 16,193 species the URL returned text that could by classified.
 3,807 species URLs did not return any useable text\footnote{The POWO website is excluded from the web crawler as this database is already available.}
 In Figure \ref{fig:URL_distribution}, the distributions can be found.
 
-\begin{figure}[h!]
- \centering
- %\hspace{-0.5cm}
- \includegraphics[width=\textwidth]{figures/URL_distribution.pdf}
- \caption[The URL, base URL and URLs with text per Species]{The distribution of the unique URLs per species, base URLs per species and URLs with text per species.}
- \label{fig:URL_distribution}
+%\begin{figure}[h!]
+% \centering
+% %\hspace{-0.5cm}
+% \includegraphics[width=\textwidth]{figures/URL_distribution.pdf}
+% \caption[The URL, base URL and URLs with text per Species]{The distribution of the unique URLs per species, base URLs %per species and URLs with text per species.}
+% \label{fig:URL_distribution}
+%\end{figure}
+
+\begin{figure} [h!]
+     \centering
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{figures/URL_distribution_1.pdf}
+         \caption{The number of unique URLs per species.}
+         \label{fig:URL_distribution_1}
+     \end{subfigure}
+     \vfill
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{figures/URL_distribution_2.pdf}
+         \caption{The number of unique base URLs per species.}
+         \label{fig:URL_distribution_2}
+     \end{subfigure}
+     \vfill
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{figures/URL_distribution_3.pdf}
+         \caption{The number of URLs with text per species.}
+         \label{fig:URL_distribution_3}
+     \end{subfigure}
+     \caption[The URL, base URL and URLs with text per Species]{The distribution of the unique URLs per species, base  URLs per species and URLs with text per species.}
+     \label{fig:URL_distribution}
 \end{figure}
+
+
+
+
 
 In Figure \ref{fig:URL_top20} the most returned base URLs can be found.
 Research.net is by far the most returned base URL when querying species, followed by Academia.edu and the international version of Wikipedia.com.
@@ -837,34 +918,85 @@ This list include the most common term but also term that are deemed similar\foo
  \caption[Bird description distribution]{The number of descriptions per bird for our data set that consists of random data and the Birds of the World dataset, and the CUB-200 dataset from the California Institute for Technology \autocite{welinder_caltech-ucsd_2010}. }
  \label{fig:CUB_distribution}
 \end{figure}
-\subsection{Species Classification}
 
+
+Matching our dataset against the glossary list resulting a 23,839 sentences for 199 birds. 
+These sentences described 231 unique parts. 
+We extracted 4,537 unique potential adjectives and with the parts this resulted in 39,451 unique combinations.
+In Table \ref{tab:attribution_unique} the complete overview for all unique combinations can be found.
+Layer Attention and Layer Gradient X Activation seem to fail as the amount of unique potential adjectives and traits is significant lower than the other attribution methods.
+From these two Layer Gradient X Activation seems to perform the best of the two with 1,588 potential adjectives and 8,911 traits.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[h!]
+\centering
+\caption[Unique combination per attribution method]{The unique combination of Birds, Sentences, Adjectives, Parts and Trait Combinations per attribution method.}
+\label{tab:attribution_unique}
+\begin{tabular}{@{}lccccc@{}}
+\cmidrule(l){2-6}
+ & \textbf{Birds} & \textbf{Sentences} & \textbf{Adjectives} & \textbf{Parts} & \textbf{Traits} \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Integrated Gradients \\ 20 Steps\end{tabular}} & 199 & 16,244 & 2,301 & 231 & 15,288 \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Integrated Gradients\\ 50 Steps\end{tabular}} & 199 & 16,244 & 2,296 & 231 & 15,239 \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Occlusion\\ Window 1, Stride 1\end{tabular}} & 199 & 16,244 & 2,259 & 231 & 14,966 \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Occlusion\\ Windows 3, Stride 2\end{tabular}} & 199 & 16,244 & 2,184 & 231 & 14,132 \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Shapley Value \\ Sampling\end{tabular}} & 199 & 16,244 & 2,094 & 231 & 13,617 \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Layer Attention\\ -\end{tabular}} & 199 & 16,244 & 212 & 231 & 3,135 \\ \midrule
+\textbf{\begin{tabular}[c]{@{}l@{}}Layer Gradient \\ X Activation\end{tabular}} & 199 & 16,244 & 1,588 & 231 & 8,911 \\ \midrule
+\textbf{All Attributions} & 199 & 23,839 & 4,537 & 231 & 3,9451 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+In Figure \ref{fig:hmean_violin} the results of computing the similarity of the attribution technique against the CUB-200 dataset can be found.
+The values are sorted on the median values (lowest at the top, highest at the bottom).
+
+
+\begin{figure}[h!]
+ \centering
+ %\hspace{-0.5cm}
+ \includegraphics[width=\textwidth]{figures/hmean_violinplot.pdf}
+ \caption[Similarity results]{The Results of computing the similarity of the different attribution methods of our own dataset against the CUB-200 dataset. The pentagon corresponds to the median, the circle corresponds to the mean and the diamond corresponds to the harmonic mean. Note that the violin plots have been cut off at 0.60. There are for all attribution methods some outliers below 0.60. The densities of the violin plot do not extend past extreme values.}
+ \label{fig:hmean_violin}
+\end{figure}
+
+\subsection{Species Classification}
 \newpage
 \section{Discussion} \label{par:discussion}
 
 \subsection{Dataset Creation}
+We gathered enough samples (See Figure \ref{fig:text_length_distribution}) to properly train a binary classifier.
+Figures \ref{fig:text_length_1} and \ref{fig:text_length_2} show that the number of samples for the negative class is much higher than the positive class. 
+After splitting the features into chunks of a random length between 10 and the text length the data is still skewed; the non-description class is over represented in the data (see Figures \ref{fig:text_length_3} and \ref{fig:text_length_4}). 
+This skewed data set could lead to problems as the classifier will not see enough samples of the underrepresented class. 
+The classifier will only update the parameters for the non-description class and still reach good result on the test data.
+
 The results of the binary description classifier perform excellent on the test dataset. 
 The loss function of \textcite{reed_training_2015} (Equation \ref{eq:softloss}) seems to do an excellent job.
 As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test} the classifier reaches an excellent score on the left out test set. 
+The classifier returns accurate results (precision) and the results that are returned are correct (recall). 
+The classifier performs worse on the two left-out datasets.
+The number of results returned is still quite high with 0.90, however the precision is lower with 0.83; The labels that are returned are incorrect for 17\% of the time.
+However as both f-1 values exceeded the threshold value set in the beginning of this thesis deemed the model sufficient and deployed it in the web crawler.
+However, we do have some suggestions to improve the binary classifier in future work.
 %Unfortunately we due to lack of time we only implemented of \(\beta\) of 0.80. 
 %By starting with a lower \(\beta\) and gradually increase \(\beta\) during the parameter optimisation %process, the model might optimise the parameters better as it gets penalised less hard.
 With the two left-out datasets, we processed the text the same way as we would have when the text was processed by the web crawler. 
 We clean the text, and split the text into single sentences with the sentecizer of \textcite{honnibal_spacy_2020}.
-However, as we do not have the ground truth labels of this dataset, we implement Equation \ref{eq:softloss_ifthen}.
+As we do not have the ground truth labels of this dataset, we implement Equation \ref{eq:softloss_ifthen}.
 This equation will treat prediction values with a 0.8 or higher as correct.
-The classifier performs reasonable on the two left out datasets.
-However, with a f1-score of 0.86 the classifier does perform worse.
-This performance issue is likely to occur due to the following reasons.
+The classifier still performs very reasonable on the two left out datasets.
+However, with a f1-score of 0.86 the classifier does perform worse than on the test dataset.
+This performance issue is likely to occur due to the following reasons:
 
-First, during the training of the binary classifier, text is randomly split into chunk. 
+First, during the training of the binary classifier, text is randomly split into chunks. 
 In some cases this will result in text chunks that will contain part of a description and something else.
-Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly.
+Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly as a single features contains information from both labels.
 This will also result in a model that cannot utilise the loss function from \textcite{reed_training_2015} optimally.
 The model will perform well on correctly labeled sentences, but its prediction values will be less certain.
 With the two left-out test sets, there will be miss labelled sentences (see Section \ref{par:reedloss}).
 Because the parameters are not fully optimised, the model will not reach the \(\beta\) threshold of 0.8.
 This will result in miss labelled sentences, where the model cannot use the high prediction value in case it is certain about a prediction, because the parameters are not fully optimised.
-In future research this binary description classification model could be improved by during training split the text into sentences or into smaller chunks.
+In future research this binary description classification model could be improved by during training split the text into sentences or into smaller chunks to make sure labels are completely seperate inside a single feature.
 This way it will be less likely for a single sentence or text chunk to contain multiple pieces of information.
 During the training process the parameters are better optimised, resulting in higher prediction values.
 During testing on external datasets, it would make sense to use a lower \(\beta\).
@@ -876,6 +1008,31 @@ A possible explanation is that paragraphs that are labeled as descriptions (beca
 If the prediction value of the classifier stay below \(\beta\) the sentences will be miss labaled in both cases.
 To test this theory, one could test the classifier on addition datasets that are completely separated from the training process.
 
+After improvement of binary classifier, it would also be interesting to change the threshold values of the binary classifier.
+In this research we simple used a threshold of 0.5 to classify whether something is a description or not.
+As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test_external} the f1-score on the external datasets was 0.83. 
+This score was reached with a recall of 0.77 and a precision of 0.83.
+By increasing the threshold value for classification to recall will go down and precision will go up.
+A lower recall in this case would mean less sentences would classified by model.
+However, with a higher precision, more sentences that are classified as descriptive, are correct, resulting in a higher quality database.
+By lowering the recall enough, a precision 1.0 could be reached.
+
+Lowering the recall will result in less retrieved possible description candidate sentences.
+To compensate for this, the web crawler could be improved.
+In this research we only crawled through the first pages of results returned by DuckDuckGo and Bing
+We did not use the Google search engine as Google creates a unique token for each query to prevent automatic searching without using their payed API.
+As can be seen from Figure \ref{fig:URL_distribution_1} the web crawler did not found many unique URLs per species; most values lay between 17 and 33.
+As far as we know there is not literature available on the number of online available databases and website that contain descriptions, but these number do not seem that high.
+When looking at Figure \ref{fig:URL_distribution_2}, the number of usefull URLs is even lower.
+For most species, the number of URLs that is useful, i.e. at least one descriptive sentence is found, lays between 5 and 10.
+About two thirds of the URLs found does not contain any useful information for this thesis.
+In future research more time should be devoted to building a better web crawler for querying species.
+
+This entails (1) making better use of the search engines.
+
+
+We only used the first pages of DuckDuckGo and Bing to save time.
+We queried DuckDuckGo and Bing with a browser controlled by Python with the Selenium package.
 
 Figure \ref{fig:URL_top20} shows that more than 15\% of the unique base URLs come from scientific databases.
 While these databases contain a rich scholarly content, we did not use their data.
