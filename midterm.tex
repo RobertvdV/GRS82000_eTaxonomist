@@ -24,7 +24,7 @@
 
 
 %Information to be included in the title page:
-\title{A Step Towards Explainable AI: Infer Species Names based on Partial descriptions}
+\title{A Step Towards Explainable AI: Infer Species Names based on Partial Descriptions}
 \author{Robert van de Vlasakker}
 \institute{Wageningen University \& Research}
 \date{14-12-21}
@@ -33,6 +33,26 @@
 \graphicspath{ {./figures/} }
 
 \frame{\titlepage}
+
+
+
+% 1 
+\begin{frame}
+\frametitle{Deep Neural Networks}
+
+Many species will go extinct before ever being described \autocite{lees_species_2015}.
+\newline
+\newline
+Deep Neural Networks can help:
+\begin{itemize}
+    \item Speed up species identification 
+    \item Automate species identification
+\end{itemize}
+
+
+\end{frame}
+
+
 
 % 1 
 \begin{frame}
@@ -46,6 +66,9 @@
 Takes in an image and makes a prediction.
 
 \end{frame}
+
+
+
 
 % 2 
 \begin{frame}
@@ -93,6 +116,19 @@ Architecture proposal by \textcite{ishikawa_contextual_2021}:
 
 % 5
 \begin{frame}
+\frametitle{Thesis Focus}
+\begin{figure} [htbp]
+    \centering
+    %\vspace{-2cm}
+    \includegraphics[width=.7\textwidth]{figures/architecture_part.pdf}
+\end{figure}
+This thesis focus on the NLP model.
+Large species database with descriptions is needed.
+\end{frame}
+
+
+% 6
+\begin{frame}
 \frametitle{Methods}
 \begin{figure} [htbp]
     \centering
@@ -125,15 +161,17 @@ Data come from several structured sources like Wikipedia:
 
 % 7
 \begin{frame}
-\frametitle{Costum Loss Function}
+\frametitle{Custom Loss Function}
 \begin{equation}
  SoftLoss(q, t) = \sum_{k=1}^{L}[\beta t _k + (1- \beta )q _k]log(q _k)
 \nonumber\end{equation}
 Implement a custom loss function from \textcite{reed_training_2015} to allow semi-supervised learning:
 \begin{itemize}
     \item Not all features are correct
-    \item Descriptions can occur in other paragraphs
-    \item Non-Descriptions occur in Description paragraphs
+    \begin{itemize}
+        \item Descriptions can occur in other paragraphs
+        \item Non-Descriptions occur in Description paragraphs
+    \end{itemize}
     \item If \(\beta\) is reached, the prediction is correct
 \end{itemize}
 \end{frame}
@@ -144,11 +182,18 @@ Implement a custom loss function from \textcite{reed_training_2015} to allow sem
 \begin{figure} [htbp]
     \centering
     %\vspace{-2cm}
-    \includegraphics[width=0.475\textwidth]{figures/precision_recall_plot.pdf}
+    \includegraphics[width=0.45\textwidth]{figures/precision_recall_plot.pdf}
+    %\caption{Precision-recall test data}
       \hfill
     %\vspace{-2cm}
-    \includegraphics[width=0.475\textwidth]{figures/precision_recall_plot_extern.pdf}
+    \includegraphics[width=0.45\textwidth]{figures/precision_recall_plot_extern.pdf}
+    %\caption{Precision-recall left-out datasets}
 \end{figure}
+precision-recall plots.
+
+Left: Test dataset
+
+Right: External datasets
 \end{frame}
 
 %9
@@ -158,7 +203,9 @@ Implement a custom loss function from \textcite{reed_training_2015} to allow sem
     \centering
     %\vspace{-2cm}
     \includegraphics[width=\textwidth]{figures/web_crawler_example_sents_2.pdf}
+    %\caption{Source: \href{http://www.llifle.com/Encyclopedia/TREES/Family/Bombacaceae/31994/Bombax_ceiba}{Llilfe.com/Bomax\_ceiba})}
 \end{figure}
+(Source: \href{http://www.llifle.com/Encyclopedia/TREES/Family/Bombacaceae/31994/Bombax_ceiba}{Llilfe.com/Bomax\_ceiba})
 \end{frame}
 
 
@@ -177,13 +224,70 @@ Implement a custom loss function from \textcite{reed_training_2015} to allow sem
 %11
 \begin{frame}
 \frametitle{And now?}
-\begin{figure} [htbp]
-    \centering
-    %\vspace{-2cm}
-    \includegraphics[width=\textwidth]{figures/web_crawler_example_sents_preds_2.pdf}
-\end{figure}
+\begin{itemize}
+    \item Web crawler done: iterated over 20,000 species
+    \item Descriptions found for ~15,000 species
+    \item Train NLP model on the Database
+    \item assess NLP model:
+    \begin{itemize}
+         \item extract most important word combinations? 
+         \item present them to a botanist?
+         \item How?
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
+%11
+\begin{frame}
+\frametitle{Assess NLP Model}
+\begin{itemize}
+    \item Compare with CUB-200 dataset:
+    \begin{itemize}
+        \item Hand annotated bird dataset
+        \item Images with visual traits
+    \end{itemize}
+    \item Compare posthoc techniques
+    \item Train NLP model on own bird descriptions
+    \item compute sentence similarity between datasets
+\end{itemize}
+\end{frame}
+
+%11
+\begin{frame}
+\frametitle{Similarity Example}
+Similarity matrix for one single trait/bird/technique
+
+\begin{figure} [htbp]
+    \centering
+    %\vspace{0cm}
+    %\hspace{-1cm}
+    %\textbf{Similarity Matrix}
+    \includegraphics[width=0.7\textwidth]{similarity_matrix.pdf}
+\end{figure}
+
+y-axis: CUB-200 data
+
+x-axis: Extracted chunk with posthoc explanation technique
+\end{frame}
+
+%12
+\begin{frame}
+\frametitle{Traits per Country}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/cover_words.pdf}
+\end{figure}
+
+\end{frame}
 \end{document}
 
 
+  \includegraphics[%
+    width=0.85\textwidth,
+    %height=0.83\textwidth,
+    align=t,
+    smash=br,
+    vshift=2.5cm,     % adjust the vertical position
+    hshift=2.5cm     % adjust the horizontal position
+    ]{figures/cover_words.pdf}%
