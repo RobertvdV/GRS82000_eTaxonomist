@@ -271,10 +271,9 @@ In Section \ref{par:results} we present the results and in Section \ref{par:disc
 \newpage
 \section{Methodology} \label{par:methodoly}
 \markboth{Approach}{Approach}
-In Figure \ref{fig:workflow} a simplified version of the workflow can be found.
-This chapter will give a detailed description of the steps.
 
-\begin{figure} [htbp]
+
+\begin{figure} [t]
     \centering
     %\vspace{-2cm}
     \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{workflow.pdf}}
@@ -282,29 +281,39 @@ This chapter will give a detailed description of the steps.
     \label{fig:workflow}
 \end{figure}
 
+The core of our idea is gathering enough text data per species, so an NLP model can learn key words describing each species.
+Using natural natural language has several potential benefits.
+Humans communicate using natural language, resulting in an theoretically endless amount of data.
+By using natural language, the results remain interpretable for humans.
+We first start by creating a DNN that can classify species descriptions.
+After this we use the harvested data to train the NLP model.
+Finally we assess the NLP model.
+In Figure \ref{fig:workflow} a simplified version of the workflow can be found.
+This chapter will give a detailed description of the steps.
+
 \subsection{Creating an Extensive Dataset} \label{par:dataset}
 The World Wide Web also has potentially an endless amount of species descriptions available.
 This makes the internet suitable for harvesting training data.
 However, description sentences can be theoretically limitless, e.g. for a Brown bear (Ursus arctos) the description text could be: "The fur is brown", "The brown bear has brown fur".
 These are relatively simple sentences.
-Sentences can have a more difficult semantic, e.g. "The fur of the Brown bear is similar to that of the Grizzly bear".
+Sentences can also have a more difficult semantic, e.g. "The fur of the Brown bear is similar to that of the Grizzly bear".
 A classic machine learning approach that requires a rule-based match system for sentence classification is not feasible to harvest description data from the internet.
-Instead we train a DNN that can classify text into description or non-description.
+Instead of a classic rule-based approach we train a DNN that can classify text into description or non-description.
 To properly train a deep learning model that can classify text data into description and non-description text, a large, accurate and consistent labelled dataset is needed \autocite{munappy_data_2019}.
 
 \subsubsection{Training a Model for Text Classification} \label{par:reedloss}
 %The internet has a vast amount of free data available that can be easily harvested.
-We create this large dataset by scraping web pages from structured sources.
-We select three large databases that are large and structured enough and have a rich scholarly content about species:
+We create this large dataset by scraping text from structured web pages.
+We select three large websites that have large databases and structured enough and have a rich scholarly content about species:
 \begin{itemize}
-    \item \href{www.wikipedia.com}{Wikipedia}
-    \item \href{https://birdsoftheworld.org/bow/home}{Birds of the World (BoW)}
-    \item \href{https://powo.science.kew.org/}{Plant of the World Online (PoWO)}
+    \item \href{www.wikipedia.com}{Wikipedia}. Wikipedia is a fee online encyclopedia that is maintained by volunteers. Everyone is allowed to edit pages. Quality is maintained by moderators and other volunteers.
+    \item \href{https://birdsoftheworld.org/bow/home}{Birds of the World (BoW)}. BOW is constructed and maintained by ornitnologists from all over the word \autocite{billerman_birds_2020}
+    \item \href{https://powo.science.kew.org/}{Plant of the World Online (PoWO)}. PoWO is international collaborative database of the world's flora. Its data is based on scientific papers. It is maintained by the Royal Botanic Gardens, Kew  \autocite{facilitated_by_the_royal_botanic_gardens_plants_2019}
 \end{itemize}
-
-These websites divide their information into paragraphs such as "Introduction", "Appearance", "Characteristics", "Habit".
-These paragraph titles are used as labels and the text inside are used as features.
-In our case we stored text from paragraphs with titles like:  "Introduction" and "Habit" as negative labels and "Introduction" and "Appearance" as positive values, making this a two class classification problem. 
+All three websites divide their information into paragraphs such as "Introduction", "Appearance", "Characteristics", "Habit".
+These headers give us the opportunity to automatically label large amount of data with a few lines of code.
+In our case we stored text from paragraphs with titles like:  "Introduction" and "Habit" as negative labels and "Introduction" and "Appearance" as positive values, making this a two class classification problem.
+The text chunks inside the paragraphs are used as features.
 Random pages from Wikipedia that are not about species are also used to gather additional negative values.
 We hypothesise that the model will be better in classifying text not related to species descriptions.
 %BERT models use two specials tokens.
@@ -312,49 +321,57 @@ We hypothesise that the model will be better in classifying text not related to 
 %Using \verb|[CLS]|, the model knows the sequence is used for classification.
 %The second token is \verb|[SEP]|, which stand for "Separation". 
 
-This will not result in a consistent dataset.
-Not all data will be labelled correctly as the paragraph titles are used as labels.
+However, automatically label the data will not result in a consistent dataset.
+There is a chance that we miss certain headers and miss label them during the preprocessing.
+Even if we correctly label all features not all data will be labelled correctly as text is generally unstructured, even in structured databases \autocite{kumar_text_2020}.
 E.g. some species description might be located in the paragraph "Introduction" and some general information might be in the paragraph "Characteristics".
 Consider the text "The European robin is red-breasted with distinctive eyes.".
 This text is likely to be found in a paragraph about descriptions.
-However, the text can also occur in the introduction paragraph about an European robin or it could be part of an image caption of an entirely different paragraph. 
+Besides, the text can also occur in the introduction paragraph about an European robin or it could be part of an image caption of an entirely different paragraph. 
 In second cases the text will be miss classified with a binary cross entropy loss the model parameters will not be updated correctly. 
-By implementing the semi-supervised loss function from \textcite{reed_training_2015}, this will be prevented to a certain extent.
-Using natural language in combination with the soft loss function from \textcite{reed_training_2015}, allows the model for semi-supervised learning.
-This combination has the advantage that it is now very easy to scale natural language training as we do not need annotated datasets.
-If the predefined \(\beta\) reaches a threshold, the prediction is treated as correct and the loss is calculated accordingly.
+By implementing the semi-supervised loss function from \textcite{reed_training_2015}, this will be prevented to a certain extent:
 \begin{equation} \label{eq:softloss}
  SoftLoss(q, t) = \sum_{k=1}^{L}[\beta t _k + (1- \beta )q _k]log(q _k)
 \end{equation}
-In equation \ref{eq:softloss}, \(q\) is directly used to calculate regression targets for each batch.
-If the model prediction reaches the set threshold, the prediction is seen as a the correct label and the label is changed during the training process, but if the model prediction is below the threshold, the loss will be calculated accordingly.
-In this thesis we use a \(\beta\) of 0.80. 
-We do not now exactly how many sentences will be mislabelled.
-Starting with a \(\beta\) that is too high will result in a model that gets penalised very hard, resulting in a model that cannot properly update its parameters.
-Starting with a \(\beta\) that is too low will result in a model that does not learn anything from the data. 
+~$q$ is directly used to calculate regression targets for each batch,~$t$ are the target values and \(\beta\) is used to balance the prediction.
+Using natural language in combination with the soft loss function from \textcite{reed_training_2015}, allows the model for semi-supervised learning.
+This combination has the advantage that it is now very easy to scale natural language training as we do not need hand annotate the datasets.
+With Equation \ref{eq:softloss}, the model is now 'allowed' to disagree with the training label to a certain extend when the prediction certainty of the model is high enough.
+%When the prediction values reach a set threshold (\(\beta\)), the prediction is treated as correct and the loss is calculated accordingly.
+%If the model prediction reaches the set threshold, the prediction is seen as a the correct label and the label is changed during the training process, but if the model prediction is below the threshold, the loss will be calculated accordingly.
+We assume most labels are correct, allowing to the model the model to learn enough from these samples.
+therefore we use a \(\beta\) of 0.80\footnote{Best practice would be find the correct \(\beta\) through cross validation \autocite{reed_training_2015, han_survey_2021}. However, as we train the model on Google Colab instances this would not be feasible.}.
+If we start with a low \(\beta\) (e.g. 0.50), there is a chance the model does not learn correctly as it can bootstrap too many samples.
+If we use a high \(\beta\) (e.g. 1,00), the model will get penalised very hard for these miss labeled samples as it cannot bootstrap them.
 
 \subsubsection{Model Architecture} \label{par:Architecture}
-As a base for the text classification model, we used a distilled version of the Bidirectional Encoder Representations from Transformers (BERT) \autocite{devlin_bert_2019}, called distilBERT \autocite{sanh_distilbert_2020}. 
-This version is 60\% faster, has 40\% less parameters and still reaches 97\% on general language understanding \autocite{sanh_distilbert_2020}.
+As a base for the text classification model, we used a distilled version (distillBERT) of the Bidirectional Encoder Representations from Transformers (BERT) \autocite{devlin_bert_2019}, created by \textcite{sanh_distilbert_2020}. 
+This version of BERT is 60\% faster, has 40\% less parameters and still reaches 97\% on general language understanding \autocite{sanh_distilbert_2020}.
 Using a pre-trained model can provide significantly improvements over models trained from scratch \autocite{mikolov_distributed_2013}.
 The use of a pre-trained model is called transfer learning and could speed up the training process and increase the accuracy of the deep learning model.
 Both distillBERT and BERT are already trained on a large corpus of English words and can be used freely.
 \textcite{sun_how_2020} already investigated how to fine-tune BERT for text classification.
 We use their findings on the full BERT model, to fine-tune the distilBERT model for description text classification.
 
-Like \textcite{sun_how_2020} we first fit a fully connected linear layer with an input size of 768 and an output size of 512 on top of the BERT architecture. 
-This linear layer is followed by a dropout layer (0.1) to enable some regularization.
-The next fully connected linear layer has a input size of 512 and an output size of 2, as we are predicting two classes.
-The final output layer is a log-likelihood (log-softmax) function:
-\begin{equation} \label{eq:logsoftmax}
-    X = \log_{}(\frac{e^{z_i}}{\sum_{j=1}^K e^{z_j}})
+Like \textcite{sun_how_2020} we first fit a dropout layer (0.1) on top of the distillBERT architecture to enable to regularisation.
+This dropout layers is followed by a Rectified Linear Unit (ReLU) activation function:
+\begin{equation} \label{ReLU}
+    f(x) = \max(0, x)
 \end{equation}
+The ReLU activation function is followed by two fully connected layers.
+The first linear layer has an input size of 786 (BERT and distillBERT both output a vector of 768 for each token) and an output size of 512.
+The second linear layer has an input size of 512 (output of the first linear) and an output of 2, as this is a binary classification problem.
+The final activation function is a log-likelihood (log-softmax) function:
+\begin{equation} \label{eq:logsoftmax}
+    f(x) = \log_{}(\frac{e^{x_i}}{\sum_{j=1}^K e^{x_j}})
+\end{equation}
+Where~$x$ is the~$log$ probability.
 Using a log-softmax will slightly increase the error factor of the model over a normal softmax function, punishing mistakes a bit higher.
 By taking the exponent, the standard likelihood (softmax) probabilities can be computed:
 \begin{equation}
-    P = e^{output} 
+    p = e^{x} 
 \end{equation}
-Where~$P$ is the probility between 0 and 1.
+Where~$p$ is the probability value between 0 and 1 and~$X$ is the output of the log-softmax layer.
 
 The basis distillBERT architecture can be fine-tuned further by updating the inner parameter of the transformer layers during training. 
 This can be useful if BERT is utilised in the non-general domain \autocite{devlin_bert_2019, sun_how_2020, sanh_distilbert_2020}, which is the case with description data.
@@ -370,40 +387,42 @@ Most tokenizers will truncate text spans larger then 512 tokens as most text inf
 We decide not truncated the text.
 Instead we randomly split the text into text spans with a minimum of 10 words and a maximum of 512 words.
 We hypothesised that the model might be better in recognising shorter description spans by splitting the raw spans.  
-This way we enlarge the dataset, prevent loosing information with truncating spans larger then 512 tokens. 
+This way we enlarge the dataset and prevent loosing information with truncating spans larger then 512 tokens. 
 We use a minimum of 10 words to prevent the model fixating on specific words.
 
-
-The tokenizer of \textcite{wolf_huggingfaces_2020} returns a Python dictionary with the input ID's and the attention mask of the text.
-E.g. by tokenizing the text "This is a test.", the tokenizer returns the following:
-~$'input\_ids': [101, 2023, 2003, 1037, 3231, 1012, 102]$, 
-~$'attention\_mask': [1, 1, 1, 1, 1, 1, 1]$.
-~$[101]$ indicates the start of a sequence and ~$[102]$ indicates the end of a sequence.
-During the training the text is also padded to the maximum of 512 tokens and the attention masks are randomised between 0 and 1.
+%The tokenizer of \textcite{wolf_huggingfaces_2020} returns a Python dictionary with the input ID's and the attention mask of the text.
+%E.g. by tokenizing the text "This is a test.", the tokenizer returns the following:
+%~$'input\_ids': [101, 2023, 2003, 1037, 3231, 1012, 102]$, 
+%~$'attention\_mask': [1, 1, 1, 1, 1, 1, 1]$.
+%~$[101]$ indicates the start of a sequence and ~$[102]$ indicates the end of a sequence.
+%During the training the text is also padded to the maximum of 512 tokens and the attention masks are randomised between 0 and 1.
 
 \subsubsection{Training \& Evaluation}
 %We train the model on a Google Colab instance.
 We use the Adam optimiser \autocite{kingma_adam_2017} during the training process.
 The Adam optimiser has shown good performance when fine-tuning BERT for text classification \autocite{you_large_2020}.
 The hyperparameters were set based on the paper of \textcite{sun_how_2020}.
-The learning rate was set to 3e-5 and the batch size was set to 32.
-During the training the gradients are clipped to prevent the gradients from becoming to large.
+The learning rate was set to 3e\textsuperscript{-5} and the batch size was set to 32.
+During the training the gradients are clipped to prevent the gradients from exploding.
 we train the model for 35 epochs.
 
-As the dataset is will be unbalanced it will be evaluated with a precision-recall summary and a precision-recall curve.
-The precision-recall summary and curves give more reliable results with an unbalanced dataset.
-When the model reaches an f1-score of at least 0.9 on the testset, the model is tested on two additional left out databases, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
-If the model reaches a f1-score on 0.8 on these external datasets, the model will be deployed in a web crawler.
-For calculating we use the Python page from \textcite{pedregosa_scikit-learn_2011}.
+As there is a high probability that the dataset is will be unbalanced, it will be evaluated with a precision-recall summary and a precision-recall curve.
+The precision-recall summary and curve give more reliable results with unbalanced datasets \autocite{saito_precision-recall_2015}.
+When the model reaches an f1-score of at least 0.90 on the test set, the model is tested on two additional left-out databases, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
+When the model reaches a f1-score on 0.80 on these external datasets, the model will be deployed in a web crawler.
+The f1-score is calculated with the following formula:
+\begin{equation}
+    F_1 = 2 \cdot \frac{\mathrm{precision} \cdot \mathrm{recall}}{\mathrm{precision} + \mathrm{recall}} 
+\end{equation}
+For calculating precision-recall metrics we use the Python package from \textcite{pedregosa_scikit-learn_2011}.
+
 Before the text of the external dataset is tokenized, it is first cleaned of references and footnotes.
 We no longer split the into random chunks, but we use a sentecizer of \textcite{honnibal_spacy_2020} to split the text into sentences.
 This is also how random text will be treated that is gathered by the web crawler.
 By splitting text into sentences instead of random text chunks we prevent information loss.
-
-We again use the paragraphs as sample labels.
 As the loss is no longer calculated, we simple calculate the prediction certainty of the model.
-If the model reaches a certainty of 0.8 or higher (\(\beta\)) the prediction is treated as correct, in all other cases the predicted label is matches against the actual (paragraph) label.
-This results in the following equation:
+If the model reaches a certainty of 0.80 or higher (\(\beta\)) the model is allowed to chance the label, in all other cases the predicted label is matches against the actual (paragraph) label.
+This results in the following equation\footnote{This actually look like the \texttt{hardloss} (Equation 7) from \textcite{reed_training_2015}.}:
 \begin{equation} \label{eq:softloss_ifthen}
 (\hat{\gamma}^{(i)} >= \beta \rightarrow \hat{\gamma}^{(i)} = \gamma^{(i)}) \wedge ( \leftharpoondown \hat{\gamma}^{(i)} = \hat{\gamma}^{(i)})
 \end{equation}
@@ -411,6 +430,15 @@ This is the loss function from \textcite{reed_training_2015}, only notated in an
 
 
 \subsubsection{Gathering \& Storing Description Data}
+
+\begin{figure} [h!]
+    \centering
+    %\vspace{-2cm}
+    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler.pdf}}
+    \caption[Web Crawler]{The web crawler}
+    \label{fig:webcrawler}
+\end{figure}
+
 We deploy the classification model in a web crawler.
 This web crawler can automatically query search engines with a predefined list of birds and plants.
 The list for plants is based on the \href{https://www.ipni.org/}{International Plant Name Index} (IPNI) and the list for birds is based on the database of \href{https://birdsoftheworld.org/bow/home}{Birds of the World} (BoW).
@@ -418,12 +446,13 @@ The IPNI database contains over 1,3 million plant species and the BoW database c
 The IPNI database is large, containing all 1,3+ million known plant species.
 There is a high chance that not all species in this database can be queried within the time-frame of this research.
 Therefore we sort the plant species based on their number of description in the PoWO dataset that is used to train the classifier.
-Plant species with a description have a higher chance of being described somewhere else on the web as the PoWO dataset is closely linked to the IPNI database.
+Plant species with more descriptions also have a higher chance of being described somewhere else on the web.
 This way we make sure that plant that will be queried have a high chance to contain a description somewhere on the web.
-This is not an issue for the bird species; the BoW only contains 10k+ described birds.
+We do the same for the bird species; bird species are sorted based on their number of descriptions in the BoW dataset.
 
-The web crawler queries the search engines. 
-This results in a list URLs with possible species descriptions.
+%The web crawler queries the search engines. 
+%This results in a list URLs with possible species descriptions.
+When the
 We use five different ways of constructing a query: the name of the species without any additional search term and the name of the species plus description, diagnosis, attributes or captions.
 We wrap quotations around the species to force the search engine to only return the exact species name. 
 This way search engines cannot return any results that it deems similar.
@@ -571,10 +600,7 @@ If we train-test split the data on species, during testing the model will be pre
 An option would to train-test-spit the data so each species is represented in both the train and the test data.
 However this brings the problem that we cannot asses if enough unique species traits are present in the train or the test data.
 
-
-Finally, we extract the most relevant combination and present these chunks to 
-
-To extract the most relevant we try different posthoc exploratory techniques and statistically assess which performs the best (also see Section \ref{par:keywords}).
+To extract the most relevant we try different post hoc exploratory techniques and statistically assess which performs the best (also see Section \ref{par:keywords}).
 
 
 \subsection{Retrieving Keywords} \label{par:keywords}
@@ -809,6 +835,13 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}, Figu
      \label{fig:precision-recall}
 \end{figure}
 
+In Figure \ref{fig:predictionvalues_external} the prediction values of the classifier for the two left-out datasets can be found.
+The classifier seems to work correctly.
+Most values are pushed towards zero or one.
+It seems there are significant more samples that qualify as a non-description then description samples.
+The bottom figure provides a zoomed overview between x-axis 0.2 and x-axis 0.8 as values lower than 0.2 and higher than 0.8 are treated as correct because of Equation \ref{eq:softloss_ifthen}.
+It seems that the classifier miss classifies more non-description samples as descriptions, the miss classified samples from the threshold value of 0.5 to 0.8 seem significant higher than the miss classified samples from 0.2 to 0.5.
+
 \begin{figure}[h!]
  \centering
  %\hspace{-0.5cm}
@@ -816,13 +849,6 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}, Figu
  \caption[Prediction values of left-out datasets]{The distribution of the two left-out datasets. In the first figure all the values are shown. In the second only values between 0.2 and 0.8 are shown as values below 0.2 and above 0.8 are always treated as correct. Note that the bars are stacked in the second figure, making the correctly classified and miss classified as high a the corresponding bars from the first figure. In both figures each bin has a width of 0.01.}
  \label{fig:predictionvalues_external}
 \end{figure}
-
-In Figure \ref{fig:predictionvalues_external} the prediction values of the classifier for the two left-out datasets can be found.
-The classifier seems to work correctly.
-Most values are pushed towards zero or one.
-It seems there are significant more samples that qualify as a non-description then description samples.
-The bottom figure provides a zoomed overview between x-axis 0.2 and x-axis 0.8 as values lower than 0.2 and higher than 0.8 are treated as correct because of Equation \ref{eq:softloss_ifthen}.
-It seems that the classifier miss classifies more non-description samples as descriptions, the miss classified samples from the threshold value of 0.5 to 0.8 seem significant higher than the miss classified samples from 0.2 to 0.5.
 
 \subsubsection{Dataset results}
 %\textbf{URLs.}
@@ -832,7 +858,10 @@ Every species returned at least one URL.
 For 20,000 species there are 519,197 unique URLs returned from 27,612 unique base URLs (URL homepage).
 For 16,193 species the URL returned text that could by classified.
 3,807 species URLs did not return any useable text\footnote{The POWO website is excluded from the web crawler as this database is already available.}
-In Figure \ref{fig:URL_distribution}, the distributions can be found.
+In Figure \ref{fig:URL_distribution}, the distributions per species can be found.
+Figure \ref{fig:URL_distribution_1} shows that for most species around 17 to 33 unique URLs are found, Figure \ref{fig:URL_distribution_2} shows that for several species multiple pages from the same base URL are retrieved.
+Finally Figure \ref{fig:URL_distribution_3} shows that most URL do not contain any description information for the species.
+This happens when the headers of a certain page does not match anything from the species name, or the text of the URL does not contain any description information according to the classifier.
 
 %\begin{figure}[h!]
 % \centering
@@ -892,13 +921,38 @@ We appended the data from the structured sources (PoWo, Agro Forestry and LLife)
 Figure \ref{fig:text_distribution} shows the distribution of sentences before and after classification.
 In this figure the sentences are before classification without sentences from the structured datasets.
 The description sentences contain all structured sources and the classified sentences from the web crawler.
-\begin{figure}[h!]
- \centering
- %\hspace{-0.5cm}
- \includegraphics[width=\textwidth]{figures/text_distribution.pdf}
- \caption[The sentences and descriptions sentences per species]{The sentences and descriptions sentences per species. The sentences per species are the sentences before classification. The description sentences are sentences that exceeded the threshold of .5 in the binary descriptions classifier. Note that the x-axis is a log-scaled axis.}
- \label{fig:text_distribution}
+
+\begin{figure} [h!]
+     \centering
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{figures/text_distribution_1.pdf}
+         \caption{The number of sentences per species.}
+         \label{fig:text_distribution_1}
+     \end{subfigure}
+     \vfill
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         %\hspace{-0.5cm}
+         \includegraphics[width=\textwidth]{figures/text_distribution_2.pdf}
+         \caption{The number of description sentences per species.}
+         \label{fig:text_distribution_2}
+     \end{subfigure}
+     \caption[The sentences and descriptions sentences per species]{The sentences and descriptions sentences per species. The sentences per species are the sentences before classification. The description sentences are sentences that exceeded the threshold of .5 in the binary descriptions classifier. Note that the x-axis is a log-scaled axis and the boxplot is based on the normal values, hence the outliers on the left.}
+     \label{fig:text_distribution}
 \end{figure}
+
+
+
+
+%\begin{figure}[h!]
+% \centering
+ %\hspace{-0.5cm}
+% \includegraphics[width=\textwidth]{figures/text_distribution.pdf}
+% \caption[The sentences and descriptions sentences per species]{The sentences and descriptions sentences per species. The sentences per species are the sentences before classification. The description sentences are sentences that exceeded the threshold of .5 in the binary descriptions classifier. Note that the x-axis is a log-scaled axis.}
+% \label{fig:text_distribution}
+%\end{figure}
 
 \subsection{Retrieving Key Words}
 \subsubsection{Similarity Results CUB}
@@ -960,6 +1014,7 @@ The values are sorted on the median values (lowest at the top, highest at the bo
 \end{figure}
 
 \subsection{Species Classification}
+
 \newpage
 \section{Discussion} \label{par:discussion}
 
@@ -969,17 +1024,19 @@ Figures \ref{fig:text_length_1} and \ref{fig:text_length_2} show that the number
 After splitting the features into chunks of a random length between 10 and the text length the data is still skewed; the non-description class is over represented in the data (see Figures \ref{fig:text_length_3} and \ref{fig:text_length_4}). 
 This skewed data set could lead to problems as the classifier will not see enough samples of the underrepresented class. 
 The classifier will only update the parameters for the non-description class and still reach good result on the test data.
-
+We evaluated the dataset with a precision recall plot (Figures \ref{fig:precision_recall_curve_test} and \ref{fig:precision_recall_curve_test_external} because of this skewness.
 The results of the binary description classifier perform excellent on the test dataset. 
 The loss function of \textcite{reed_training_2015} (Equation \ref{eq:softloss}) seems to do an excellent job.
-As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test} the classifier reaches an excellent score on the left out test set. 
-The classifier returns accurate results (precision) and the results that are returned are correct (recall). 
+As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test} the classifier reaches an excellent AP and f-1 score on the left out test set.
+The classifier identifies almost all description text chunks from the data (recall).
+The text chunks that are qualified as a description are almost all correctly classified (precision)
 The classifier performs worse on the two left-out datasets.
 The number of results returned is still quite high with 0.90, however the precision is lower with 0.83; The labels that are returned are incorrect for 17\% of the time.
 However as both f-1 values exceeded the threshold value set in the beginning of this thesis deemed the model sufficient and deployed it in the web crawler.
 However, we do have some suggestions to improve the binary classifier in future work.
 %Unfortunately we due to lack of time we only implemented of \(\beta\) of 0.80. 
 %By starting with a lower \(\beta\) and gradually increase \(\beta\) during the parameter optimisation %process, the model might optimise the parameters better as it gets penalised less hard.
+
 With the two left-out datasets, we processed the text the same way as we would have when the text was processed by the web crawler. 
 We clean the text, and split the text into single sentences with the sentecizer of \textcite{honnibal_spacy_2020}.
 As we do not have the ground truth labels of this dataset, we implement Equation \ref{eq:softloss_ifthen}.
@@ -1051,8 +1108,15 @@ In the web crawler we left room to easily implement a PDF reader that could brea
 
 \newpage
 \section{Conclusion} \label{par:conclusion}
-A binary description classification model can be trained by using structured webpages. 
-By using the header as labels in combination with a semi-supervised loss, annotation can be prevented and the model can reach a high classification accuracy.
+In this thesis we investigated how we can automatically query web pages, retrieve the text and assess which sentences are part of a species descriptions and which are not.
+We found that a deep learning binary classification with a custom loss function can be quickly trained without annotating any data.
+By first gathering text from several structured web sources and using the paragraph and titles as labels and the text split into chunks of random size as features, we reached an f1-score of 0.96 on the test set and and f1-score of 0.83 on two completely left-out datasets.
+The custom loss function allows the model for some semi-supervised learning by allowing the model to chance the label of a sample if a predefined threshold is reached.
+We deployed this model into a web crawler.
+We used scientific databases to find all currently known plant species and bird species.
+By deploying the trained binary classifier into this web crawler we were able to create a large dataset that contains description sentences per species.
+
+
 
 \newpage
 \section{Recommendations}
@@ -1064,7 +1128,6 @@ However not all pages contain the Latin name of the species in the title.
 Some pages contain the English name, some contain a general name like description and some contain no title at all. 
 All these pages are skipped by the web crawler why they still might contain valuable information about the species.
 A better approach would be to determine if the web page or even the paragraph is related to the queried species.
-
 
 \printbibliography
 \end{document}
