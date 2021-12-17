@@ -40,12 +40,19 @@
 \usepackage{comment}
 
 % COLORS
-%\usepackage{xcolor} 
-%\usepackage{soul}
-%\definecolor{color1}{HTML}{a5ddd0}
-%\definecolor{color2}{HTML}{00441b}
-%\sethlcolor{color1}\hl{Its trunk bears spikes to deter attacks by animals. <0.35> }
-%\sethlcolor{color2}\hl{Branches usually in whorls of 3. <1.0> }
+\usepackage{xcolor} 
+\usepackage{soul}
+\usepackage{adjustbox}
+\definecolor{color1}{HTML}{4fb688}
+\definecolor{color2}{HTML}{005622}
+\definecolor{color3}{HTML}{f4fbfc}
+\definecolor{color4}{HTML}{70c6ac}
+\definecolor{color5}{HTML}{f7fcfd}
+\definecolor{color6}{HTML}{2b9452}
+\definecolor{color7}{HTML}{61bf9e}
+\definecolor{color8}{HTML}{e3f4f7}
+\definecolor{color9}{HTML}{005020}
+\definecolor{color10}{HTML}{00441b}
 
 
 
@@ -422,22 +429,14 @@ This is also how random text will be treated that is gathered by the web crawler
 By splitting text into sentences instead of random text chunks we prevent information loss.
 As the loss is no longer calculated, we simple calculate the prediction certainty of the model.
 If the model reaches a certainty of 0.80 or higher (\(\beta\)) the model is allowed to chance the label, in all other cases the predicted label is matches against the actual (paragraph) label.
-This results in the following equation\footnote{This actually look like the \texttt{hardloss} (Equation 7) from \textcite{reed_training_2015}.}:
+This results in the following equation\footnote{This actually look like the \texttt{hardloss} (Equation 7) from \textcite{reed_training_2015}. In this case the equation is changed from a loss function to an If-Then statement.}:
 \begin{equation} \label{eq:softloss_ifthen}
 (\hat{\gamma}^{(i)} >= \beta \rightarrow \hat{\gamma}^{(i)} = \gamma^{(i)}) \wedge ( \leftharpoondown \hat{\gamma}^{(i)} = \hat{\gamma}^{(i)})
 \end{equation}
-This is the loss function from \textcite{reed_training_2015}, only notated in an if-then statement to compensate for the miss labelled sentences of the external datasets.
+%This is the loss function from \textcite{reed_training_2015}, only notated in an if-then statement to compensate for the miss labelled sentences of the external datasets.
 
 
 \subsubsection{Gathering \& Storing Description Data}
-
-\begin{figure} [h!]
-    \centering
-    %\vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler.pdf}}
-    \caption[Web Crawler]{The web crawler}
-    \label{fig:webcrawler}
-\end{figure}
 
 We deploy the classification model in a web crawler.
 This web crawler can automatically query search engines with a predefined list of birds and plants.
@@ -452,7 +451,15 @@ We do the same for the bird species; bird species are sorted based on their numb
 
 %The web crawler queries the search engines. 
 %This results in a list URLs with possible species descriptions.
-When the
+\begin{figure} [t]
+    \centering
+    %\vspace{-2cm}
+    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler.pdf}}
+    \caption[Web Crawler]{The process of the web crawler. The search engines are queries with five different queries per species. The search engines return a list of URLs per species. BeautifulSoup break extract the HTML of each URL and retrieves the text. SpaCy break the text down into single sentences. The sentences are presented to the classifier.}
+    \label{fig:webcrawler}
+\end{figure}
+
+In Figure \ref{fig:webcrawler} the process overview of the web crawler can be found.
 We use five different ways of constructing a query: the name of the species without any additional search term and the name of the species plus description, diagnosis, attributes or captions.
 We wrap quotations around the species to force the search engine to only return the exact species name. 
 This way search engines cannot return any results that it deems similar.
@@ -465,6 +472,40 @@ Finally the header of the URL is checked against the queried species to make sur
 %Not every query will return correct websites, i.e. websites about the queried species.
 %This way we prevent accidentally storing description data for the wrong species.
 
+\begin{figure}[h!]
+    \centering
+    
+    \begin{subfigure}[b]{1.00\textwidth}
+        \centering
+          \framebox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
+          "Plumage, legs and beak orange. The bill and the legs are both black. The house is large with enormous windows. This is something random, but the sexes are similar. Nuclear power might solve the worlds energy crisis. The tree has a brown bark and the leaves are pointed. The trunk bears conical spines to deter animal attacks. By growing in shaded places, the plant reduces evaporation. Seeds are 3 cm. Branches usually in whorls of 3."}}
+        \caption{A random piece of text.}
+        \label{fig:webcrawler_sents_nopred}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{1.00\textwidth}
+        \centering
+        \framebox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
+        "
+        \sethlcolor{color1}\hl{Plumage, legs and beak orange. < 0.585 >}
+        \sethlcolor{color2}\hl{The bill and the legs are both black. < 0.943 >}
+        \sethlcolor{color3}\hl{The house is large with enormous windows. < 0.045 >}
+        \sethlcolor{color4}\hl{This is something random, but the sexes are similar. < 0.486 >}
+        \sethlcolor{color5}\hl{Nuclear power might solve the energy power. < 0.026 >}
+        \sethlcolor{color6}\hl{The tree has a brown bark and the leaves are pointed < 0.722 >}
+        \sethlcolor{color7}\hl{The trunk bears conical spines to deter animal attacks. < 0.530 >}
+        \sethlcolor{color8}\hl{By growing in shaded places, the plant reduces evaporation. < 0.162 >}
+        \sethlcolor{color9}\hl{Seeds are 3 cm. < 0.964 >}
+        \sethlcolor{color10}\hl{Branches usually in whorls of 3. < 0.999 >}
+        "}}   
+        \caption{A random piece of text broken down into single sentences and classified.}
+        \label{fig:webcrawler_sents_pred}
+    \end{subfigure}
+    \caption{A small example how text from URLs is processed. Text is broken into single sentences by the Sentecizer of \textcite{honnibal_spacy_2020} and the classifier classifies each sentences. Sentences with a value of 0.50 or higher are stored in the database. The darker the colour green, the higher the prediction value. The prediction value is also shown after each sentence.}
+    \label{fig:webcrawler_sents}
+\end{figure}
+
+
 When the web page meets all criteria, the raw text is retrieved and broken down into single sentences. 
 This makes sure the descriptions will be stored as much as possible per unique species trait.
 The text is cleaned using several regular expressions. % LINK TO THE EXPRESSIONS
@@ -473,7 +514,12 @@ Every sentence is checked against the train description classifier.
 If a description is recognised by the model, the sentence is stored.
 We use a threshold of 0.5 to determine if a sentence is a description or otherwise.
 In Figure \ref{fig:webcrawler_sents} a small example can be found how the web crawler will process web pages and stores relevant information. 
-Figure \ref{fig:webcrawler_sents_nopred} contains the original text before processing and in \ref{fig:webcrawler_sents_pred} the original text is processed into single sentences and each sentence is classified.
+
+
+
+
+\begin{comment}
+
 
 \begin{figure} [h!]
      \centering
@@ -496,13 +542,8 @@ Figure \ref{fig:webcrawler_sents_nopred} contains the original text before proce
      \label{fig:webcrawler_sents}
 \end{figure}
 
-Description sentences often name the species in the description, e.g. "Fagus sylvatica is a large tree, capable of reaching heights of up to 50 m (160 ft) tall." (source: \href{https://en.wikipedia.org/wiki/Fagus_sylvatica}{Wikipedia/wiki/Fagus\_sylvatica}).
-Species names are replaced by the word "the species". 
-In the example above in Figure \ref{fig:webcrawler_sents} the sentence is stored as: "The species is a large tree, capable of reaching heights of up to 50 m (160 ft) tall."
-This way the NLP model will not have access to (parts of) the labels of the input data. In Figure \ref{fig:webcrawler_sents_nopred} and Figure \ref{fig:webcrawler_sents_pred} and example of a piece of text before and after processing can be found.
 
-We deploy the web crawler for two weeks and the data that is gathered in these weeks is used in the next parts of this research. 
-
+\end{comment}
 \begin{comment}
 \subsubsection{Sentence Similarity}
 There is a change that different web pages use the a common source for describing a species.
@@ -550,7 +591,7 @@ Creating a knowledge graph of the scraped data will results in a clean database.
 This database will only contain subjects, relations and objects, also known as semantic triples. 
 When feeding this data to the model it cannot be become dependent on artefacts such as word order, incorrect punctuation etc.
 
-
+\subsection{Inferring Species} \label{par:inferring}
 \begin{figure} [h!tb]
     \centering
     \begin{subfigure}[b]{1.0\textwidth}
@@ -591,19 +632,9 @@ We know that every sentence describes the queries species, this means that we ca
 By processing this in a rule-base system we create a knowledge graph like shown in Figure \ref{fig:graph_example}.
 \end{comment}
 
-\subsection{Inferring Species} \label{par:inferring}
-For inferring species on partial descriptions we again use the distilled version of BERT \autocite{sanh_distilbert_2020, devlin_bert_2019} that we used for the binary classification of descriptions.
-We simply replace the final linear layer of the model that currently has an output of two, with a linear layer that can output the number of species used in the training of the model.
-
-We cannot split the data into a train and test set.
-If we train-test split the data on species, during testing the model will be presented species it has never seen and it cannot predict the correct species.
-An option would to train-test-spit the data so each species is represented in both the train and the test data.
-However this brings the problem that we cannot asses if enough unique species traits are present in the train or the test data.
-
-To extract the most relevant we try different post hoc exploratory techniques and statistically assess which performs the best (also see Section \ref{par:keywords}).
-
 
 \subsection{Retrieving Keywords} \label{par:keywords}
+
 For retrieving key words from the description data we try several different posthoc explanation techniques. We implement all techniques with the Captum library from \textcite{kokhlikyan_captum_2020}.
 \begin{itemize}
     \item Layer Integrated Gradients (LIG), based on the paper of \textcite{sundararajan_axiomatic_2017}. We use LIG with 20 steps and with 100 steps.
@@ -614,9 +645,8 @@ For retrieving key words from the description data we try several different post
 \end{itemize}
 
 For comparing the techniques, we use the \href{http://www.vision.caltech.edu/visipedia/CUB-200-2011.html}{Caltech-UCSD Birds 200 dataset} (CUB-200) from  \textcite{welinder_caltech-ucsd_2010}.
-The CUB-200 is a dataset with 200 bird species from Northern America.
-Each bird is represented by approximately 60 images. 
-Each of these images is hand annotated with traits that are possibly (0, not present, to 5 present) present in the images.
+The CUB-200 dataset is a dataset with 200 bird species from Northern America.
+Each bird is represented by approximately 60 images and of these images is hand annotated with traits that are possibly (0, not present, to 5 present) present in the images.
 We only extract information with the highest certainty (5) and concatenate the information on species level.
 
 We train a classification model on a subset of the BOW dataset.
