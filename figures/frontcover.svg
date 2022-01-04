@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1005" height="1155">
+<style>@font-face{font-family:'Droid Sans Mono';font-weight:normal;font-style:normal;src:url("data:application/font-woff;charset=utf-8;base64,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")format("woff");}</style>
+<style>text{font-family:'Droid Sans Mono';font-weight:normal;font-style:normal;}</style>
+<text transform="translate(284,596)" font-size="75" style="fill:rgb(35, 169, 131)">covert great</text>
+<text transform="translate(286,768)" font-size="58" style="fill:rgb(72, 40, 120)">bill black</text>
+<text transform="translate(240,655)" font-size="52" style="fill:rgb(30, 156, 137)">underpart white</text>
+<text transform="translate(571,254)" font-size="52" style="fill:rgb(55, 91, 141)">covert less</text>
+<text transform="translate(231,703)" font-size="46" style="fill:rgb(246, 230, 32)">plumage similar</text>
+<text transform="translate(524,290)" font-size="40" style="fill:rgb(68, 57, 131)">covert secondary</text>
+<text transform="translate(628,350)" font-size="40" style="fill:rgb(72, 37, 118)">head white</text>
+<text transform="translate(593,199)" font-size="40" style="fill:rgb(197, 224, 33)">bill short</text>
+<text transform="translate(479,822)" font-size="39" style="fill:rgb(31, 161, 135)">bill long</text>
+<text transform="translate(587,384)" font-size="39" style="fill:rgb(44, 113, 142)">feather white</text>
+<text transform="translate(648,498)" font-size="38" style="fill:rgb(71, 44, 122)">head black</text>
+<text transform="translate(588,531)" font-size="37" style="fill:rgb(69, 53, 129)">covert white</text>
+<text transform="translate(626,412)" font-size="34" style="fill:rgb(70, 48, 126)">tail long</text>
+<text transform="translate(509,856)" font-size="33" style="fill:rgb(147, 215, 65)">wing long</text>
+<text transform="translate(326,542)" font-size="32" style="fill:rgb(82, 197, 105)">bar white</text>
+<text transform="translate(281,798)" font-size="31" style="fill:rgb(59, 82, 139)">bar dark</text>
+<text transform="translate(406,512) rotate(-90)" font-size="31" style="fill:rgb(42, 176, 127)">mandible low</text>
+<text transform="translate(715,160)" font-size="30" style="fill:rgb(59, 187, 117)">bar black</text>
+<text transform="translate(635,453)" font-size="27" style="fill:rgb(152, 216, 62)">marking dark</text>
+<text transform="translate(516,885)" font-size="27" style="fill:rgb(31, 153, 138)">bill yellow</text>
+<text transform="translate(614,313)" font-size="27" style="fill:rgb(39, 128, 142)">feather black</text>
+<text transform="translate(427,469) rotate(-90)" font-size="27" style="fill:rgb(35, 138, 141)">feather dark</text>
+<text transform="translate(528,214)" font-size="20" style="fill:rgb(52, 96, 141)">molt prealternate</text>
+<text transform="translate(468,468)" font-size="20" style="fill:rgb(41, 123, 142)">upperpart brown</text>
+<text transform="translate(338,615)" font-size="20" style="fill:rgb(42, 120, 142)">feather brown</text>
+<text transform="translate(447,800) rotate(-90)" font-size="20" style="fill:rgb(57, 86, 140)">belly white</text>
+<text transform="translate(103,869)" font-size="20" style="fill:rgb(74, 193, 109)">covert gray</text>
+<text transform="translate(705,619)" font-size="20" style="fill:rgb(194, 223, 35)">bill dark</text>
+<text transform="translate(537,786)" font-size="20" style="fill:rgb(31, 153, 138)">covert black</text>
+<text transform="translate(269,830) rotate(-90)" font-size="20" style="fill:rgb(101, 203, 94)">tail short</text>
+<text transform="translate(540,545)" font-size="18" style="fill:rgb(41, 122, 142)">plumage white</text>
+<text transform="translate(743,124)" font-size="18" style="fill:rgb(60, 79, 138)">rump white</text>
+<text transform="translate(639,427)" font-size="18" style="fill:rgb(72, 29, 111)">throat white</text>
+<text transform="translate(99,890)" font-size="18" style="fill:rgb(71, 17, 100)">morph dark</text>
+<text transform="translate(464,430)" font-size="18" style="fill:rgb(43, 116, 142)">head brown</text>
+<text transform="translate(453,717)" font-size="18" style="fill:rgb(63, 188, 115)">forehead white</text>
+<text transform="translate(571,159)" font-size="12" style="fill:rgb(30, 155, 138)">basic plumage second</text>
+<text transform="translate(130,794)" font-size="12" style="fill:rgb(74, 193, 109)">upperpart gray</text>
+<text transform="translate(406,352)" font-size="12" style="fill:rgb(223, 227, 24)">covert dark</text>
+<text transform="translate(429,407)" font-size="12" style="fill:rgb(194, 223, 35)">covert brown</text>
+<text transform="translate(504,609)" font-size="12" style="fill:rgb(37, 132, 142)">breast white</text>
+<text transform="translate(604,670)" font-size="12" style="fill:rgb(208, 225, 28)">crown dark</text>
+<text transform="translate(593,1015)" font-size="12" style="fill:rgb(42, 118, 142)">leg black</text>
+<text transform="translate(531,726)" font-size="12" style="fill:rgb(42, 119, 142)">leg long</text>
+<text transform="translate(371,492) rotate(-90)" font-size="12" style="fill:rgb(72, 193, 110)">bar brown</text>
+<text transform="translate(291,667)" font-size="12" style="fill:rgb(41, 122, 142)">bill large</text>
+<text transform="translate(272,606)" font-size="12" style="fill:rgb(56, 185, 119)">head dark</text>
+<text transform="translate(249,615)" font-size="12" style="fill:rgb(42, 118, 142)">chin white</text>
+<text transform="translate(847,179)" font-size="12" style="fill:rgb(71, 14, 97)">wing short</text>
+<text transform="translate(682,547)" font-size="12" style="fill:rgb(40, 174, 128)">covert proximal</text>
+<text transform="translate(595,902)" font-size="12" style="fill:rgb(61, 77, 138)">leg yellow</text>
+<text transform="translate(652,769) rotate(-90)" font-size="12" style="fill:rgb(31, 151, 139)">feather gray</text>
+<text transform="translate(708,635)" font-size="12" style="fill:rgb(62, 76, 138)">upperpart dark</text>
+<text transform="translate(748,460)" font-size="10" style="fill:rgb(38, 173, 129)">wing covert great</text>
+<text transform="translate(820,215)" font-size="10" style="fill:rgb(36, 170, 131)">plumage fresh</text>
+<text transform="translate(531,578)" font-size="10" style="fill:rgb(66, 64, 134)">feather few</text>
+<text transform="translate(878,352) rotate(-90)" font-size="10" style="fill:rgb(71, 47, 125)">plumage brown</text>
+<text transform="translate(665,463)" font-size="10" style="fill:rgb(38, 130, 142)">bill red</text>
+<text transform="translate(535,300)" font-size="10" style="fill:rgb(117, 208, 84)">plumage black</text>
+<text transform="translate(533,447)" font-size="10" style="fill:rgb(117, 208, 84)">leg short</text>
+<text transform="translate(497,482)" font-size="10" style="fill:rgb(68, 2, 86)">marking black</text>
+<text transform="translate(861,190)" font-size="10" style="fill:rgb(57, 86, 140)">tail white</text>
+<text transform="translate(589,1036)" font-size="10" style="fill:rgb(186, 222, 40)">scapular long</text>
+<text transform="translate(741,262)" font-size="10" style="fill:rgb(66, 65, 134)">underpart pale</text>
+<text transform="translate(532,262)" font-size="10" style="fill:rgb(132, 212, 75)">covert Upperwing</text>
+<text transform="translate(317,549)" font-size="10" style="fill:rgb(31, 149, 139)">feather new</text>
+<text transform="translate(855,198)" font-size="10" style="fill:rgb(218, 227, 25)">bill pink</text>
+<text transform="translate(352,506) rotate(-90)" font-size="10" style="fill:rgb(72, 31, 112)">bill pale</text>
+<text transform="translate(522,238)" font-size="10" style="fill:rgb(32, 146, 140)">back low</text>
+<text transform="translate(276,833) rotate(-90)" font-size="10" style="fill:rgb(208, 225, 28)">secondary innermost</text>
+<text transform="translate(275,713)" font-size="10" style="fill:rgb(189, 223, 38)">bar subterminal</text>
+<text transform="translate(741,206)" font-size="10" style="fill:rgb(33, 166, 133)">median great</text>
+<text transform="translate(541,831)" font-size="10" style="fill:rgb(117, 208, 84)">bill gray</text>
+<text transform="translate(439,366)" font-size="10" style="fill:rgb(216, 226, 25)">back gray</text>
+<text transform="translate(744,167)" font-size="10" style="fill:rgb(62, 73, 137)">morph light</text>
+<text transform="translate(379,513) rotate(-90)" font-size="10" style="fill:rgb(72, 32, 113)">back black</text>
+<text transform="translate(464,776)" font-size="10" style="fill:rgb(72, 41, 121)">crown black</text>
+<text transform="translate(707,648)" font-size="10" style="fill:rgb(38, 130, 142)">primary black</text>
+<text transform="translate(245,824) rotate(-90)" font-size="10" style="fill:rgb(115, 208, 86)">iris brown</text>
+<text transform="translate(711,357)" font-size="10" style="fill:rgb(68, 1, 84)">tail black</text>
+<text transform="translate(650,138)" font-size="10" style="fill:rgb(55, 90, 140)">bill thin</text>
+<text transform="translate(448,783)" font-size="10" style="fill:rgb(202, 225, 31)">underpart gray</text>
+<text transform="translate(530,663)" font-size="10" style="fill:rgb(134, 213, 73)">winter first</text>
+<text transform="translate(492,494)" font-size="10" style="fill:rgb(37, 131, 142)">bill small</text>
+<text transform="translate(412,508)" font-size="10" style="fill:rgb(60, 79, 138)">leg pink</text>
+<text transform="translate(588,913)" font-size="10" style="fill:rgb(52, 97, 141)">upperpart white</text>
+<text transform="translate(163,806)" font-size="10" style="fill:rgb(59, 187, 117)">bar narrow</text>
+<text transform="translate(550,557)" font-size="10" style="fill:rgb(59, 82, 139)">wing dark</text>
+<text transform="translate(386,549)" font-size="10" style="fill:rgb(43, 117, 142)">breast low</text>
+<text transform="translate(596,482)" font-size="10" style="fill:rgb(63, 72, 137)">leg red</text>
+<text transform="translate(606,1046)" font-size="10" style="fill:rgb(37, 132, 142)">head large</text>
+<text transform="translate(845,264)" font-size="10" style="fill:rgb(137, 213, 72)">tail forked</text>
+<text transform="translate(721,137)" font-size="10" style="fill:rgb(52, 97, 141)">bill orange</text>
+<text transform="translate(374,424) rotate(-90)" font-size="10" style="fill:rgb(43, 116, 142)">wing covert less</text>
+<text transform="translate(525,893)" font-size="10" style="fill:rgb(31, 154, 138)">head pale</text>
+<text transform="translate(649,604)" font-size="10" style="fill:rgb(72, 35, 116)">tail dark</text>
+<text transform="translate(631,145)" font-size="10" style="fill:rgb(42, 118, 142)">molt partial</text>
+<text transform="translate(637,320)" font-size="10" style="fill:rgb(70, 50, 126)">plumage dark</text>
+<text transform="translate(541,310)" font-size="10" style="fill:rgb(47, 108, 142)">side white</text>
+<text transform="translate(505,619)" font-size="10" style="fill:rgb(186, 222, 40)">wing black</text>
+<text transform="translate(587,505)" font-size="9" style="fill:rgb(246, 230, 32)">underwing covert white</text>
+<text transform="translate(798,132)" font-size="9" style="fill:rgb(71, 47, 125)">cheek white</text>
+<text transform="translate(412,806)" font-size="9" style="fill:rgb(58, 84, 140)">bill stout</text>
+<text transform="translate(446,549)" font-size="9" style="fill:rgb(30, 157, 137)">upperpart black</text>
+<text transform="translate(367,622)" font-size="9" style="fill:rgb(72, 26, 108)">undertail covert white</text>
+<text transform="translate(534,525)" font-size="9" style="fill:rgb(31, 159, 136)">wing broad</text>
+<text transform="translate(619,796)" font-size="9" style="fill:rgb(70, 10, 93)">covert blackish</text>
+<text transform="translate(557,566)" font-size="9" style="fill:rgb(31, 152, 139)">back dark</text>
+<text transform="translate(675,263)" font-size="9" style="fill:rgb(40, 174, 128)">bill thick</text>
+<text transform="translate(301,805)" font-size="9" style="fill:rgb(43, 116, 142)">feather retained</text>
+<text transform="translate(659,470)" font-size="9" style="fill:rgb(31, 162, 135)">wing pointed</text>
+<text transform="translate(813,391)" font-size="9" style="fill:rgb(32, 163, 134)">plumage later</text>
+<text transform="translate(411,663)" font-size="9" style="fill:rgb(62, 73, 137)">back brown</text>
+<text transform="translate(581,431)" font-size="9" style="fill:rgb(210, 226, 27)">bill white</text>
+<text transform="translate(458,437)" font-size="9" style="fill:rgb(70, 192, 111)">feather pale</text>
+<text transform="translate(824,633) rotate(-90)" font-size="9" style="fill:rgb(31, 153, 138)">plumage immature</text>
+<text transform="translate(683,171)" font-size="9" style="fill:rgb(92, 200, 99)">covert pale</text>
+<text transform="translate(624,931)" font-size="9" style="fill:rgb(38, 130, 142)">mantle gray</text>
+<text transform="translate(334,520)" font-size="8" style="fill:rgb(30, 156, 137)">molt preformative</text>
+<text transform="translate(248,622)" font-size="8" style="fill:rgb(239, 229, 28)">feather fresh</text>
+<text transform="translate(613,220)" font-size="7" style="fill:rgb(35, 169, 131)">alternate plumage first</text>
+<text transform="translate(437,374)" font-size="7" style="fill:rgb(108, 205, 90)">crown gray</text>
+<text transform="translate(290,719)" font-size="7" style="fill:rgb(142, 214, 69)">plumage non-breeding</text>
+<text transform="translate(514,225)" font-size="7" style="fill:rgb(43, 117, 142)">secondary white</text>
+<text transform="translate(817,165)" font-size="6" style="fill:rgb(31, 154, 138)">alternate plumage second</text>
+<text transform="translate(795,539)" font-size="6" style="fill:rgb(63, 71, 136)">covert grayish</text>
+<text transform="translate(137,896)" font-size="6" style="fill:rgb(72, 20, 103)">underpart whitish</text>
+<text transform="translate(593,1023)" font-size="6" style="fill:rgb(46, 111, 142)">feather blackish</text>
+<text transform="translate(220,706) rotate(-90)" font-size="6" style="fill:rgb(69, 4, 87)">marking white</text>
+<text transform="translate(434,480)" font-size="6" style="fill:rgb(246, 230, 32)">underpart black</text>
+<text transform="translate(288,774)" font-size="6" style="fill:rgb(39, 126, 142)">prebasic molt second</text>
+<text transform="translate(415,470)" font-size="6" style="fill:rgb(244, 230, 30)">leg gray</text>
+<text transform="translate(424,298)" font-size="6" style="fill:rgb(43, 117, 142)">wing folded</text>
+<text transform="translate(488,829)" font-size="6" style="fill:rgb(57, 85, 140)">crown brown</text>
+<text transform="translate(807,398)" font-size="6" style="fill:rgb(72, 27, 109)">upperpart pale</text>
+<text transform="translate(520,665) rotate(-90)" font-size="6" style="fill:rgb(30, 157, 137)">side gray</text>
+<text transform="translate(595,1001)" font-size="6" style="fill:rgb(41, 121, 142)">supercilium white</text>
+<text transform="translate(830,505)" font-size="6" style="fill:rgb(50, 182, 122)">bill slender</text>
+<text transform="translate(430,333)" font-size="6" style="fill:rgb(34, 168, 132)">breast gray</text>
+<text transform="translate(175,735)" font-size="6" style="fill:rgb(31, 161, 135)">plumage nonbreeding</text>
+<text transform="translate(545,583)" font-size="6" style="fill:rgb(52, 96, 141)">flank white</text>
+<text transform="translate(645,615)" font-size="6" style="fill:rgb(42, 118, 142)">forehead black</text>
+<text transform="translate(737,213)" font-size="6" style="fill:rgb(31, 150, 139)">bill heavy</text>
+<text transform="translate(612,550)" font-size="6" style="fill:rgb(31, 154, 138)">breast brown</text>
+<text transform="translate(528,247)" font-size="6" style="fill:rgb(103, 204, 92)">shaft white</text>
+<text transform="translate(742,241)" font-size="6" style="fill:rgb(52, 97, 141)">feather long</text>
+<text transform="translate(371,673)" font-size="6" style="fill:rgb(38, 129, 142)">feather whitish</text>
+<text transform="translate(821,138)" font-size="6" style="fill:rgb(110, 206, 88)">head gray</text>
+<text transform="translate(239,660) rotate(-90)" font-size="6" style="fill:rgb(69, 5, 89)">eye yellow</text>
+<text transform="translate(150,776)" font-size="6" style="fill:rgb(112, 207, 87)">marking brown</text>
+<text transform="translate(433,312)" font-size="6" style="fill:rgb(44, 177, 126)">wing brown</text>
+<text transform="translate(706,660)" font-size="6" style="fill:rgb(64, 69, 136)">plumage gray</text>
+<text transform="translate(536,192)" font-size="6" style="fill:rgb(137, 213, 72)">underpart dark</text>
+<text transform="translate(717,432)" font-size="6" style="fill:rgb(110, 206, 88)">median less</text>
+<text transform="translate(895,365) rotate(-90)" font-size="6" style="fill:rgb(33, 145, 140)">primary distally</text>
+<text transform="translate(804,471)" font-size="6" style="fill:rgb(31, 161, 135)">molt complete</text>
+<text transform="translate(738,389)" font-size="6" style="fill:rgb(69, 55, 129)">tail feather white</text>
+<text transform="translate(371,720)" font-size="6" style="fill:rgb(55, 91, 141)">back white</text>
+<text transform="translate(179,813)" font-size="6" style="fill:rgb(63, 188, 115)">plumage worn</text>
+<text transform="translate(206,743)" font-size="6" style="fill:rgb(68, 2, 86)">feather worn</text>
+<text transform="translate(597,862)" font-size="6" style="fill:rgb(68, 57, 131)">leg dark</text>
+<text transform="translate(626,981) rotate(-90)" font-size="6" style="fill:rgb(176, 221, 47)">leg orange</text>
+<text transform="translate(744,220)" font-size="6" style="fill:rgb(202, 225, 31)">bill pointed</text>
+<text transform="translate(711,624)" font-size="6" style="fill:rgb(176, 221, 47)">bill straight</text>
+<text transform="translate(256,840)" font-size="6" style="fill:rgb(61, 78, 138)">head blackish</text>
+<text transform="translate(530,900)" font-size="5" style="fill:rgb(32, 164, 134)">outer primary broad</text>
+<text transform="translate(493,499)" font-size="5" style="fill:rgb(142, 214, 69)">rump black</text>
+<text transform="translate(566,415)" font-size="5" style="fill:rgb(39, 128, 142)">plumage pale</text>
+<text transform="translate(477,452)" font-size="5" style="fill:rgb(32, 146, 140)">bar pale</text>
+<text transform="translate(794,105)" font-size="5" style="fill:rgb(34, 168, 132)">tertial brown</text>
+<text transform="translate(737,343) rotate(-90)" font-size="5" style="fill:rgb(70, 52, 128)">bill blackish</text>
+<text transform="translate(499,535)" font-size="5" style="fill:rgb(45, 112, 142)">breast dark</text>
+<text transform="translate(628,827)" font-size="5" style="fill:rgb(45, 178, 125)">throat low</text>
+<text transform="translate(358,468) rotate(-90)" font-size="5" style="fill:rgb(229, 228, 25)">feather scattered</text>
+<text transform="translate(450,669)" font-size="5" style="fill:rgb(41, 121, 142)">primary white</text>
+<text transform="translate(622,918)" font-size="5" style="fill:rgb(134, 213, 73)">outer primary worn</text>
+<text transform="translate(595,488)" font-size="5" style="fill:rgb(52, 182, 121)">feather elongated</text>
+<text transform="translate(734,595) rotate(-90)" font-size="5" style="fill:rgb(68, 59, 132)">bar whitish</text>
+<text transform="translate(243,663)" font-size="5" style="fill:rgb(44, 114, 142)">wing narrow</text>
+<text transform="translate(775,110)" font-size="5" style="fill:rgb(205, 225, 29)">flank brown</text>
+<text transform="translate(577,316)" font-size="5" style="fill:rgb(84, 197, 104)">bill narrow</text>
+<text transform="translate(277,672)" font-size="5" style="fill:rgb(71, 42, 122)">crest short</text>
+<text transform="translate(828,310)" font-size="5" style="fill:rgb(34, 168, 132)">tail pointed</text>
+<text transform="translate(495,411)" font-size="5" style="fill:rgb(231, 228, 25)">winter early</text>
+<text transform="translate(803,548)" font-size="5" style="fill:rgb(119, 209, 83)">secondary medial</text>
+<text transform="translate(780,594) rotate(-90)" font-size="5" style="fill:rgb(42, 120, 142)">bar distinct</text>
+<text transform="translate(428,319)" font-size="5" style="fill:rgb(46, 110, 142)">covert upperwing</text>
+<text transform="translate(776,426)" font-size="5" style="fill:rgb(55, 90, 140)">primary pale</text>
+<text transform="translate(824,203)" font-size="5" style="fill:rgb(99, 203, 95)">plumage breeding</text>
+<text transform="translate(475,830) rotate(-90)" font-size="5" style="fill:rgb(33, 166, 133)">bill pinkish</text>
+<text transform="translate(559,179)" font-size="5" style="fill:rgb(239, 229, 28)">mantle dark</text>
+<text transform="translate(249,830) rotate(-90)" font-size="5" style="fill:rgb(105, 205, 91)">definitive plumage typically</text>
+<text transform="translate(614,357)" font-size="5" style="fill:rgb(46, 179, 124)">rectrix distally</text>
+<text transform="translate(538,434)" font-size="5" style="fill:rgb(33, 143, 141)">forehead gray</text>
+<text transform="translate(620,936)" font-size="5" style="fill:rgb(99, 203, 95)">head small</text>
+<text transform="translate(859,219)" font-size="5" style="fill:rgb(197, 224, 33)">upperpart including</text>
+<text transform="translate(701,400)" font-size="5" style="fill:rgb(186, 222, 40)">tail gray</text>
+<text transform="translate(748,173)" font-size="5" style="fill:rgb(32, 164, 134)">prebasic molt complete</text>
+<text transform="translate(734,464)" font-size="5" style="fill:rgb(103, 204, 92)">eye red</text>
+<text transform="translate(92,873)" font-size="5" style="fill:rgb(181, 222, 43)">wing white</text>
+</svg>

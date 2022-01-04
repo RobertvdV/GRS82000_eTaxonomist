@@ -93,13 +93,13 @@
   %\end{wrapfigure}
   
   \includegraphics[%
-    width=0.85\textwidth,
+    width=0.83\textwidth,
     %height=0.83\textwidth,
     align=t,
     smash=br,
     vshift=2.5cm,     % adjust the vertical position
     hshift=2.5cm     % adjust the horizontal position
-    ]{figures/cover_words.pdf}%
+    ]{figures/frontcover.pdf}%
   
   {\Large \theauthor}\vspace{6.0cm}
   
@@ -161,6 +161,10 @@
 \newpage
 \thispagestyle{empty}
 \textbf{Foreword}
+\newpage
+\thispagestyle{empty}
+\textbf{Summary}
+\newpage
 
 \thispagestyle{empty}
 \tableofcontents
@@ -170,6 +174,7 @@
 \listoftables
 \thispagestyle{empty}
 \newpage
+
 
 
 \renewcommand{\thesection}{\arabic{section}}
@@ -283,23 +288,23 @@ In Section \ref{par:results} we present the results and in Section \ref{par:disc
 \begin{figure} [t]
     \centering
     %\vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{workflow.pdf}}
-    \caption[Workflow]{A simplified workflow. Text data is used to train a model to recognize species description. In this case the paragraph titles are used as labels. The model is deployed in a web crawler that searches the web for species descriptions. These data are then used to train the NLP model independently of the visual-language hybrid model. The NLP model will focus on important words to recognise the species.}
+    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/workflow_v3.pdf}}
+    \caption[Workflow]{A simplified workflow. The web crawler searches for species descriptions on the word wide web and stores it in a database. The data is used to train a NLP model the infer species bases on the textual data.}
     \label{fig:workflow}
 \end{figure}
 
 The core of our idea is gathering enough text data per species, so an NLP model can learn key words describing each species.
-Using natural natural language has several potential benefits.
-Humans communicate using natural language, resulting in an theoretically endless amount of data.
-By using natural language, the results remain interpretable for humans.
-We first start by creating a DNN that can classify species descriptions.
-After this we use the harvested data to train the NLP model.
+Using natural natural language for this idea has several potential benefits.
+Humans communicate using natural language, resulting in an theoretically endless amount of data that can be used and by using natural language, the results remain interpretable for humans.
+We first start by creating a DNN that can classify species descriptions and deploy this DNN in a web crawler.
+This web crawler can automatically query species and store descriptive sentences.
+We use the harvested data to train the NLP model.
 Finally we assess the NLP model.
 In Figure \ref{fig:workflow} a simplified version of the workflow can be found.
 This chapter will give a detailed description of the steps.
 
 \subsection{Creating an Extensive Dataset} \label{par:dataset}
-The World Wide Web also has potentially an endless amount of species descriptions available.
+The World Wide Web has potentially an endless amount of species descriptions available.
 This makes the internet suitable for harvesting training data.
 However, description sentences can be theoretically limitless, e.g. for a Brown bear (Ursus arctos) the description text could be: "The fur is brown", "The brown bear has brown fur".
 These are relatively simple sentences.
@@ -311,7 +316,7 @@ To properly train a deep learning model that can classify text data into descrip
 \subsubsection{Training a Model for Text Classification} \label{par:reedloss}
 %The internet has a vast amount of free data available that can be easily harvested.
 We create this large dataset by scraping text from structured web pages.
-We select three large websites that have large databases and structured enough and have a rich scholarly content about species:
+We select three websites that have large databases, are structured enough and have a rich scholarly content about species:
 \begin{itemize}
     \item \href{www.wikipedia.com}{Wikipedia}. Wikipedia is a fee online encyclopedia that is maintained by volunteers. Everyone is allowed to edit pages. Quality is maintained by moderators and other volunteers.
     \item \href{https://birdsoftheworld.org/bow/home}{Birds of the World (BoW)}. BOW is constructed and maintained by ornitnologists from all over the word \autocite{billerman_birds_2020}
@@ -360,7 +365,7 @@ Both distillBERT and BERT are already trained on a large corpus of English words
 \textcite{sun_how_2020} already investigated how to fine-tune BERT for text classification.
 We use their findings on the full BERT model, to fine-tune the distilBERT model for description text classification.
 
-Like \textcite{sun_how_2020} we first fit a dropout layer (0.1) on top of the distillBERT architecture to enable to regularisation.
+Like \textcite{sun_how_2020} we first fit a dropout layer (0.1) on top of the distillBERT architecture to enable some regularisation.
 This dropout layers is followed by a Rectified Linear Unit (ReLU) activation function:
 \begin{equation} \label{ReLU}
     f(x) = \max(0, x)
@@ -386,19 +391,19 @@ However, we decided not to fine-tune the inner workings of BERT for two reasons:
 (1) We used additional Wikipedia to increase the text data with negatives values.
 These random Wikipedia pages are highly likely to contain information from the general
 domain, resulting in a  data distribution close(r) to the general domain.
-(2) A binary classification problem is a relatively simple task; updating the inner parameters during training cost additional time and computing power, while only resulting a small accuracy increase.
+(2) A binary classification problem is a relatively simple task; updating the inner parameters during training cost additional time and computing power, while it only might result in a small accuracy increase.
 
-To prepare the text spans, we use the tokenizer of \textcite{wolf_huggingfaces_2020}.
+To prepare the text spans, we use the tokeniser of \textcite{wolf_huggingfaces_2020}.
 The used BERT architecture can only process up to 512 token at once \autocite{sanh_distilbert_2020, devlin_bert_2019}.
-Most tokenizers will truncate text spans larger then 512 tokens as most text information is in the beginning (head-encoding), end (tail-encoding) or beginning and end (head+tail-encoding).
+Most tokenisers will truncate text spans larger then 512 tokens as most text information is in the beginning (head-encoding), end (tail-encoding) or beginning and end (head+tail-encoding).
 We decide not truncated the text.
 Instead we randomly split the text into text spans with a minimum of 10 words and a maximum of 512 words.
 We hypothesised that the model might be better in recognising shorter description spans by splitting the raw spans.  
 This way we enlarge the dataset and prevent loosing information with truncating spans larger then 512 tokens. 
 We use a minimum of 10 words to prevent the model fixating on specific words.
 
-%The tokenizer of \textcite{wolf_huggingfaces_2020} returns a Python dictionary with the input ID's and the attention mask of the text.
-%E.g. by tokenizing the text "This is a test.", the tokenizer returns the following:
+%The tokeniser of \textcite{wolf_huggingfaces_2020} returns a Python dictionary with the input ID's and the attention mask of the text.
+%E.g. by tokenizing the text "This is a test.", the tokeniser returns the following:
 %~$'input\_ids': [101, 2023, 2003, 1037, 3231, 1012, 102]$, 
 %~$'attention\_mask': [1, 1, 1, 1, 1, 1, 1]$.
 %~$[101]$ indicates the start of a sequence and ~$[102]$ indicates the end of a sequence.
@@ -409,7 +414,7 @@ We use a minimum of 10 words to prevent the model fixating on specific words.
 We use the Adam optimiser \autocite{kingma_adam_2017} during the training process.
 The Adam optimiser has shown good performance when fine-tuning BERT for text classification \autocite{you_large_2020}.
 The hyperparameters were set based on the paper of \textcite{sun_how_2020}.
-The learning rate was set to 3e\textsuperscript{-5} and the batch size was set to 32.
+The learning rate was set to 3e\textsuperscript{-5} and the batch size was set to 32 as this is generally found the most effective batch size for BERT \autocite{devlin_bert_2019, sanh_distilbert_2020, sun_how_2020, you_large_2020}.
 During the training the gradients are clipped to prevent the gradients from exploding.
 we train the model for 35 epochs.
 
@@ -423,38 +428,40 @@ The f1-score is calculated with the following formula:
 \end{equation}
 For calculating precision-recall metrics we use the Python package from \textcite{pedregosa_scikit-learn_2011}.
 
-Before the text of the external dataset is tokenized, it is first cleaned of references and footnotes.
+Before the text of the external dataset is tokenised, it is first cleaned of references and footnotes.
 We no longer split the into random chunks, but we use a sentecizer of \textcite{honnibal_spacy_2020} to split the text into sentences.
-This is also how random text will be treated that is gathered by the web crawler.
+This is also how text will be treated that is retrieved by the web crawler.
 By splitting text into sentences instead of random text chunks we prevent information loss.
-As the loss is no longer calculated, we simple calculate the prediction certainty of the model.
-If the model reaches a certainty of 0.80 or higher (\(\beta\)) the model is allowed to chance the label, in all other cases the predicted label is matches against the actual (paragraph) label.
-This results in the following equation\footnote{This actually look like the \texttt{hardloss} (Equation 7) from \textcite{reed_training_2015}. In this case the equation is changed from a loss function to an If-Then statement.}:
+
+Like the training data, the left-out datasets will also have miss labelled sentences.
+We use the following equation\footnote{This actually looks like the \texttt{hardloss} (Equation 7) from \textcite{reed_training_2015}. In this case the equation is changed from a loss function to an If-Then statement.} to correct these labels to a certain extent:
 \begin{equation} \label{eq:softloss_ifthen}
 (\hat{\gamma}^{(i)} >= \beta \rightarrow \hat{\gamma}^{(i)} = \gamma^{(i)}) \wedge ( \leftharpoondown \hat{\gamma}^{(i)} = \hat{\gamma}^{(i)})
 \end{equation}
-%This is the loss function from \textcite{reed_training_2015}, only notated in an if-then statement to compensate for the miss labelled sentences of the external datasets.
+As the loss is no longer calculated, we simple calculate the prediction certainty of the model.
+If the model reaches a probability of 0.80 or higher (\(\beta\)) the model is allowed to chance the label, in all other cases the predicted label is matched against the actual (paragraph) label.
 
 
 \subsubsection{Gathering \& Storing Description Data}
-
 We deploy the classification model in a web crawler.
 This web crawler can automatically query search engines with a predefined list of birds and plants.
-The list for plants is based on the \href{https://www.ipni.org/}{International Plant Name Index} (IPNI) and the list for birds is based on the database of \href{https://birdsoftheworld.org/bow/home}{Birds of the World} (BoW).
+The list for plants is based on the \href{https://www.ipni.org/}{International Plant Name Index} (IPNI) and the list for birds is based on the BoW database %of \href{https://birdsoftheworld.org/bow/home}{Birds of the World} (BoW).
 The IPNI database contains over 1,3 million plant species and the BoW database contains over ten thousand birds.
+
 The IPNI database is large, containing all 1,3+ million known plant species.
 There is a high chance that not all species in this database can be queried within the time-frame of this research.
 Therefore we sort the plant species based on their number of description in the PoWO dataset that is used to train the classifier.
 Plant species with more descriptions also have a higher chance of being described somewhere else on the web.
-This way we make sure that plant that will be queried have a high chance to contain a description somewhere on the web.
+This way we make sure the plants that will be queried have a high chance to contain a description somewhere on the web.
 We do the same for the bird species; bird species are sorted based on their number of descriptions in the BoW dataset.
 
 %The web crawler queries the search engines. 
 %This results in a list URLs with possible species descriptions.
 \begin{figure} [t]
     \centering
+    %\textbf{The Web Crawler}
     %\vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler.pdf}}
+    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler_v2.pdf}}
     \caption[Web Crawler]{The process of the web crawler. The search engines are queries with five different queries per species. The search engines return a list of URLs per species. BeautifulSoup break extract the HTML of each URL and retrieves the text. SpaCy break the text down into single sentences. The sentences are presented to the classifier.}
     \label{fig:webcrawler}
 \end{figure}
@@ -472,13 +479,13 @@ Finally the header of the URL is checked against the queried species to make sur
 %Not every query will return correct websites, i.e. websites about the queried species.
 %This way we prevent accidentally storing description data for the wrong species.
 
-\begin{figure}[h!]
+\begin{figure}[bh!]
     \centering
     
     \begin{subfigure}[b]{1.00\textwidth}
         \centering
           \framebox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
-          "Plumage, legs and beak orange. The bill and the legs are both black. The house is large with enormous windows. This is something random, but the sexes are similar. Nuclear power might solve the worlds energy crisis. The tree has a brown bark and the leaves are pointed. The trunk bears conical spines to deter animal attacks. By growing in shaded places, the plant reduces evaporation. Seeds are 3 cm. Branches usually in whorls of 3."}}
+          "Plumage, legs and beak orange. The bill and the legs are both black. The house is large with enormous windows. This is something random, but the sexes are similar. Nuclear power might solve the world's energy crisis. The tree has a brown bark and the leaves are pointed. The trunk bears conical spines to deter animal attacks. By growing in shaded places, the plant reduces evaporation. Seeds are 3 cm. Branches usually in whorls of 3."}}
         \caption{A random piece of text.}
         \label{fig:webcrawler_sents_nopred}
     \end{subfigure}
@@ -491,7 +498,7 @@ Finally the header of the URL is checked against the queried species to make sur
         \sethlcolor{color2}\hl{The bill and the legs are both black. < 0.943 >}
         \sethlcolor{color3}\hl{The house is large with enormous windows. < 0.045 >}
         \sethlcolor{color4}\hl{This is something random, but the sexes are similar. < 0.486 >}
-        \sethlcolor{color5}\hl{Nuclear power might solve the energy power. < 0.026 >}
+        \sethlcolor{color5}\hl{Nuclear power might solve the world's energy crisis. < 0.026 >}
         \sethlcolor{color6}\hl{The tree has a brown bark and the leaves are pointed < 0.722 >}
         \sethlcolor{color7}\hl{The trunk bears conical spines to deter animal attacks. < 0.530 >}
         \sethlcolor{color8}\hl{By growing in shaded places, the plant reduces evaporation. < 0.162 >}
@@ -501,7 +508,7 @@ Finally the header of the URL is checked against the queried species to make sur
         \caption{A random piece of text broken down into single sentences and classified.}
         \label{fig:webcrawler_sents_pred}
     \end{subfigure}
-    \caption{A small example how text from URLs is processed. Text is broken into single sentences by the Sentecizer of \textcite{honnibal_spacy_2020} and the classifier classifies each sentences. Sentences with a value of 0.50 or higher are stored in the database. The darker the colour green, the higher the prediction value. The prediction value is also shown after each sentence.}
+    \caption[An example how the web crawler 'sees' the text data]{A small example how text from URLs is processed. Text is broken into single sentences by the Sentecizer of \textcite{honnibal_spacy_2020} and the classifier classifies each sentences. Sentences with a value of 0.50 or higher are stored in the database. The darker the colour green, the higher the prediction value. The prediction value is also shown after each sentence.}
     \label{fig:webcrawler_sents}
 \end{figure}
 
@@ -545,6 +552,7 @@ In Figure \ref{fig:webcrawler_sents} a small example can be found how the web cr
 
 \end{comment}
 \begin{comment}
+
 \subsubsection{Sentence Similarity}
 There is a change that different web pages use the a common source for describing a species.
 By checking for similar sentence within the same species we make sure the same sentence is not appended twice to the dataset and the train and test set are completely disjoint.
@@ -553,8 +561,8 @@ Fortunately, this last hidden state is the output of a base BERT architecture.
 However, the last hidden state output contain a matrix of 512 x 768. 
 It is not feasibly to compute the cosine similarity distance for multiple matrices of this size.
 By using a mean-pooling operation we create a vector of size 768 for every text span and compute the cosine distance for these text spans.
-We first create a new dictionary that corresponds to the dictionary initialised by the tokenizer, \verb|{'input_ids': [], 'attention_mask': []}|.
-We tokenize all the sentences we are comparing and append the tokens and masking to the correct key.
+We first create a new dictionary that corresponds to the dictionary initialised by the tokeniser, \verb|{'input_ids': [], 'attention_mask': []}|.
+We tokenise all the sentences we are comparing and append the tokens and masking to the correct key.
 After all the sentences have been processed, we reformat the dictionary into a single tensor and push it trough the model.
 This will result in a tensor of the number of sentences times 512 times 768. 
 We sum the 3D matrix along the first axis, resulting in a 2D matrix.
@@ -584,14 +592,13 @@ In Figure \ref{fig:similarity_matrix} a comparison of a few fictional sentences 
 %This sentence is describing the leaves and the attributes in the same sentence. 
 
 \subsubsection{Knowledge Graph}
-A knowledge graph (KG) is a graph that contains interlinked descriptions, information has a formal structure that allows both people and computer to process the data unambiguously \autocite{petkova_crafting_2020}.
-If we apply this to species descriptions we would expect the end up with a single graph per species, that contain descriptive information about that species in a semantic way.
-These graphs can also be linked if species share common traits.
-Creating a knowledge graph of the scraped data will results in a clean database.
+A knowledge graph (KG) is a graph that contains interlinked descriptions, information has a formal structure that allows both people and computer to process the data unambiguously \autocite{petkova_crafting_2020}, like in Figure \ref{fig:graph_example}.
+If we apply this to species descriptions we would expect the end up with a single graph per species, or with a large graph per class (e.g. mammalia).
+Traits are not longer unique and can be shared per species.
+Processing the data this will will result in a clean semantic database for both humans and computers.
 This database will only contain subjects, relations and objects, also known as semantic triples. 
-When feeding this data to the model it cannot be become dependent on artefacts such as word order, incorrect punctuation etc.
+When feeding this data to the model it cannot be become dependent on artefacts such as word order, punctuation's, etc.
 
-\subsection{Inferring Species} \label{par:inferring}
 \begin{figure} [h!tb]
     \centering
     \begin{subfigure}[b]{1.0\textwidth}
@@ -621,73 +628,31 @@ When feeding this data to the model it cannot be become dependent on artefacts s
     \caption[Part of Speech tagging and knowledge graph]{The sentences are first broken down with the NLP pipeline of \textcite{honnibal_spacy_2020}. The extracted PoS tags and dependency tags are then used to construct the semantic triples In first case the first node is the normal subject (nsubj) combined witht the compound. The root verb of this subject is the relation and the direct object (dobj) of the verb is the object of the first semantic triple. For the last relation and node, the adjective modifier (amod) of the last node (fur) is used as object. In this case the relation is dependent on the PoS tag of the adjective modifier. In the last case the claws are a normal subject, but are treated as an object.}
     \label{fig:pos_pipeline}
 \end{figure}
-We use PoS tagging and dependency parsing to create a clean knowledge graph.
+
 For PoS extracting we use the library of \textcite{honnibal_spacy_2020}.
 This is a pretrained NLP model that can extract PoS tags and their dependencies.
 We set up a rule-based system to extract data from the sentences.
-In Figure \ref{fig:pos_pipeline} two example sentences can be found that are processed using PoS tagging and dependency parsing with the pretrained pipelines of \textcite{honnibal_spacy_2020}.
-We have the benefit that we already know the broad subject of every sentence, which is the species.
+In Figure \ref{fig:pos_pipeline} two (very simple) example sentences can be found that are processed using PoS tagging and dependency parsing with the pretrained pipelines of \textcite{honnibal_spacy_2020}.
+We have the benefit that we already know the broad subject of every sentence, as each sentence corresponds to the queries species.
+This means that we can have the species as starting node, even when the subject is not the species itself, see Figure \ref{fig:PoS_example2}.
 Most researches do not have this and also need to determine the subject of every sentence \autocite{hutchison_knowledge_2013} like we do in \ref{fig:PoS_example}.
-We know that every sentence describes the queries species, this means that we can have the species as starting node, even when the subject is not the species itself, see Figure \ref{fig:PoS_example2}.
-By processing this in a rule-base system we create a knowledge graph like shown in Figure \ref{fig:graph_example}.
+By processing this in a rule-base system we expect to create a knowledge graph like shown in Figure \ref{fig:graph_example}.
 \end{comment}
 
 
 \subsection{Retrieving Keywords} \label{par:keywords}
-
-For retrieving key words from the description data we try several different posthoc explanation techniques. We implement all techniques with the Captum library from \textcite{kokhlikyan_captum_2020}.
-\begin{itemize}
-    \item Layer Integrated Gradients (LIG), based on the paper of \textcite{sundararajan_axiomatic_2017}. We use LIG with 20 steps and with 100 steps.
-    \item Occlusions, based on the paper of \textcite{fleet_visualizing_2014}. Although this is originally used for explaining CNNs it can also be used to explain NLP models. We use two different version of occlusion, (1) with a window and stride of both 1. (2) a window of 3\footnote{The windows is 1-dimensional in this case as the input vector is a tensor of the tokenised text.} and a stride of 2. In both cases the word(s) will be replaced with a tensor of zeros to check the prediction changes of the model. 
-    \item Shapley Value Sampling (SVS) based on the papers of \textcite{castro_polynomial_2009, strumbelj_efficient_2010}. We use the Captum default of 25 samples.
-    \item Layer Activation (LA), which simple computes the activation of the internal BERT embeddings for the inputs.
-    \item Layer Gradient X Activation (LGXA), which is the element-wise multiplication of the gradients and the layers activation for a giver target with respect to the layer.
-\end{itemize}
-
+We use two different way to extract the most important words from the description sentences.
+(1) several different post hoc explanation techniques (see Section \ref{par:attribution}), and (2) a rule-bases system of PoS in combination with dependency parsing (see Section \ref{par:PoS}). 
 For comparing the techniques, we use the \href{http://www.vision.caltech.edu/visipedia/CUB-200-2011.html}{Caltech-UCSD Birds 200 dataset} (CUB-200) from  \textcite{welinder_caltech-ucsd_2010}.
 The CUB-200 dataset is a dataset with 200 bird species from Northern America.
-Each bird is represented by approximately 60 images and of these images is hand annotated with traits that are possibly (0, not present, to 5 present) present in the images.
-We only extract information with the highest certainty (5) and concatenate the information on species level.
+Each bird is represented by approximately 60 images and each of these images is hand annotated with traits that are seen\footnote{Images are annotated with a certainty of the trait being present, we only use the traits that have the highest certainty in the image.}.
 
-We train a classification model on a subset of the BOW dataset.
-We select birds of the BOW dataset that have the most description HTML pages.
-We also make sure that all the bird of the CUB-200 dataset are present in the birds that are presented to the model.
-We random sample additional birds from the BOW dataset so the CUB birds make up about 10\% of the total data and resulting in 2,000 birds.
-We use the web crawler with the trained binary classifier for descriptions to enrich the BOW dataset with sentences from the internet.
-We do not split the model into train and test data, as evaluating with a test set has no use.
-We use the same hyperparameters and architecture as we did for training the binary classification model (see Section \ref{par:Architecture}).
-We only change the last linear output layer so it matches the number of species that are used during training.
-After the model has been trained we compute the attribution value for every word per sentence with the aforementioned techniques.
+Before extracting keywords, we first match every sentence from our own dataset against bird glossary from \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds}.
+The CUB-200 dataset only contains visual traits, where our own bird dataset can also contain non-visual traits like behavioural traits or vocal traits.
+Matching our own textual data against the bird glossary will also remove sentences that are incorrectly classified by our classifier and also saves computing power as we can first select the bird, then select a trait and finally match the results against the CUB-200 dataset.
 
-%Comparing all sentences from our own dataset against 
-%
-%We match every sentence against bird glossary from \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds}.
-%The CUB dataset only contains visual traits, where our own bird dataset can also contain non-visual traits like behavioural traits or vocal traits.
-
-%We first match each text chunk against a bird glossary to remove irrelevant sentences.
-%We use  to construct this bird glossary list.
-%The CUB dataset only contains visual traits, where our scraped dataset can also contain behaviour traits, voice features etc.
-%By matching both sets against a common bird glossary list, we also do not have to compare all text chunks at once and we can skip irrelevant chunks.
-%Comparing all chunks would result in an enormous list of large vectors, and would probably not computationally feasible.
-%Instead, per species, we intersect each text chunk and CUB-200 trait, and compute the similarity for each attribution.
-%This will result in several similarity values per attribution depending on the CUB-200 dataset.
-%For example, if the the result of the SVS is "wing blackish" for the Common raven (Corvus corax) and the wings have 3 different descriptions in the CUB-200 dataset, the result will be 3 different similarity values for the SVS.
-%Each text chunk is matched against the bird glossary, if the chunk is a match we extract the most relevant words according to the aforementioned techniques.
-%The CUB-200 dataset is also matched against the bird glossary, so we can compare traits that are described in both datasets.
-%The most important word, together with the trait from the glossary is matched against the CUB-200 dataset to see which explanatory technique performs the best.
-%Text similarity with the CUB-200 dataset is used as a metric to compare the different techniques.
-
-Before extracting the highest attribution value we first match every sentence from our own dataset against bird glossary from \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds}.
-The CUB dataset only contains visual traits, where our own bird dataset can also contain non-visual traits like behavioural traits or vocal traits.
-This matching allows us to remove irrelevant traits from our own dataset that will not have match in the CUB-200 sets.
-Matching against traits before computing the similarity also saves computing power as we can first select the bird, than select a trait and finally match the results against the CUB-200 dataset.
-To make sure we only match visual trait of our data set against the bird glossary list, we first extract the noun of a sentence.
-We match both the noun in its original form, and a lemmatised version of the noun against the bird glossary.
-Sentences that do not match this glossary are not used in further analysis.
-The word with the highest attribution value, together with the trait from the glossary is matched against the CUB-200 dataset to see which explanatory technique performs the best.
-
-To compute the text similarity we use an untrained version of distillBERT and compute cosine similarity between two outputs.
-We tokenize each sentence and push it trough the distilled version of BERT.
+To compute the text similarity we use an untrained version of distillBERT and compute cosine similarity between the two outputs.
+We tokenise each sentence and push it trough the distilled version of BERT.
 For each sentence we sum the last hidden state along the first axis.
 This will result in a matrix where the hidden state if summed for each token:
 \begin{equation}
@@ -700,11 +665,20 @@ After this we simple compute the cosine similarity of each text chunk against al
 \end{equation}
 Where~$A$ is the vector of text chunk 1 and~$B$ the vector of text chunk 2. 
 In Figure \ref{fig:similarity_matrix} a comparison of a few fictional text chunks can be found. 
-Finally we assess which of the exploratory technique delivers the best performance and select this for the larger dataset.
-\begin{figure} [h!]
+Finally we assess which of the technique delivers the best performance and select this for the larger dataset.
+
+For each unique bird, part and technique combination of the CUB-200 data and the data from the internet we compute a similarity matrix.
+We extract the highest value of each unique combination, resulting in a large array of similarity values per attribution.
+The harmonic mean is computed to get the best attribution method:
+\begin{equation}
+    H = \frac{n}{\sum\limits_{i=1}^n \frac1{x_i}}
+\end{equation}
+Where~$H$ is the harmonic mean,~$n$ is the number of samples and~$x$ is the similarity value. 
+
+\begin{figure} [th]
     \centering
     %\hspace{-2cm}
-    %\hspace{-1cm}
+    \hspace{-2cm}
     %\textbf{Similarity Matrix}
     \includegraphics[width=0.8\textwidth]{similarity_matrix.pdf}
     \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
@@ -712,13 +686,82 @@ Finally we assess which of the exploratory technique delivers the best performan
     \label{fig:similarity_matrix}
 \end{figure}
 
-For each unique bird, part and attribution combination of the CUB-200 data and the data from the internet we compute a similarity matrix.
-We extract the highest value of each unique combination, resulting in a large array of similarity values per attribution.
-The harmonic mean is computed to get the best attribution method:
-\begin{equation}
-    H = \frac{n}{\sum\limits_{i=1}^n \frac1{x_i}}
-\end{equation}
-Where~$H$ is the harmonic mean,~$n$ is the number of samples and~$x$ is the similarity value. 
+
+\subsubsection{Post Hoc Attribution Techniques} \label{par:attribution}
+For retrieving key words from the description data we try several different posthoc explanation techniques\footnote{We do not use jittering techniques as this makes no sense in the case of text data, which results in fixed values when tokenised. }. 
+We implement all techniques with the Captum library from \textcite{kokhlikyan_captum_2020}.
+\begin{itemize}
+    \item Layer Integrated Gradients (LIG), based on the paper of \textcite{sundararajan_axiomatic_2017}. We use LIG with 20 steps and with 100 steps.
+    \item Occlusions, based on the paper of \textcite{fleet_visualizing_2014}. Although this is originally used for explaining CNNs it can also be used to explain NLP models. We use two different version of occlusion, (1) with a window and stride of both 1. (2) a window of 3\footnote{The windows is 1-dimensional in this case as the input vector is a tensor of the tokenised text.} and a stride of 2. In both cases the word(s) will be replaced with a tensor of zeros to check the prediction changes of the model. 
+    \item Shapley Value Sampling (SVS) based on the papers of \textcite{castro_polynomial_2009, strumbelj_efficient_2010}. We use the Captum default of 25 samples.
+    \item Layer Activation (LA), which simple computes the activation of the internal BERT embeddings for the inputs.
+    \item Layer Gradient X Activation (LGXA), which is the element-wise multiplication of the gradients and the layers activation for a giver target with respect to the layer.
+\end{itemize}
+
+We train a classification model on a subset of the BOW dataset.
+We make sure that all the bird of the CUB-200 dataset are present in the birds that are presented to the model.
+We random sample additional birds from the BOW dataset so the CUB birds make up about 10\% of the total data and resulting in 2,000 birds, but birds with a high amount of HTML pages have priority during the sampling.
+This way we make sure birds with a decent number of descriptions are used during training.
+We use the web crawler with the trained binary classifier for descriptions to enrich the BOW dataset with sentences from the internet.
+We do not split the model into train and test data, as evaluating with a test set has no use.
+We use the same hyperparameters and architecture as we did for training the binary classification model (see Section \ref{par:Architecture}).
+We only change the last linear output layer so it matches the number of species that are used during training.
+After the model has been trained we compute the attribution value for every word per sentence with the aforementioned techniques.
+
+
+\subsubsection{Part-of-Speech \& Dependency Parsing} \label{par:PoS}
+A knowledge graph (KG) is a graph that contains interlinked descriptions fo traits, the information has a formal structure that allows both people and computer to process the data unambiguously \autocite{petkova_crafting_2020}.
+If we apply this to species descriptions we would expect the end up with a single graph per species, that contain descriptive information about that species in a semantic way.
+These graphs can also be linked if species share common traits.
+Creating a knowledge graph of the scraped data will results in a clean database.
+This database will only contain subjects, relations and objects, also known as semantic triples. 
+We use PoS tagging and dependency parsing to create a clean knowledge graph.
+For PoS extracting we use the library of \textcite{honnibal_spacy_2020}.
+This is a pretrained NLP model that can extract PoS tags and their dependencies.
+We set up a rule-based system to extract data from the sentences.
+In Figure \ref{fig:pos_pipeline} two example sentences can be found that are processed using PoS tagging and dependency parsing with the pretrained pipelines of \textcite{honnibal_spacy_2020}.
+We have the benefit that we already know the broad subject of every sentence, which is the species.
+Most researches do not have this and also need to determine the subject of every sentence if they want to link all data \autocite{hutchison_knowledge_2013} like we do in \ref{fig:PoS_example}.
+We know that every sentence describes the queried species, this means that we can have the species as starting node, even when the subject is not the species itself, see Figure \ref{fig:PoS_example2}.
+By processing this in a rule-base system we create a knowledge graph like shown in Figure \ref{fig:graph_example}.
+\begin{figure} [h!tb]
+    \centering
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        %\vspace{0cm}
+        \includesvg[inkscapelatex=false, width=\textwidth]{PoS_example.svg}
+        \caption[Example of part of speech tagging (1)]{An example of part of speech and dependency parsing for the sentence "The Brown bear has brown fur.".}
+        \label{fig:PoS_example}
+    \end{subfigure}
+    \vfill
+    \centering
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        %\vspace{0cm}
+        \includesvg[inkscapelatex=false, width=0.6\textwidth]{PoS_example2.svg}
+        \caption[Example of part of speech tagging (2)]{An example of part of speech and dependency parsing for the sentence "The claws are sharp.".}
+        \label{fig:PoS_example2}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        %\vspace{-2cm}
+        \includegraphics[width=0.65\textwidth]{kn_example_v2.pdf}
+        \caption[Example of a knowledge graph]{A knowledge graph example. The circles contain the objects/subjects and the arrows represent the relations.}
+        \label{fig:graph_example}    
+    \end{subfigure}
+    \caption[Part of Speech tagging and dependency parsing]{An example of part-of-speech tagging and dependency parsing to extract semantic triples for the creation of a knowledge graph. The arrows indicate the dependency tags and the abbreviations below the sentence contain the PoS tags. The sentences result in five nodes (subject/object) and four edges (relation). }
+    \label{fig:pos_pipeline}
+\end{figure}
+
+\subsection{Species Predictions}
+We use the the technique with the highest harmonic mean.
+We use this technique to extract the most important word/trait combinations to create a database.
+The methods from extracting useful plant term is almost the same as for birds.
+We first match every sentence against \href{https://en.wikipedia.org/wiki/Glossary_of_plant_morphology}{Wikipedia/Glossary/Plants}.
+
+
+In case PoS and dependency parsing will have the highest mean, we will use the same technique as we did with the birds.
 
 
 
@@ -742,16 +785,16 @@ This leads to the following equation that approximates the gradients \autocite{s
     {IntegratedGrads_i^{approx}} (x) ::= (x_i - x'_i) *  \sum\nolimits_{k=1}^{m}  \frac{\partial F(x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x') }{\partial x_i} 
 \end{equation}
 \(i\) = feature (token/word)\newline
-\(x\) = input (text span tokenized)\newline
+\(x\) = input (text span tokenised)\newline
 \(x'\) = baseline (zero input embedding)\newline
 \(k\) = scaled feature perturbation constant\newline
 \(m\) = number of steps\newline
 \((x - x')\) = difference from the baseline. \newline
 \newline
 By combining Equation \ref{eq:integrad} with PoS tagging and, we can extract the relevant PoS tags used for the prediction.
-However, using a tokenizer can split certain words.
+However, using a tokeniser can split certain words.
 For example, for the sentence "The plant has 7 antheriferous stamens." we would expect nine token (beginning, words, point and ending).
-Applying the BERT tokenizer on this sentence results in thirteen tokens:
+Applying the BERT tokeniser on this sentence results in thirteen tokens:
 %\newline
 "\verb|[CLS] the plant has 7 ant ##her ##iferous st ##amen ##s. [SEP]|".
 %\newline
@@ -969,7 +1012,7 @@ The description sentences contain all structured sources and the classified sent
          \caption{The number of description sentences per species.}
          \label{fig:text_distribution_2}
      \end{subfigure}
-     \caption[The sentences and descriptions sentences per species]{The sentences and descriptions sentences per species. The sentences per species are the sentences before classification. The description sentences are sentences that exceeded the threshold of .5 in the binary descriptions classifier. Note that the x-axis is a log-scaled axis and the boxplot is based on the normal values, hence the outliers on the left.}
+     \caption[The sentences and descriptions sentences per species]{The sentences and descriptions sentences per species. The sentences per species are the sentences before classification. The description sentences are sentences that exceeded the threshold of .5 in the binary descriptions classifier. Note that the x-axis is a log-scaled axis and the boxplot is based on the normal values, hence the outliers on the right.}
      \label{fig:text_distribution}
 \end{figure}
 
@@ -992,8 +1035,7 @@ The number of descriptions per bird is higher on average for the CUB data.
 The CUB-200 dataset has a mean of 148.86 descriptions per bird, while our dataset had 119.21 descriptions per bird.
 For one Bird, the Cape Starling (Lamprotornis nitens), we did not find any descriptions.
 
-From \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds} we extracted 1,163 glossary terms to describe birds.
-This list include the most common term but also term that are deemed similar\footnote{For example 'addled eggs ' has to glossary terms 'wind eggs' and 'hypanema' that mean the same. We append all three term to the glossary list.} (also know as).
+
 
 \begin{figure}[h!]
  \centering
@@ -1003,7 +1045,7 @@ This list include the most common term but also term that are deemed similar\foo
  \label{fig:CUB_distribution}
 \end{figure}
 
-
+From \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds} we extracted 1,163 glossary terms related to birds \footnote{This list include the most common terms, but also term that are deemed similar. For example 'addled eggs ' has to glossary terms 'wind eggs' and 'hypanema' that mean the same. We append all three term to the glossary list.}.
 Matching our dataset against the glossary list resulting a 23,839 sentences for 199 birds. 
 These sentences described 231 unique parts. 
 We extracted 4,537 unique potential adjectives and with the parts this resulted in 39,451 unique combinations.
@@ -1011,23 +1053,24 @@ In Table \ref{tab:attribution_unique} the complete overview for all unique combi
 Layer Attention and Layer Gradient X Activation seem to fail as the amount of unique potential adjectives and traits is significant lower than the other attribution methods.
 From these two Layer Gradient X Activation seems to perform the best of the two with 1,588 potential adjectives and 8,911 traits.
 
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-\begin{table}[h!]
+
+
+\begin{table}[]
 \centering
-\caption[Unique combination per attribution method]{The unique combination of Birds, Sentences, Adjectives, Parts and Trait Combinations per attribution method.}
+\caption{The unique combination of Birds, Sentences, Adjectives, Traits and Trait Combinations per attribution method.}
 \label{tab:attribution_unique}
-\begin{tabular}{@{}lccccc@{}}
-\cmidrule(l){2-6}
- & \textbf{Birds} & \textbf{Sentences} & \textbf{Adjectives} & \textbf{Parts} & \textbf{Traits} \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Integrated Gradients \\ 20 Steps\end{tabular}} & 199 & 16,244 & 2,301 & 231 & 15,288 \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Integrated Gradients\\ 50 Steps\end{tabular}} & 199 & 16,244 & 2,296 & 231 & 15,239 \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Occlusion\\ Window 1, Stride 1\end{tabular}} & 199 & 16,244 & 2,259 & 231 & 14,966 \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Occlusion\\ Windows 3, Stride 2\end{tabular}} & 199 & 16,244 & 2,184 & 231 & 14,132 \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Shapley Value \\ Sampling\end{tabular}} & 199 & 16,244 & 2,094 & 231 & 13,617 \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Layer Attention\\ -\end{tabular}} & 199 & 16,244 & 212 & 231 & 3,135 \\ \midrule
-\textbf{\begin{tabular}[c]{@{}l@{}}Layer Gradient \\ X Activation\end{tabular}} & 199 & 16,244 & 1,588 & 231 & 8,911 \\ \midrule
-\textbf{All Attributions} & 199 & 23,839 & 4,537 & 231 & 3,9451 \\ \bottomrule
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & \textbf{Adjectives} & \textbf{Parts} & \textbf{Traits} \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Part-of-Speech and\\ Dependency Parsing\end{tabular} & 1988 & 336 & 8329 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Integrated Gradients \\ 20 Steps\end{tabular} & 2,301 & 231 & 15,288 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Integrated Gradients\\ 50 Steps\end{tabular} & 2,296 & 231 & 15,239 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Occlusion\\ Window 1, Stride 1\end{tabular} & 2,259 & 231 & 14,966 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Occlusion\\ Windows 3, Stride 2\end{tabular} & 2,184 & 231 & 14,132 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Shapley Value \\ Sampling\end{tabular} & 2,094 & 231 & 13,617 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Layer Attention\\ -\end{tabular} & 212 & 231 & 3,135 \\ \midrule
+\begin{tabular}[c]{@{}l@{}}Layer Gradient \\ X Activation\end{tabular} & 1,588 & 231 & 8,911 \\ \midrule
+\textbf{All Attributions} & 4,537 & 231 & 3,9451 \\ \bottomrule
 \end{tabular}
 \end{table}
 
@@ -1038,12 +1081,13 @@ The values are sorted on the median values (lowest at the top, highest at the bo
 \begin{figure}[h!]
  \centering
  %\hspace{-0.5cm}
- \includegraphics[width=\textwidth]{figures/hmean_violinplot.pdf}
- \caption[Similarity results]{The Results of computing the similarity of the different attribution methods of our own dataset against the CUB-200 dataset. The pentagon corresponds to the median, the circle corresponds to the mean and the diamond corresponds to the harmonic mean. Note that the violin plots have been cut off at 0.60. There are for all attribution methods some outliers below 0.60. The densities of the violin plot do not extend past extreme values.}
+ \includegraphics[width=\textwidth]{figures/densities.pdf}
+ \caption[Similarity results]{The Results of computing the similarity of the different methods of our own dataset against the CUB-200 dataset. The pentagon corresponds to the median, the circle corresponds to the mean and the diamond corresponds to the harmonic mean. The densities of the violin plot do not extend past extreme values.}
  \label{fig:hmean_violin}
 \end{figure}
 
 \subsection{Species Classification}
+
 
 \newpage
 \section{Discussion} \label{par:discussion}
