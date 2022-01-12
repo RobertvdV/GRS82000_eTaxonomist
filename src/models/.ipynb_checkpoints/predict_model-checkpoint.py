@@ -119,7 +119,7 @@ def load_simBERT():
     
     return model
 
-def SpanPredictor(span, model, pred_values=False):
+def SpanPredictor(span, model, pred_values=False, truncation=True):
 
     """
     Uses a trained bert classifier to see if a span
@@ -128,7 +128,7 @@ def SpanPredictor(span, model, pred_values=False):
         
     with torch.no_grad():
         # Tokenize input
-        inputs = tokenizer(span, return_tensors="pt", truncation=True)
+        inputs = tokenizer(span, return_tensors="pt", truncation=truncation)
         # Predict class
         outputs = model(**inputs)
         # Get prediction values
@@ -176,7 +176,7 @@ def similarity_matrix(sentence_list, SIMmodel):
     # Get the matrix
     return summed_hs_np
 
-def load_CUB_Bert(location, modelname):
+def load_CUB_Bert(location, modelname, outputsize=2000):
     
     device = 'cuda' if cuda.is_available() else 'cpu'
 
@@ -196,7 +196,7 @@ def load_CUB_Bert(location, modelname):
             self.fc1 = nn.Linear(768, 512)
             # Linear II (Out)
             #self.fc2 = nn.Linear(512, 170)
-            self.fc2 = nn.Linear(512, 2000)
+            self.fc2 = nn.Linear(512, outputsize)
             # Softmax
             self.softmax = nn.LogSoftmax(dim=1)
 
