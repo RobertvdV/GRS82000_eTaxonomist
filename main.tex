@@ -160,10 +160,23 @@
 
 \newpage
 \thispagestyle{empty}
-\textbf{Foreword}
+\section*{Foreword}
+First of all, I would like to thank my supervisors Diego Marcos PhD and professor Ioannis Athanasiadis.
+Both were always available for support and constructive criticism.
+Especially Diego Marcos PhD, without his feedback this project would not have been possible.
+\newline
+
+\noindent
+The front cover is a little joke to make the geo-information theme more prominent present in this thesis. 
+Most of this thesis is about textual data without any location information.
+The front cover is a word cloud that displays the most common Dutch bird traits that we found in our datasets. 
+It contains 519 bird that are present in the Netherlands, somewhere we 'lost' 7 birds as according to the \href{https://avibase.bsc-eoc.org/checklist.jsp?region=NL&list=howardmoore}{Checklist of Dutch bird species} there are   526 birds (September 2020) present in the Netherlands.
+For the word cloud we constructed a small database and simply counted the occurrences of all the trait combinations.
+While just used as a front cover, it does have some research potential to investigate the most common traits of a certain location.
+
 \newpage
 \thispagestyle{empty}
-\textbf{Summary}
+\section*{Abstract}
 \newpage
 
 \thispagestyle{empty}
@@ -234,7 +247,7 @@ The semantic bottleneck layer allows deep learning developers to adjust the arch
 \begin{figure} [tbp]
     \centering
     \vspace{0cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{architecture.pdf}}
+    \includegraphics[width=\textwidth]{architecture.pdf}
     \caption[Proposed architecture]{The proposed architecture by \textcite{ishikawa_contextual_2021} for species classification. The model input is an image. The first model will describe the attributes present in the image in natural language. The second model will take the output of the first model and will make a prediction. The intermediate results remain interpretable by using natural language.}
     \label{fig:intro}
 \end{figure}
@@ -262,18 +275,32 @@ As DNNs need we large datasets to properly learn the necessary features from the
 This dataset needs as many unique descriptions as possible for each species, so for both a taxonomist and the NLP model, it would be possible to infer the species name based on provided descriptions.
 We expect that a DNN model will learn the most important traits of a species if we can feed it enough unique descriptions.
 For example, if the models sees multiple unique sentences about a European robin (also see \ref{fig:workflow}, the model will learn that an important trait for an European robin it its orange breast and plumage.
-By applying posthoc explanatory techniques we can extract the most disciminative features from the text that are used for making a prediction.
+By applying post-hoc explanatory techniques we can extract the most discriminative features from the text that are used for making a prediction.
+
 
 This brings us to the first objective of this research: (1) creating an high-quality database with species and their descriptions.
+This objective is accompanied with following research question:
+\begin{itemize}
+    \item \emph{How can a high-quality database be created containing species names and a combination of unique descriptions per species?}
+\end{itemize}
 We will train a model that can recognize descriptions sentences and deploy this model in a web crawler that can automatically query search engines.
 The text from the returned URLs are broken down into single sentences and the text is classified by the model.
 We hypothesise that this will result in a large database with clean descriptions about species, that an NLP model can learn distinctive features per species.
 
-Once enough data is gathered, we train a NLP model to predict species based on the predictions.
-The NLP model needs to make predictions on partial descriptions, but in the meantime, it should be clear which parts of the description data is used to make to prediction so the reasoning can be evaluated. 
-This brings us to the second and third objective of this research: (2) creating an NLP model that can infer species names based on description data, (3) while in the meantime keeping traceability throughout the model.
-This way we can validate if the model is focusing on useful traits of species.
-We expect that if train an NLP model on text descriptions and extract the most important text for making a predictions, we can extract the most relevant and distinctive features of each species.
+Once enough data is gathered, we want to process these sentences in such a way that we can extract the most important words per sentence, resulting in a large database with most important traits per species.
+This brings us to the second objective of this research: (2) processing the data is such a way that only the most relevant parts of the sentences are stored:
+\begin{itemize}
+    \item \emph{What interpretation techniques can be used with the natural language model to extract the most relevant traits for a species?}
+\end{itemize}
+By training an NLP model based on the text we gathered and applying several posthoc explanatory techniques we expect that the NLP model will focus on most discriminative features per sentence.
+Besides the aforementioned method, we also use the pretrained transformer model of \textcite{wolf_huggingfaces_2020} to extract the necessary features.
+
+Finally we investigate how we can train an NLP model that can infer species bases on the data we gather and processed:
+\begin{itemize}
+    \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
+\end{itemize}
+This model should be able to produce a probability based...
+
 
 We first will describe our approach in the Methodology.
 In Section \ref{par:dataset} we will describe how we gather enough description data per species.
@@ -285,10 +312,10 @@ In Section \ref{par:results} we present the results and in Section \ref{par:disc
 \markboth{Approach}{Approach}
 
 
-\begin{figure} [t]
+\begin{figure} [h!]
     \centering
     %\vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/workflow_v3.pdf}}
+    \includegraphics[width=\textwidth]{figures/workflow_v4.pdf}
     \caption[Workflow]{A simplified workflow. The web crawler searches for species descriptions on the word wide web and stores it in a database. The data is used to train a NLP model the infer species bases on the textual data.}
     \label{fig:workflow}
 \end{figure}
@@ -303,7 +330,7 @@ Finally we assess the NLP model.
 In Figure \ref{fig:workflow} a simplified version of the workflow can be found.
 This chapter will give a detailed description of the steps.
 
-\subsection{Creating an Extensive Dataset} \label{par:dataset}
+\subsection{Gathering Species Descriptions} \label{par:dataset}
 The World Wide Web has potentially an endless amount of species descriptions available.
 This makes the internet suitable for harvesting training data.
 However, description sentences can be theoretically limitless, e.g. for a Brown bear (Ursus arctos) the description text could be: "The fur is brown", "The brown bear has brown fur".
@@ -398,7 +425,7 @@ The used BERT architecture can only process up to 512 token at once \autocite{sa
 Most tokenisers will truncate text spans larger then 512 tokens as most text information is in the beginning (head-encoding), end (tail-encoding) or beginning and end (head+tail-encoding).
 We decide not truncated the text.
 Instead we randomly split the text into text spans with a minimum of 10 words and a maximum of 512 words.
-We hypothesised that the model might be better in recognising shorter description spans by splitting the raw spans.  
+We hypothesised that the model might be better in recognising shorter description spans by splitting the raw spans, while in the mean time it can still recognise larger spans.  
 This way we enlarge the dataset and prevent loosing information with truncating spans larger then 512 tokens. 
 We use a minimum of 10 words to prevent the model fixating on specific words.
 
@@ -466,20 +493,7 @@ We do the same for the bird species; bird species are sorted based on their numb
     \label{fig:webcrawler}
 \end{figure}
 
-In Figure \ref{fig:webcrawler} the process overview of the web crawler can be found.
-We use five different ways of constructing a query: the name of the species without any additional search term and the name of the species plus description, diagnosis, attributes or captions.
-We wrap quotations around the species to force the search engine to only return the exact species name. 
-This way search engines cannot return any results that it deems similar.
-Each query will return a list of candidate URLs and are appended to a list for a single species.
-%The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentence to drop duplicates.
-The URLs are visited and all the text if retrieved.
-If a URL points towards a PDF file er text file, it is skipped.
-PDF files and text files are read line by line and not as a single text span and it is difficult to break these down into single sentences. 
-Finally the header of the URL is checked against the queried species to make sure that the page really contains information about the queried species.
-%Not every query will return correct websites, i.e. websites about the queried species.
-%This way we prevent accidentally storing description data for the wrong species.
-
-\begin{figure}[bh!]
+\begin{figure}[h!]
     \centering
     
     \begin{subfigure}[b]{1.00\textwidth}
@@ -512,6 +526,20 @@ Finally the header of the URL is checked against the queried species to make sur
     \label{fig:webcrawler_sents}
 \end{figure}
 
+
+We use five different ways of constructing a query: the name of the species without any additional search term and the name of the species plus description, diagnosis, attributes or captions.
+We wrap quotations around the species to force the search engine to only return the exact species name.
+This way search engines cannot return any results that it deems similar.
+Each query will return a list of candidate URLs and are appended to a list for a single species.
+%The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentence to drop duplicates.
+The URLs are visited and all the text if retrieved.
+If a URL points towards a PDF file er text file, it is skipped.
+PDF files and text files are read line by line and not as a single text span and it is difficult to break these down into single sentences. 
+Finally the header of the URL is checked against the queried species to make sure that the page really contains information about the queried species.
+In Figure \ref{fig:webcrawler} the process overview of the web crawler can be found and in Figure \ref{fig:webcrawler_sents} a small example can be found how the web crawler 'sees' a random piece of text.
+Figure \ref{fig:webcrawler_sents_nopred} contains the unclassified text, and Figure \ref{fig:webcrawler_sents_pred} contains the classified text.
+%Not every query will return correct websites, i.e. websites about the queried species.
+%This way we prevent accidentally storing description data for the wrong species.
 
 When the web page meets all criteria, the raw text is retrieved and broken down into single sentences. 
 This makes sure the descriptions will be stored as much as possible per unique species trait.
@@ -640,7 +668,7 @@ By processing this in a rule-base system we expect to create a knowledge graph l
 \end{comment}
 
 
-\subsection{Retrieving Keywords} \label{par:keywords}
+\subsection{Preprocessing Text Data} \label{par:keywords}
 We use two different way to extract the most important words from the description sentences.
 (1) several different post hoc explanation techniques (see Section \ref{par:attribution}), and (2) a rule-bases system of PoS in combination with dependency parsing (see Section \ref{par:PoS}). 
 For comparing the techniques, we use the \href{http://www.vision.caltech.edu/visipedia/CUB-200-2011.html}{Caltech-UCSD Birds 200 dataset} (CUB-200) from  \textcite{welinder_caltech-ucsd_2010}.
@@ -658,14 +686,25 @@ This will result in a matrix where the hidden state if summed for each token:
 \begin{equation}
      \sum\nolimits_{j}^{} x_{ij} 
 \end{equation}
-Where~$i$ is 768 and~$j$ is the number of tokens. 
+Where~$i$ is 768 (the vector representation of a token) and~$j$ is the number of tokens. 
 After this we simple compute the cosine similarity of each text chunk against all the text chunks of the CUB-200 dataset:
 \begin{equation}
 \cos ({\bf A},{\bf B})= {{\bf A} {\bf B} \over \|{\bf A}\| \|{\bf B}\|} = \frac{ \sum_{i=1}^{n}{{\bf A}_i{\bf B}_i} }{ \sqrt{\sum_{i=1}^{n}{({\bf A}_i)^2}} \sqrt{\sum_{i=1}^{n}{({\bf B}_i)^2}} }
 \end{equation}
 Where~$A$ is the vector of text chunk 1 and~$B$ the vector of text chunk 2. 
-In Figure \ref{fig:similarity_matrix} a comparison of a few fictional text chunks can be found. 
+In Figure \ref{fig:similarity_matrix} an example of a comparison of a few fictional text chunks can be found. 
 Finally we assess which of the technique delivers the best performance and select this for the larger dataset.
+
+\begin{figure} [h!]
+    \centering
+    %\hspace{-2cm}
+    \hspace{-2cm}
+    %\textbf{Similarity Matrix}
+    \includegraphics[width=0.8\textwidth]{similarity_matrix.pdf}
+    \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
+    In this case reconstructed text chunks from the CUB-200 dataset are shown on the y-axis and reconstructed text chunks from scraped data is shown on the x-axis. In this case 'Bill color yellow', and 'Bill yellow' is almost the same, hence the high similarity score of 0.91. Note that the matrix does not necessarily have to have equal rows and columns.}
+    \label{fig:similarity_matrix}
+\end{figure}
 
 For each unique bird, part and technique combination of the CUB-200 data and the data from the internet we compute a similarity matrix.
 We extract the highest value of each unique combination, resulting in a large array of similarity values per attribution.
@@ -675,16 +714,7 @@ The harmonic mean is computed to get the best attribution method:
 \end{equation}
 Where~$H$ is the harmonic mean,~$n$ is the number of samples and~$x$ is the similarity value. 
 
-\begin{figure} [th]
-    \centering
-    %\hspace{-2cm}
-    \hspace{-2cm}
-    %\textbf{Similarity Matrix}
-    \includegraphics[width=0.8\textwidth]{similarity_matrix.pdf}
-    \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
-    In this case reconstructed text chunks from the CUB-200 dataset are shown on the y-axis and reconstructed text chunks from scraped data is shown on the x-axis. In this case 'Bill color yellow', and 'Bill yellow' is almost the same, hence the high similarity score of 0.91. Note that the similarity matrix does not necessarily have equal rows and columns.}
-    \label{fig:similarity_matrix}
-\end{figure}
+
 
 
 \subsubsection{Post Hoc Attribution Techniques} \label{par:attribution}
@@ -715,16 +745,9 @@ If we apply this to species descriptions we would expect the end up with a singl
 These graphs can also be linked if species share common traits.
 Creating a knowledge graph of the scraped data will results in a clean database.
 This database will only contain subjects, relations and objects, also known as semantic triples. 
-We use PoS tagging and dependency parsing to create a clean knowledge graph.
-For PoS extracting we use the library of \textcite{honnibal_spacy_2020}.
-This is a pretrained NLP model that can extract PoS tags and their dependencies.
-We set up a rule-based system to extract data from the sentences.
-In Figure \ref{fig:pos_pipeline} two example sentences can be found that are processed using PoS tagging and dependency parsing with the pretrained pipelines of \textcite{honnibal_spacy_2020}.
-We have the benefit that we already know the broad subject of every sentence, which is the species.
-Most researches do not have this and also need to determine the subject of every sentence if they want to link all data \autocite{hutchison_knowledge_2013} like we do in \ref{fig:PoS_example}.
-We know that every sentence describes the queried species, this means that we can have the species as starting node, even when the subject is not the species itself, see Figure \ref{fig:PoS_example2}.
-By processing this in a rule-base system we create a knowledge graph like shown in Figure \ref{fig:graph_example}.
-\begin{figure} [h!tb]
+We use the subject, relation and object to create a single text span to tokenise.
+
+\begin{figure} [h!]
     \centering
     \begin{subfigure}[b]{1.0\textwidth}
         \centering
@@ -754,62 +777,67 @@ By processing this in a rule-base system we create a knowledge graph like shown 
     \label{fig:pos_pipeline}
 \end{figure}
 
-\subsection{Species Predictions}
-We use the the technique with the highest harmonic mean.
+We use PoS tagging and dependency parsing to create a clean knowledge graph.
+For PoS extracting we use the library of \textcite{honnibal_spacy_2020}.
+This is a pretrained NLP model that can extract PoS tags and their dependencies.
+We set up a rule-based system to extract data from the sentences.
+In Figure \ref{fig:pos_pipeline} two example sentences can be found that are processed using PoS tagging and dependency parsing with the pretrained pipelines of \textcite{honnibal_spacy_2020}.
+We have the benefit that we already know the broad subject of every sentence, which is the species.
+Most researches do not have this and also need to determine the subject of every sentence if they want to link all data \autocite{hutchison_knowledge_2013} like we do in Figure \ref{fig:PoS_example}.
+We know that every sentence describes the queried species, this means that we can have the species as starting node, even when the subject is not the species itself, see Figure \ref{fig:PoS_example2} and \ref{fig:graph_example}.
+By processing this in a rule-base system we at temp to create a knowledge graph like shown in Figure \ref{fig:graph_example}.
+
+
+
+\subsubsection{Knowledge Graph Creation}
+We use PoS in combination with dependency parsing to extract to most important adjectives trait combinations to create semantic triples as this has proven to give the best results (See Section \ref{par:results_keywords} and especially Figure \ref{fig:hmean_violin}).
+%We use the the technique with the highest harmonic mean to create a database from description sentences.
 We use this technique to extract the most important word/trait combinations to create a database.
 The methods from extracting useful plant term is almost the same as for birds.
 We first match every sentence against \href{https://en.wikipedia.org/wiki/Glossary_of_plant_morphology}{Wikipedia/Glossary/Plants}.
+This will allow us to remove irrelevant sentences that accidentally slipped though the classifier and allows us to create a more consistent database.
 
+We use a plant species a a starting node.
+From every sentence noun are checked against this glossary.
+If a noun exists within the glossary a node from the species $has\_main\_part$ to the header of glossary and from the header to noun $has\_sub\_part$ is created.
+However, because appending the noun to the knowledge graph, we first construct possible compound nouns.
+This allows us to make a distinction between e.g. sexes (male/female) or locations (lower/upper).
+Finally we extract the adjectives and possible relations between the noun and adjectives.
+During the process, we lemmatise all nouns and adjectives, reducing the variation in the database and increasing the probability species have shared traits/nodes.
 
-In case PoS and dependency parsing will have the highest mean, we will use the same technique as we did with the birds.
+In most cases we use a simple relations like $is$ or $has$ in case the sentence does not contain any verbs or verbal modifiers.
+In some cases, the verb of the sentences will result in the relation (edge), e.g. $elongated\_below$.
+In Figure \ref{fig:kngraph} a small example of information extraction from sentences of a single plant species (Dichanthelium superatum) can be found.
+By applying this technique on all data, species can have shared parts and even have shared traits.
+We hypothesise that the an NLP model for inferring species based on textual description will give better results.
+For a classifier it will become more difficult to learn to unique vector representation of a sentence because sentences are less likely to be unique for a single species.
 
+\begin{figure} [h!]
+    \centering
+    %\vspace{-2cm}
+    \includegraphics[width=\textwidth]{figures/kngraph.pdf}
+    \caption[Example of automatic information extraction]{An example of the information extracted for a single species from the PoWO dataset. The center node (dark green) is the starting node. The green branches represent main parts of the plant (found in the glossary). The light green branches represent traits that are both found in the glossary and the sentence. Finally, the white ending node represent information (adjectives, appositional modifiers etc.) of the found trait. Note that the relations (edges/arrows: e.g. 'have', 'located at') are not shown plotted in this figure. For this example 35 sentences are used.}
+    \label{fig:kngraph}
+\end{figure}
 
-
-
-
-\begin{comment}
-We use the integrated gradients from \textcite{sundararajan_axiomatic_2017} to retrieve the most important keywords.
-Integrated gradients are best used (1) to identify feature importance, in our case: which are the most important words used for a prediction and (2) to identify data skew, in our case this can be very important. %%% Add something about this.
-
-Our code to calculate the integrated gradients is based on \textcite{gardner_allennlp_2017} and especially this  \href{https://github.com/allenai/allennlp/tree/master/allennlp/interpret}{this part} of their repository.
-We use a zero input embedding as a baseline.
-All irrelevant words will correspond to the baseline in this case.
-We simply compute all the the gradients in a simple loop for a text span:
-\begin{equation}
-    x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x')
-\end{equation}
-For this we use 20 steps to calculate the gradients as this is the minimum that \textcite{sundararajan_axiomatic_2017} found that could approximate the gradients by 5\%\footnote{The gradients are calculated from 0,00 to almost, but not exactly 1,00. As we are using 20 steps to calculate the gradients, we approximate the gradients by 5\% (\(\frac{1}{20} * 100 = 5\)). By increasing the number of steps, a better approximation of the gradients can be calculated. However, the computation time scales linearly with the number of steps.}.
-We calculate the gradients for every input token and sum the gradients.
-This leads to the following equation that approximates the gradients \autocite{sundararajan_axiomatic_2017}:
-\begin{equation} \label{eq:integrad}
-    {IntegratedGrads_i^{approx}} (x) ::= (x_i - x'_i) *  \sum\nolimits_{k=1}^{m}  \frac{\partial F(x' +  \frac{\mathrm{k}}{\mathrm{m}} * (x - x') }{\partial x_i} 
-\end{equation}
-\(i\) = feature (token/word)\newline
-\(x\) = input (text span tokenised)\newline
-\(x'\) = baseline (zero input embedding)\newline
-\(k\) = scaled feature perturbation constant\newline
-\(m\) = number of steps\newline
-\((x - x')\) = difference from the baseline. \newline
-\newline
-By combining Equation \ref{eq:integrad} with PoS tagging and, we can extract the relevant PoS tags used for the prediction.
-However, using a tokeniser can split certain words.
-For example, for the sentence "The plant has 7 antheriferous stamens." we would expect nine token (beginning, words, point and ending).
-Applying the BERT tokeniser on this sentence results in thirteen tokens:
-%\newline
-"\verb|[CLS] the plant has 7 ant ##her ##iferous st ##amen ##s. [SEP]|".
-%\newline
-if this happens we sum the gradients, because the sum of the gradients should equal 1.
-In this example, both \verb|antheriferous| and \verb|stamens| will consist of three integrated gradients. 
+We prepare the semantic triples for species prediction by creation single text span out of them.
+Each text span exists of a start node, relation and end node.
+The text span is finalised with a punctuation and is capitalised before being stored.
+For Example, the nodes and relation $rhachilla\_internode$, $elongated\_below$ and $floret$ will be reconstructed to "Rhachilla internode elongated below floret".
+This allows us to tokenise the text span and push it trough a BERT model with a linear classifier on top of it.
+To compare the effectiveness we apply this technique on species the PoWO and Llife  and AgroForestry datasets have both in common. %%%% INSERT LINKS
 
 
 
-\end{comment}
-
+\subsection{Species Predictions}
+TO BE FILLED IN.
+We train a linear classifier on top on the distilled basis of BERT.
+While information extracted from the sentences should be as much shared per species as possible, it it still likely that ending nodes do not have a lot of shared traits.
 
 \newpage
 \section{Results} \label{par:results}
 \markboth{Results}{Results}
-\subsection{Extensive dataset}
+\subsection{Species Descriptions}
 \subsubsection{Description Classification Model}
 Scraping the structured sources and using their paragraph titles resulted in 1,461,884 samples before splitting the sample into random text chunks.
 1,105,576 samples correspond to label zero and 356,308 correspond to label one.
@@ -980,13 +1008,15 @@ This happens when the headers of a certain page does not match anything from the
 In Figure \ref{fig:URL_top20} the most returned base URLs can be found.
 Research.net is by far the most returned base URL when querying species, followed by Academia.edu and the international version of Wikipedia.com.
 Academic sites seems to contain the most information about the queried species.
-\begin{figure}[h!]
+\begin{figure}[t]
  \centering
+ %\vspace{-2cm}
  %\hspace{-0.5cm}
  \includegraphics[width=\textwidth]{figures/URL_top20.pdf}
  \caption[The top 20 returned base URLs]{The top 20 base URLs that are returned the most. Above each bar the part of the overall total is plotted. This is the percentage compared to all unique base URLs. The top 20 unique base URLs make up 46.49\% of the total.}
  \label{fig:URL_top20}
 \end{figure}
+
 The URL titles are checked against the species name, if the species name exists within the title the sentences are retrieved, resulting in 4,284,057 Sentences.
 We used the binary description classifier to classify these sentences, resulting in 218,106 that are classified as a description.
 We found description data for 14,557 different species.
@@ -994,7 +1024,6 @@ We appended the data from the structured sources (PoWo, Agro Forestry and LLife)
 Figure \ref{fig:text_distribution} shows the distribution of sentences before and after classification.
 In this figure the sentences are before classification without sentences from the structured datasets.
 The description sentences contain all structured sources and the classified sentences from the web crawler.
-
 \begin{figure} [h!]
      \centering
      \begin{subfigure}[b]{1\textwidth}
@@ -1017,25 +1046,13 @@ The description sentences contain all structured sources and the classified sent
 \end{figure}
 
 
-
-
-%\begin{figure}[h!]
-% \centering
- %\hspace{-0.5cm}
-% \includegraphics[width=\textwidth]{figures/text_distribution.pdf}
-% \caption[The sentences and descriptions sentences per species]{The sentences and descriptions sentences per species. The sentences per species are the sentences before classification. The description sentences are sentences that exceeded the threshold of .5 in the binary descriptions classifier. Note that the x-axis is a log-scaled axis.}
-% \label{fig:text_distribution}
-%\end{figure}
-
-\subsection{Retrieving Key Words}
+\subsection{Preprocessing Text Data} \label{par:results_keywords}
 \subsubsection{Similarity Results CUB}
 In Figure \ref{fig:CUB_distribution} the number of descriptions per bird for our created dataset and the CUB-200 dataset can be found.
 For our own dataset we only display the 200 birds that exist within the CUB-200 dataset as these birds are used for further analysis.
 The number of descriptions per bird is higher on average for the CUB data.
 The CUB-200 dataset has a mean of 148.86 descriptions per bird, while our dataset had 119.21 descriptions per bird.
 For one Bird, the Cape Starling (Lamprotornis nitens), we did not find any descriptions.
-
-
 
 \begin{figure}[h!]
  \centering
@@ -1055,7 +1072,7 @@ From these two Layer Gradient X Activation seems to perform the best of the two 
 
 
 
-\begin{table}[]
+\begin{table}[h!]
 \centering
 \caption{The unique combination of Birds, Sentences, Adjectives, Traits and Trait Combinations per attribution method.}
 \label{tab:attribution_unique}
@@ -1082,35 +1099,42 @@ The values are sorted on the median values (lowest at the top, highest at the bo
  \centering
  %\hspace{-0.5cm}
  \includegraphics[width=\textwidth]{figures/densities.pdf}
- \caption[Similarity results]{The Results of computing the similarity of the different methods of our own dataset against the CUB-200 dataset. The pentagon corresponds to the median, the circle corresponds to the mean and the diamond corresponds to the harmonic mean. The densities of the violin plot do not extend past extreme values.}
+ \caption[Similarity results]{The Results of computing the similarity of the different methods of our own dataset against the CUB-200 dataset. The densities of the violin plot do not extend past extreme values.}
  \label{fig:hmean_violin}
 \end{figure}
+
+
+\subsubsection{Information Extraction}
+
+
 
 \subsection{Species Classification}
 
 
 \newpage
 \section{Discussion} \label{par:discussion}
+\markboth{Discussion}{Discussion}
 
-\subsection{Dataset Creation}
+\subsection{Binary Classifier}
 We gathered enough samples (See Figure \ref{fig:text_length_distribution}) to properly train a binary classifier.
 Figures \ref{fig:text_length_1} and \ref{fig:text_length_2} show that the number of samples for the negative class is much higher than the positive class. 
 After splitting the features into chunks of a random length between 10 and the text length the data is still skewed; the non-description class is over represented in the data (see Figures \ref{fig:text_length_3} and \ref{fig:text_length_4}). 
-This skewed data set could lead to problems as the classifier will not see enough samples of the underrepresented class. 
+This skewed data set could lead to problems as the classifier will not see enough samples of the under represented class. 
 The classifier will only update the parameters for the non-description class and still reach good result on the test data.
-We evaluated the dataset with a precision recall plot (Figures \ref{fig:precision_recall_curve_test} and \ref{fig:precision_recall_curve_test_external} because of this skewness.
+We evaluated the dataset with a precision recall plot (Figures \ref{fig:precision_recall_curve_test} and \ref{fig:precision_recall_curve_test_external}) because of this skewness.
 The results of the binary description classifier perform excellent on the test dataset. 
 The loss function of \textcite{reed_training_2015} (Equation \ref{eq:softloss}) seems to do an excellent job.
 As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test} the classifier reaches an excellent AP and f-1 score on the left out test set.
 The classifier identifies almost all description text chunks from the data (recall).
 The text chunks that are qualified as a description are almost all correctly classified (precision)
 The classifier performs worse on the two left-out datasets.
-The number of results returned is still quite high with 0.90, however the precision is lower with 0.83; The labels that are returned are incorrect for 17\% of the time.
+The number of results returned is still quite high with 0.90, however the precision is lower with 0.83; the labels that are returned are incorrect for 17\% of the time.
 However as both f-1 values exceeded the threshold value set in the beginning of this thesis deemed the model sufficient and deployed it in the web crawler.
 However, we do have some suggestions to improve the binary classifier in future work.
 %Unfortunately we due to lack of time we only implemented of \(\beta\) of 0.80. 
 %By starting with a lower \(\beta\) and gradually increase \(\beta\) during the parameter optimisation %process, the model might optimise the parameters better as it gets penalised less hard.
 
+\subsubsection{Classifier Accuracy}
 With the two left-out datasets, we processed the text the same way as we would have when the text was processed by the web crawler. 
 We clean the text, and split the text into single sentences with the sentecizer of \textcite{honnibal_spacy_2020}.
 As we do not have the ground truth labels of this dataset, we implement Equation \ref{eq:softloss_ifthen}.
@@ -1121,22 +1145,29 @@ This performance issue is likely to occur due to the following reasons:
 
 First, during the training of the binary classifier, text is randomly split into chunks. 
 In some cases this will result in text chunks that will contain part of a description and something else.
-Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly as a single features contains information from both labels.
-This will also result in a model that cannot utilise the loss function from \textcite{reed_training_2015} optimally.
-The model will perform well on correctly labeled sentences, but its prediction values will be less certain.
-With the two left-out test sets, there will be miss labelled sentences (see Section \ref{par:reedloss}).
-Because the parameters are not fully optimised, the model will not reach the \(\beta\) threshold of 0.8.
-This will result in miss labelled sentences, where the model cannot use the high prediction value in case it is certain about a prediction, because the parameters are not fully optimised.
-In future research this binary description classification model could be improved by during training split the text into sentences or into smaller chunks to make sure labels are completely seperate inside a single feature.
-This way it will be less likely for a single sentence or text chunk to contain multiple pieces of information.
-During the training process the parameters are better optimised, resulting in higher prediction values.
-During testing on external datasets, it would make sense to use a lower \(\beta\).
-This would help the model better for the miss labeled samples.
+The text data is not all in the correct place of a paragraph, e.g. descriptive data about species can also occur in the introduction (also see Section \ref{par:reedloss}).
+Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly as a single feature contains information from both labels.
+This will result in a model that cannot utilise the loss function from \textcite{reed_training_2015} optimally as high prediction values will be less likely to be reached, thus the loss function is not used to its full extend.
+%The model will perform well on correctly labeled sentences, but its prediction values will be less certain.
+This might explain the lower f-1 score of the classifier on the two left-out datasets/
+Like with the training data, the left-out datasets will contain miss labeled sentences as text is messy (again see Section \ref{par:reedloss}).
+The parameters are not fully optimised, and thus the model will not reach the \(\beta\) threshold of 0.8 resulting in an incorrect prediction, even when the sentence is actually a description.
+%This will result in miss labelled sentences, where the model cannot use the high prediction value in case it is certain about a prediction, because the parameters are not fully optimised.
+In future research it would make sense to split the text into smaller chunks or even single sentences.
+This would make sure a feature is more likely to contain just a single label and features do not contain multiple pieces of information.
+During the training process of the model, the parameters are better optimised, resulting in higher prediction values.
+During testing, the binary classifier can now utilise these higher prediction values.
+Miss labeled sentences of external test-sets are now sooner labelled correctly.
+During testing one could also use a lower \(\beta\) or use the hard loss equation of \textcite{reed_training_2015}.
+We used the same \(\beta\) during training and testing.
+However, during the training we use the soft loss of \textcite{reed_training_2015}, where during testing we used a modified version of their hard loss.
+The soft loss equation directly calculates regression targets for each batch, where the hard loss version is allowed to change the label if set threshold is reached.
 
 Second, the lower f1-value could be specifically related to the two left-out datasets from Llife and Agroforestry.
 In the second part of Figure \ref{fig:predictionvalues_external} it is clearly visible that more samples are miss labeled as descriptions; there are relatively more sample miss labeled from the threshold value of 0.5 towards 0.8 than below 0.5.
+Quickly testing the average height of the miss classified bins below 0.5 and above 0.5 against each other does confirm that the height of the miss classified bins above 0.5 is significantly higher.
 A possible explanation is that paragraphs that are labeled as descriptions (because of their header), have relatively more non-description sentences than non-description paragraphs have description sentences.
-If the prediction value of the classifier stay below \(\beta\) the sentences will be miss labaled in both cases.
+If the prediction values of the classifier stay below the set \(\beta\), the sentences will be miss labelled as the model is not allowed to change the label.
 To test this theory, one could test the classifier on addition datasets that are completely separated from the training process.
 
 After improvement of binary classifier, it would also be interesting to change the threshold values of the binary classifier.
@@ -1147,28 +1178,58 @@ By increasing the threshold value for classification to recall will go down and 
 A lower recall in this case would mean less sentences would classified by model.
 However, with a higher precision, more sentences that are classified as descriptive, are correct, resulting in a higher quality database.
 By lowering the recall enough, a precision 1.0 could be reached.
+While the quality of the database would increase, the size of the database would decrease as less sentences are stored.
+This could result in vital information loss as the classifier might miss vital sentences describing a species.
 
-Lowering the recall will result in less retrieved possible description candidate sentences.
-To compensate for this, the web crawler could be improved.
-In this research we only crawled through the first pages of results returned by DuckDuckGo and Bing
-We did not use the Google search engine as Google creates a unique token for each query to prevent automatic searching without using their payed API.
-As can be seen from Figure \ref{fig:URL_distribution_1} the web crawler did not found many unique URLs per species; most values lay between 17 and 33.
+\subsubsection{Data Origins}
+%Lowering the recall will result in less retrieved possible description candidate sentences.
+%To compensate for this, the web crawler could be improved.
+
+As can be seen from Figure \ref{fig:URL_distribution_1} the web crawler did not found many unique URLs per species; according to the boxplot, most values lay between 17 and 33.
 As far as we know there is not literature available on the number of online available databases and website that contain descriptions, but these number do not seem that high.
-When looking at Figure \ref{fig:URL_distribution_2}, the number of usefull URLs is even lower.
-For most species, the number of URLs that is useful, i.e. at least one descriptive sentence is found, lays between 5 and 10.
+Google Search has a really nice API, however their API is rather pricey and costs could easily exceed over \$2000 dollars when constructing a large number of queries. 
+So we were limited to search engines that we could query automatically without using a paid API, this left us with DuckDUckGo and Microsoft Bing.
+The fact that we only used the first page of DuckDuckGo and Microsoft Bing will have a large influence on this.
+
+
+%To make sure a retrieved text page is about the species, we now split the species name, and title page, resulting in two lists. 
+%%We intersected both lists, and if this yielded any result, we extracted and processed the text.
+%This is a very strict way, as we used the Latin names of the species for the querying.
+%In some cases the query is successful and correct pages about species are retrieved.
+%However not all pages contain the Latin name of the species in the title.
+%Some pages contain the English name, some contain a general name like description and some contain no title at all. 
+%All these pages are skipped by the web crawler why they still might contain valuable information about the species.
+%A better approach would be to determine if the web page or even the paragraph is related to the queried species.
+
+
+The number of unique base URLs is even lower when looking at Figure \ref{fig:URL_distribution_2}.
+This means that for some species the same base URL is returned multiple times. 
+Reasons for this could be that a web page creates an unique link for every paragraph, e.g.baselink/species/intro and baselink/species/habitat for a single species.
+Another reason could be that some web pages are returned that do not correspond to the queried species and still manage to slip through.
+We now create an intersection between the header of the returned URL and the species that is queried:
+\begin{equation} \label{eq:intersection}
+    ~A \cap B
+\end{equation}
+Where~$A$ is the queries species and~$B$ is the title web page.
+In most cases this will work correctly, however in some cases this could lead to a failure, e.g.~$A = $ 'Somateria spectabilis' and~$B = $ 'Somateria mollissima'.
+In this case the web page of 'Somateria mollissima' will be search for descriptions that will be stored under 'Somateria spectabilis'. 
+We do force the query with brackets to contain the whole species name in the search, but this fails if another web page refers to the queried species.
+In future research it would be interesting to research how much correct content is return when querying species and/or which search engines returns the best result in the case of species querying.
+Another option would be to store the extracted data under species title page, and later determine which species are the same.
+
+For most species, the number of URLs that is useful, i.e. at least one descriptive sentence is found, lays between 5 and 10 as can be seen from Figure \ref{fig:URL_distribution_3}.
 About two thirds of the URLs found does not contain any useful information for this thesis.
+In this thesis we constructed several queries that use the Latin names of the species.
+If the web page title contains the English name and not the Latin name of species Equation \ref{eq:intersection} is not valid and text will not be stored resulting in loss of possible descriptions.
+All other pages are also skipped, but they can still contain valuable information.
+The same applies for all other pages with different headers then the Latin names.
+
 In future research more time should be devoted to building a better web crawler for querying species.
-
-This entails (1) making better use of the search engines.
-
-
-We only used the first pages of DuckDuckGo and Bing to save time.
-We queried DuckDuckGo and Bing with a browser controlled by Python with the Selenium package.
-
-Figure \ref{fig:URL_top20} shows that more than 15\% of the unique base URLs come from scientific databases.
+This entails (1) making better use of the search engines and (2) increase the use of scientific sources found on the web.
+Figure \ref{fig:URL_top20} shows that more than 15\%\footnote{\href{https://www.researchgate.net/}{Researchgate.net} and \href{https://www.academia.edu/}{academia.edu} are both scientific resources that are returned the most. The actual number is probably much higher as Figure \ref{fig:URL_distribution_3} only displays the top 20 websites.} of the unique base URLs come from scientific databases.
 While these databases contain a rich scholarly content, we did not use their data.
-Most of these data is offered as a PDF download (or sometimes a viewable PDF).
-reconstructing PDF files into their original structure proven to be very difficult.
+Most of these data is offered as a PDF download (or sometimes as a viewable PDF).
+reconstructing PDF files into their original structure proven to be very difficult (although not impossible).
 Some (older) PDF files are scanned, resulting in a single image per two pages. 
 It is possible to split this page, but not all PDF files are scanned the same. 
 This can result in pages that are not split correctly.
@@ -1178,11 +1239,29 @@ However the indentation depends on the text margins and this varies across the P
 As for now, we skipped PDF (and similar files). 
 In the web crawler we left room to easily implement a PDF reader that could break down PDF files into single sentences.
 
+\subsection{Part-of-Speech Tagging}
+The PoS tagging is now based on the Python package of \textcite{honnibal_spacy_2020}.
+They used a transformer based approach to train the models \autocite{wolf_huggingfaces_2020, vaswani_attention_2017}.
+We used their interpretable output into a rule-based system to extract to most important information about parts.
+However, as both distillBERT and their models are based on the transformer model of \textcite{vaswani_attention_2017}, the semantic output of their models might already be present in the vector representations of the sentences.
+In future work it might be possible to directly use a transformer based model to extract the necessary data from the sentence instead of building a rule-based system.
+The information might even be already present in the output vectors of a trained BERT model as the model of \textcite{wolf_huggingfaces_2020} is also based on BERT.
 
+
+
+Like mentioned in the Discussion and especially Figure \ref{fig:URL_top20}, about 12\% of species information is found in scientific databases, which present their data in PDF (or similar) files.
+Text information from PDF is difficult to reconstruct, but not impossible.
+During this thesis we created a small script that was able to reconstruct all textual information from several text files.
+However, some parameters of the script needed to be adjusted per PDF file, resulting in a large amount of work.
+If this process could be automated for all the different PDF files a vast amount of additional data can be harvest from scientific resources.
+Since the PoS information extracting has proven to give decent results, duplicate information becomes less important as parts and traits can be shared across different species.
 
 \newpage
 \section{Conclusion} \label{par:conclusion}
-In this thesis we investigated how we can automatically query web pages, retrieve the text and assess which sentences are part of a species descriptions and which are not.
+\markboth{Conclusion}{Conclusion}
+In this thesis we investigated how a large database with species and their corresponding descriptions can be build, and use this database to train an NLP model to predict species on textual species descriptions.
+
+%In this thesis we investigated how we can automatically query web pages, retrieve the text and assess which sentences are part of a species descriptions and which are not.
 We found that a deep learning binary classification with a custom loss function can be quickly trained without annotating any data.
 By first gathering text from several structured web sources and using the paragraph and titles as labels and the text split into chunks of random size as features, we reached an f1-score of 0.96 on the test set and and f1-score of 0.83 on two completely left-out datasets.
 The custom loss function allows the model for some semi-supervised learning by allowing the model to chance the label of a sample if a predefined threshold is reached.
@@ -1190,18 +1269,44 @@ We deployed this model into a web crawler.
 We used scientific databases to find all currently known plant species and bird species.
 By deploying the trained binary classifier into this web crawler we were able to create a large dataset that contains description sentences per species.
 
+We propose a work flow that can process this data into a large, relatively clean database with descriptions per species.
+Information is stored as much as possible as semantic triples, with a subject, a predicate and a subject.
+Using Part-of-Speech in combination with dependency parsing has proven to give better information extraction results from sentences then training a linear classifier on top of BERT and using post-hoc attribution techniques to extract the most important part/adjectives combination from sentences.
+Using Part-of-Speech in combination with taxonomist glossary lists to describe species we are able to build a consist and large database with species information.
+The data mainly exists of nodes (nouns/adjectives) and the relationship between them (verbs).
 
 
 \newpage
 \section{Recommendations}
-To make sure a retrieved text page is about the species, we now split the species name, and title page, resulting in two lists. 
-We intersected both lists, and if this yielded any result, we extracted and processed the text.
-This is a very strict way, as we used the Latin names of the species for the querying.
-In some cases the query is successful and correct pages about species are retrieved.
-However not all pages contain the Latin name of the species in the title.
-Some pages contain the English name, some contain a general name like description and some contain no title at all. 
-All these pages are skipped by the web crawler why they still might contain valuable information about the species.
-A better approach would be to determine if the web page or even the paragraph is related to the queried species.
+\markboth{Recommendations}{Recommendations}
+
+
+
+Now all the knowledge graph of the species stands on itself, meaning they can be linked among each other, but they do only contain information extract from sentences.
+The benefit of a knowledge graph is that information is both interpretable for humans and computers.
+Knowledge graphs of the species can now easily be linked to other data sources like \href{https://www.wikidata.org/wiki/Wikidata:Main_Page}{WikiData}.
+This way the information can be improved, and might allow future models to learn which ending nodes contain measurement or colors instead of just learning which traits are relevant or irrelevant for a species.
+The WikiData is now structured the same with the base nodes of the plant e.g. "\href{https://www.wikidata.org/wiki/Property:P527}{has part} (P527)"  is similar to our $has\_main\_part$ and $has\_sub\_part$.
+By processing our knowledge graph a little more, data could be linked.
+Instead of simple $is$ predicates between noun nodes and adjectives, the predicate could be changed into e.g. $has\_colour$, $has\_measurement$ or $has\_property$.
+Textual descriptive could be processed to an such a level that nodes mostly contain single words.
+This allows species to have more shared nodes as the nodes become less unique.
+
+In Figure \ref{fig:kngraph_rec} a small example of a knowledge graph that implements these features can be found.
+This knowledge graph corresponds to the following text:
+\newline
+
+\noindent
+"The Brown bear has brown fur and a nose similar to that of the Black bear. Brown bear have 4 large claws, also known as paws, which 5 sharp nails. They have a thick, brown fur."
+
+\begin{figure}[h!]
+ \centering
+ %\hspace{-0.5cm}
+ \includegraphics[width=\textwidth]{figures/kngraph_rec.pdf}
+ \caption[Knowledge Graph Future Example]{The Results of computing the similarity of the different methods of our own dataset against the CUB-200 dataset. The densities of the violin plot do not extend past extreme values.}
+ \label{fig:kngraph_rec}
+\end{figure}
+
 
 \printbibliography
 \end{document}
