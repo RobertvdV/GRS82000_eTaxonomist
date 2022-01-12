@@ -1,4 +1,32 @@
 
+@article{vaswani_attention_2017,
+	title = {Attention Is All You Need},
+	url = {http://arxiv.org/abs/1706.03762},
+	abstract = {The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 {BLEU} on the {WMT} 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 {BLEU}. On the {WMT} 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art {BLEU} score of 41.8 after training for 3.5 days on eight {GPUs}, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.},
+	journaltitle = {{arXiv}:1706.03762 [cs]},
+	author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, Lukasz and Polosukhin, Illia},
+	urldate = {2022-01-10},
+	date = {2017-12-05},
+	eprinttype = {arxiv},
+	eprint = {1706.03762},
+	keywords = {Computer Science - Computation and Language, Computer Science - Machine Learning},
+}
+
+@article{wolf_huggingfaces_2020,
+	title = {{HuggingFace}'s Transformers: State-of-the-art Natural Language Processing},
+	url = {http://arxiv.org/abs/1910.03771},
+	shorttitle = {{HuggingFace}'s Transformers},
+	abstract = {Recent progress in natural language processing has been driven by advances in both model architecture and model pretraining. Transformer architectures have facilitated building higher-capacity models and pretraining has made it possible to effectively utilize this capacity for a wide variety of tasks. Transformers is an open-source library with the goal of opening up these advances to the wider machine learning community. The library consists of carefully engineered stateof-the art Transformer architectures under a uniﬁed {API}. Backing this library is a curated collection of pretrained models made by and available for the community. Transformers is designed to be extensible by researchers, simple for practitioners, and fast and robust in industrial deployments. The library is available at https://github.com/ huggingface/transformers.},
+	journaltitle = {{arXiv}:1910.03771 [cs]},
+	author = {Wolf, Thomas and Debut, Lysandre and Sanh, Victor and Chaumond, Julien and Delangue, Clement and Moi, Anthony and Cistac, Pierric and Rault, Tim and Louf, Rémi and Funtowicz, Morgan and Davison, Joe and Shleifer, Sam and von Platen, Patrick and Ma, Clara and Jernite, Yacine and Plu, Julien and Xu, Canwen and Scao, Teven Le and Gugger, Sylvain and Drame, Mariama and Lhoest, Quentin and Rush, Alexander M.},
+	urldate = {2022-01-10},
+	date = {2020-07-13},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1910.03771},
+	keywords = {Computer Science - Computation and Language},
+}
+
 @article{han_survey_2021,
 	title = {A Survey of Label-noise Representation Learning: Past, Present and Future},
 	url = {http://arxiv.org/abs/2011.04406},
@@ -499,7 +527,7 @@ Section: Physical Sciences},
 	keywords = {Computer Science - Computer Vision and Pattern Recognition},
 }
 
-@article{wolf_huggingfaces_2020,
+@article{wolf_huggingfaces_2020-1,
 	title = {{HuggingFace}'s Transformers: State-of-the-art Natural Language Processing},
 	url = {http://arxiv.org/abs/1910.03771},
 	shorttitle = {{HuggingFace}'s Transformers},
@@ -1128,31 +1156,6 @@ Publisher: Multidisciplinary Digital Publishing Institute},
 	urldate = {2021-07-20},
 	date = {2018-12},
 	langid = {english},
-}
-
-@online{noauthor_openie-based_nodate,
-	title = {{OpenIE}-based approach for Knowledge Graph construction from text {\textbar} Elsevier Enhanced Reader},
-	url = {https://reader.elsevier.com/reader/sd/pii/S0957417418304329?token=2EEAB1A078C9DD135C1E6513ED6CAEA37E228CEB29BAD3B64F5EC0DB23AC90577D2252D7EC5F6BAFA5CB0A5403498D81&originRegion=eu-west-1&originCreation=20210720114836},
-	urldate = {2021-07-20},
-	langid = {english},
-	doi = {10.1016/j.eswa.2018.07.017},
-}
-
-@article{martinez-rodriguez_openie-based_2018-1,
-	title = {{OpenIE}-based approach for Knowledge Graph construction from text},
-	volume = {113},
-	issn = {0957-4174},
-	url = {https://www.sciencedirect.com/science/article/pii/S0957417418304329},
-	doi = {10.1016/j.eswa.2018.07.017},
-	abstract = {Transforming unstructured text into a formal representation is an important goal of the Semantic Web in order to facilitate the integration and retrieval of information. The construction of Knowledge Graphs ({KGs}) pursues such an idea, where named entities (real world things) and their relations are extracted from text. In recent years, many approaches for the construction of {KGs} have been proposed by exploiting Discourse Analysis, Semantic Frames, or Machine Learning algorithms with existing Semantic Web data. Although such approaches are useful for processing taxonomies and connecting beliefs, they provide several linguistic descriptions, which lead to semantic data heterogeneity and thus, complicating data consumption. Moreover, Open Information Extraction ({OpenIE}) approaches have been slightly explored for the construction of {KGs}, which provide binary relations representing atomic units of information that could simplify the querying and representation of data. In this paper, we propose an approach to generate {KGs} using binary relations produced by an {OpenIE} approach. For such purpose, we present strategies for favoring the extraction and linking of named entities with {KG} individuals, and additionally, their association with grammatical units that lead to producing more coherent facts. We also provide decisions for selecting the extracted information elements for creating potentially useful {RDF} triples for the {KG}. Our results demonstrate that the integration of information extraction units with grammatical structures provides a better understanding of proposition-based representations provided by {OpenIE} for supporting the construction of {KGs}.},
-	pages = {339--355},
-	journaltitle = {Expert Systems with Applications},
-	shortjournal = {Expert Systems with Applications},
-	author = {Martinez-Rodriguez, Jose L. and Lopez-Arevalo, Ivan and Rios-Alvarado, Ana B.},
-	urldate = {2021-07-20},
-	date = {2018-12-15},
-	langid = {english},
-	keywords = {Fact extraction, Knowledge Graph, {RDF} events, Relation Extraction, Semantic Web representation},
 }
 
 @article{li_understanding_2017,
