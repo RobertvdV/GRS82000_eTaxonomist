@@ -306,12 +306,20 @@ Unlike classic machine learning models, deep learning models can automatically e
 Domain knowledge, in combination with careful engineering to extract the necessary features for the detection or classification, is no longer needed \autocite{lecun_deep_2015}.
 However, end-to-end training also results in DNNs that are rigid, difficult to interpret and explain.
 To extract the features from the input data, deep learning models use multiple neurons that take the input, process it to a slightly more abstract representation and pass it through the next layer of neurons \autocite{schmidhuber_deep_2015}.
-Provided enough layers are stacked upon each other, very complex features can be extracted and correctly detected or classified by such a network.
+Provided enough layers are stacked upon each other, very complex features can be extracted and correctly detected or classified by such a network (see Figure \ref{fig:CNN} where a Convolutional Neural Network (CNN) takes in an image, and makes a prediction based on its updates parameters.)
+\begin{figure} [tbp]
+    \centering
+    \vspace{0cm}
+    \includegraphics[width=\textwidth]{figures/CNN.pdf}
+    \caption[Classic CNN]{A classic CNN approach, where the model takes the entire image and makes a single prediction (based on the probabilities). The model uses several stacked layers to extract the features of the image. The output is correct, however the reasoning behind the prediction is hard to track.}
+    \label{fig:CNN}
+\end{figure}
 
 Because the network's parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019}, and they do not perform well on long-tailed datasets\footnote{Long-tailed datasets are skewed datasets. A lot of samples are available for a few species and most species only are represented in the dataset only by a few species.}, like most real-world datasets \autocite{van_horn_inaturalist_2018}.
 Stacking multiple layers of neurons on top of each other often results in millions of parameters, and all of these neurons use non-linear activation functions that decrease the interpretability of the network.
 In long-tailed datasets, the parameters are not well optimised for less represented classes as the neurons cannot extract the necessary features.
 While this automatic feature extraction is very convenient, it will become difficult to track models' reasons, and it can hamper performance.
+
 
 Different algorithms and techniques have been proposed to increase the interpretability of the models.
 Common approaches are feature reduction algorithms \autocite{ribeiro_why_2016}, inference of training sample contribution \autocite{koh_understanding_2020}, adding jittering to test samples and see how the prediction changes \autocite{li_understanding_2017} and decomposition and partial derivatives techniques \autocite{samek_explainable_2017}.
@@ -326,14 +334,14 @@ An a priori approach entails designing an architecture network with a semantic b
 The bottleneck layer is usually an intermediate layer that is fitted between a regular deep learning architecture \autocite{bucher_semantic_2019}.
 The DNN is still trained end-to-end, but humans can inspect this semantic bottleneck layer to check the intermediate results.
 In the case of a visual semantic bottleneck layer things like colors, shape and texture are usually chosen as these can be semantically expressed and they are overall important for classification or detection \autocite{yosinski_understanding_2015, fleet_visualizing_2014}.
-Although all downstream results are based on this layer (as all data has to flow trough this layer) it does not hamper the results \autocite{bucher_semantic_2019}.
+Although all downstream results are based on this layer (i.e. all data has to flow trough this layer) it does not hamper the results \autocite{bucher_semantic_2019}.
 The semantic bottleneck layer allows deep learning developers to adjust the architecture more easily in case the model does not perform as expected.
 
 \begin{figure} [tbp]
     \centering
     \vspace{0cm}
-    \includegraphics[width=\textwidth]{architecture.pdf}
-    \caption[Proposed architecture]{The proposed architecture by \textcite{ishikawa_contextual_2021} for species classification. The model input is an image. The first model will describe the attributes present in the image in natural language. The second model will take the output of the first model and will make a prediction. The intermediate results remain interpretable by using natural language.}
+    \includegraphics[width=\textwidth]{figures/architecture_v2.pdf}
+    \caption[Proposed architecture]{The proposed architecture by \textcite{ishikawa_contextual_2021} for species classification. The model input is an image. The first model will describe the attributes present in the image in natural language. The second model will take the output of the first model and will make a prediction. The intermediate results remain interpretable by using natural language and allow for shared traits among species.}
     \label{fig:intro}
 \end{figure}
 
@@ -401,14 +409,14 @@ In Section \ref{par:results} we present the results and in Section \ref{par:disc
 \begin{figure} [htpb]
     \centering
     %\vspace{-2cm}
-    \includegraphics[width=\textwidth]{figures/workflow_v5.pdf}
-    \caption[Workflow]{A simplified workflow. The web crawler searches for species descriptions on the word wide web. We use a custom script in combination with the transformer models of \textcite{wolf_huggingfaces_2020} to extract the information from the sentences and create a knowledge graph per species. Finally, an NLP model is trained to extract the most distinctive traits of the knowledge graph that make a species distinctive from other species}
+    \includegraphics[width=\textwidth]{figures/workflow.pdf}
+    \caption[Proposed Workflow]{A simplified proposed workflow for this thesis. The web crawler searches for species descriptions on the word wide web. We use a custom script in combination with the transformer models of \textcite{wolf_huggingfaces_2020} to extract the information from the sentences and create a knowledge graph per species. Finally, an NLP model is trained to extract the most distinctive traits of the knowledge graph that make a species distinctive from other species}
     \label{fig:workflow}
 \end{figure}
 
 The core of our idea is gathering enough text data per species, so an NLP model can learn key words describing each species.
 Using natural natural language for this idea has several potential benefits.
-Humans communicate using natural language, resulting in an theoretically endless amount of data that can be used and by using natural language, the results remain interpretable for humans.
+Humans communicate using natural language, resulting in an theoretically endless amount of data that can be used and by using natural language and the results remain interpretable for humans.
 We first start by creating a DNN that can classify species descriptions and deploy this DNN in a web crawler.
 This web crawler can automatically query species and store descriptive sentences.
 We use the harvested data to train the NLP model.
@@ -432,7 +440,7 @@ We create this large dataset by scraping text from structured web pages.
 We select three websites that have large databases, are structured enough and have a rich scholarly content about species:
 \begin{itemize}
     \item \href{www.wikipedia.com}{Wikipedia}. Wikipedia is a fee online encyclopedia that is maintained by volunteers. Everyone is allowed to edit pages. Quality is maintained by moderators and other volunteers.
-    \item \href{https://birdsoftheworld.org/bow/home}{Birds of the World (BoW)}. BOW is constructed and maintained by ornitnologists from all over the word \autocite{billerman_birds_2020}
+    \item \href{https://birdsoftheworld.org/bow/home}{Birds of the World (BoW)}. BOW is constructed and maintained by ornithologists from all over the word \autocite{billerman_birds_2020}
     \item \href{https://powo.science.kew.org/}{Plant of the World Online (PoWO)}. PoWO is international collaborative database of the world's flora. Its data is based on scientific papers. It is maintained by the Royal Botanic Gardens, Kew  \autocite{facilitated_by_the_royal_botanic_gardens_plants_2019}
 \end{itemize}
 All three websites divide their information into paragraphs such as "Introduction", "Appearance", "Characteristics", "Habit".
@@ -519,7 +527,7 @@ We use a minimum of 10 words to prevent the model fixating on specific words.
 \subsubsection{Loss Function}
 Automatically label the data will not result in a consistent dataset.
 There is a chance that we miss certain headers and miss label them during the preprocessing.
-Even if we correctly label all features not all data will be labelled correctly as text is generally unstructured, even in structured databases \autocite{kumar_text_2020}.
+Even if we correctly label all features not all data will be labelled correctly as text is generally unstructured \autocite{kumar_text_2020}.
 E.g. some species description might be located in the paragraph "Introduction" and some general information might be in the paragraph "Characteristics".
 Consider the text "The European robin is red-breasted with distinctive eyes.".
 This text is likely to be found in a paragraph about descriptions.
@@ -529,7 +537,7 @@ By implementing the semi-supervised loss function from \textcite{reed_training_2
 \begin{equation} \label{eq:softloss}
  SoftLoss(q, t) = \sum_{k=1}^{L}[\beta t _k + (1- \beta )q _k]log(q _k)
 \end{equation}
-~$q$ is directly used to calculate regression targets for each batch,~$t$ are the target values and \(\beta\) is used to balance the prediction.
+Where~$q$ is directly used to calculate regression targets for each batch,~$t$ are the target values and \(\beta\) is used to balance the prediction.
 Using natural language in combination with the soft loss function from \textcite{reed_training_2015}, allows the model for semi-supervised learning.
 This combination has the advantage that it is now very easy to scale natural language training as we do not need hand annotate the datasets.
 With Equation \ref{eq:softloss}, the model is now 'allowed' to disagree with the training label to a certain extend when the prediction certainty of the model is high enough.
@@ -569,6 +577,7 @@ We use the following equation\footnote{This actually looks like the \texttt{hard
 \begin{equation} \label{eq:softloss_ifthen}
 (\hat{\gamma}^{(i)} >= \beta \rightarrow \hat{\gamma}^{(i)} = \gamma^{(i)}) \wedge ( \leftharpoondown \hat{\gamma}^{(i)} = \hat{\gamma}^{(i)})
 \end{equation}
+Where~$\hat{\gamma}^{(i)}$ is the predicted value,~$\gamma^{(i)})$ is the actual label and~$\beta$ is the set threshold. 
 As the loss is no longer calculated, we simple calculate the prediction certainty of the model.
 If the model reaches a probability of 0.80 or higher (\(\beta\)) the model is allowed to chance the label, in all other cases the predicted label is matched against the actual (paragraph) label.
 
@@ -592,7 +601,7 @@ We do the same for the bird species; bird species are sorted based on their numb
     \centering
     %\textbf{The Web Crawler}
     %\vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler_v2.pdf}}
+    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler.pdf}}
     \caption[Web Crawler]{The process of the web crawler. The search engines are queries with five different queries per species. The search engines return a list of URLs per species. BeautifulSoup break extract the HTML of each URL and retrieves the text. SpaCy break the text down into single sentences. The sentences are presented to the classifier.}
     \label{fig:webcrawler}
 \end{figure}
@@ -956,7 +965,7 @@ We first find plants species that are present in both sets with a simple interse
 \subsubsection{Data Preparation \& Training} \label{par:pos_training}
 Section \ref{par:results_keywords} and especially Figure \ref{fig:hmean_violin}, show that PoS in combination with dependency parsing is the most promising technique to extract useful species descriptions from sentences.
 We cannot directly use the graphs in a NLP model to predict species.
-Graphs are complex, can a variable size and have no fixed forms, whereas text (which can also be represented as a graph) are relatively simple and are ordered \autocite{sanchez-lengeling_gentle_2021}. 
+Graphs are complex, can a variable size and have no fixed forms, whereas text (which can also be represented as a graph) is relatively simple and is ordered to some extent \autocite{sanchez-lengeling_gentle_2021}. 
 For simplicity, in this thesis we prepare the semantic triples for species prediction by creation single text span out of them.
 Each text span exists of a start node, relation and end node.
 The text span is finalised with a punctuation and is capitalised.
@@ -987,7 +996,7 @@ We calculate the probabilities from the summed log values by taking using a soft
     \sigma(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{j=1}^K e^{z_j}}
 \end{equation}
 Where~$z$ are in these case the log values and~$\sigma$ is and output vector with probabilities with a sum of exactly 1.00.
-Note that sentences are randomised and the order of the sentences does influence the number of sentences it takes to find the correct species.
+Note that order of the sentences is randomised and the order of the sentences does influence the number of sentences it takes to find the correct species.
 We could sort the sentence based on their prediction values of \ref{fig:probs_nonstacked} to decrease the number of sentence that are needed to obtain a 100\% certainty.
 However, as we only look at the final result, the order does no longer matter.
 
@@ -1058,7 +1067,7 @@ As expected node-edge-node relations that are shared across many species, like t
 \section{Results} \label{par:results}
 \markboth{Results}{Results}
 \subsection{Species Descriptions}
-\subsubsection{Description Classification Model}
+\subsubsection{Description Classification Model} \label{par:results_binary_classifier}
 Scraping the structured sources and using their paragraph titles resulted in 1,461,884 samples before splitting the sample into random text chunks.
 1,105,576 samples correspond to label zero and 356,308 correspond to label one.
 %Each sample consists of a tuple, containing the label (0/1) and the text span.
@@ -1156,18 +1165,15 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}, Figu
      \label{fig:precision-recall}
 \end{figure}
 
-In Figure \ref{fig:predictionvalues_external} the prediction values of the classifier for the two left-out datasets can be found.
-The classifier seems to work correctly.
-Most values are pushed towards zero or one.
-It seems there are significant more samples that qualify as a non-description then description samples.
-The bottom figure provides a zoomed overview between x-axis 0.2 and x-axis 0.8 as values lower than 0.2 and higher than 0.8 are treated as correct because of Equation \ref{eq:softloss_ifthen}.
-It seems that the classifier miss classifies more non-description samples as descriptions, the miss classified samples from the threshold value of 0.5 to 0.8 seem significant higher than the miss classified samples from 0.2 to 0.5.
+In Figure \ref{fig:predictionvalues_external} the prediction values and the distribution the prediction values of the classifier for the two left-out datasets can be found.
+
+%{The distribution of the two left-out datasets. In the first figure all the values are shown. In the second only values between 0.2 and 0.8 are shown as values below 0.2 and above 0.8 are always treated as correct. Note that the bars are stacked in the second figure, making the correctly classified and miss classified as high a the corresponding bars from the first figure. In both figures each bin has a width of 0.01.}
 
 \begin{figure}[htpb]
  \centering
  %\hspace{-0.5cm}
  \includegraphics[width=\textwidth]{figures/predictionvalues_external.pdf}
- \caption[Prediction values of left-out datasets]{The distribution of the two left-out datasets. In the first figure all the values are shown. In the second only values between 0.2 and 0.8 are shown as values below 0.2 and above 0.8 are always treated as correct. Note that the bars are stacked in the second figure, making the correctly classified and miss classified as high a the corresponding bars from the first figure. In both figures each bin has a width of 0.01.}
+ \caption[Prediction values of left-out datasets]{The distribution of the two left-out datasets and the kernel density estimations for the correct and incorrect values normalized between 0 and 1. Note that prediction values below 0.2 and above 0.8 are always treated as correct. Note that the kernel density line for all prediction values corresponds to the second y-axes that is not shown.}
  \label{fig:predictionvalues_external}
 \end{figure}
 
@@ -1351,7 +1357,19 @@ The classifier still performs very reasonable on the two left out datasets.
 However, with a f1-score of 0.86 the classifier does perform worse than on the test dataset.
 This performance issue is likely to occur due to the following reasons:
 
-First, during the training of the binary classifier, text is randomly split into chunks. 
+First, this could be a classic example where a model learn to predict the class that is over represented in the dataset.
+%The model has seen more sample of non-description data than is has seen description data.
+During the process the model has seen more samples of the negative class.
+The model updates the parameters based on the loss function and does so equally for both classes.
+As the model has seen more samples of the negative class, it better learn to predict the negative class.
+In our case the negative class is also over represented in the dataset during training (See Section \ref{par:results_binary_classifier}
+The parameters are better optimised for the over represented class, i.e. the negative class.
+Figure \ref{fig:predictionvalues_external} clearly shows that the miss classified samples are much higher for the positive samples (description values). 
+The data distribution for the two-left out test sets is also skewed as can be seen from Table \ref{tab:precision_recall_metrics}.
+Figure \ref{fig:predictionvalues_external} also follow this skewness and predict more negative values 
+
+
+Second, during the training of the binary classifier, text is randomly split into chunks. 
 In some cases this will result in text chunks that will contain part of a description and something else.
 The text data is not all in the correct place of a paragraph, e.g. descriptive data about species can also occur in the introduction (also see Section \ref{par:reedloss}).
 Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly as a single feature contains information from both labels.
@@ -1371,10 +1389,11 @@ We used the same \(\beta\) during training and testing.
 However, during the training we use the soft loss of \textcite{reed_training_2015}, where during testing we used a modified version of their hard loss.
 The soft loss equation directly calculates regression targets for each batch, where the hard loss version is allowed to change the label if set threshold is reached.
 
-Second, the lower f1-value could be specifically related to the two left-out datasets from Llifle and Agroforestry.
-In the second part of Figure \ref{fig:predictionvalues_external} it is clearly visible that more samples are miss labeled as descriptions; there are relatively more sample miss labeled from the threshold value of 0.5 towards 0.8 than below 0.5.
-Quickly testing the average height of the miss classified bins below 0.5 and above 0.5 against each other does confirm that the height of the miss classified bins above 0.5 is significantly higher.
-A possible explanation is that paragraphs that are labeled as descriptions (because of their header), have relatively more non-description sentences than non-description paragraphs have description sentences.
+third, the lower f1-value could be specifically related to the two left-out datasets from Llifle and Agroforestry.
+Overall the classifier perform well, Figure \ref{fig:predictionvalues_external} show that most prediction values are pushed towards either zero of one.
+However, Figure \ref{fig:predictionvalues_external} also shows that more samples are miss labeled between the threshold value of 0.5 towards 0.8 than below 0.5 and above 0.2.
+Quickly testing the average height of the miss classified values below 0.5 and above 0.5 against each other does confirm that the height of the miss classified values above 0.5 is significantly higher than below 0.5.
+A possible explanation is that paragraphs that are labeled as descriptions (because of their header), have relatively more non-description sentences than non-description paragraphs have description sentences, in this case the classifier perform worse because of incorrect labels.
 If the prediction values of the classifier stay below the set \(\beta\), the sentences will be miss labelled as the model is not allowed to change the label.
 To test this theory, one could test the classifier on addition datasets that are completely separated from the training process.
 
