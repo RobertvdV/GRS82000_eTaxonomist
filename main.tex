@@ -14,6 +14,7 @@
 \usepackage[english]{babel}
 %\usepackage{biblatex}
 \usepackage[backend=biber, style=apa]{biblatex}
+\usepackage{csquotes}
 \setlength\bibitemsep{\baselineskip}
 \usepackage{svg}
 \usepackage{graphicx}
@@ -29,6 +30,8 @@
 \usepackage{caption}
 % Footnote indentation
 \usepackage[hang,flushmargin]{footmisc} 
+% Hyphens
+\usepackage{hyphenat}
 \usepackage{subcaption}
 \usepackage[left]{lineno} % For line numbers
 %\renewcommand{\baselinestretch}{2.0}
@@ -101,25 +104,34 @@
 \newglossaryentry{semantictriple}
 {
         name=semantic triple,
-        description={A piece of information consisting two nodes and the relation between the nodes.}
+        description={A piece of information consisting two nodes and the relation between the nodes}
 }
 \newglossaryentry{knowledgegraph}
 {
         name=knowledge graph,
-        description={A structured graph model that contain and links multiple semantic triples.}
+        description={A structured graph model that contain and links multiple semantic triples}
 }
-\newglossaryentry{bert}
-{
-        name=BERT,
-        description={A transformer-based deep neural network developed by Google.}
-}
+
 \newglossaryentry{distillbert}
 {
         name=DistillBERT,
-        description={A slimmed down (distilled) version of BERT.}
+        description={A slimmed down (distilled) version of BERT}
 }
-
-
+\newglossaryentry{neuron}
+{
+        name=Neuron,
+        description={A unit in a neural network through which information flows}
+}
+\newglossaryentry{webcrawler}
+{
+        name=Web Crawler,
+        description={An internet bot that systematically browser that web and return data}
+}
+\newglossaryentry{batchsize}
+{
+        name=Batch Size,
+        description={The number of training samples that are used during a single iteration}
+}
 \newacronym{pos}{PoS}{Part-of-Speech}
 \newacronym{cnn}{CNN}{Convolutional Neural Network}
 \newacronym{dnn}{DNN}{Deep Neural Network}
@@ -127,18 +139,21 @@
 \newacronym{bow}{BoW}{Birds of the Word}
 \newacronym{powo}{PoWo}{Plants of the World online}
 \newacronym{ipni}{IPNI}{International Plant Name Index}
+\newacronym{cub}{CUB}{Caltech UCSD Birds}
 \newacronym{lig}{LIG}{Layer Integrated Gradients}
 \newacronym{svs}{SVS}{Shapely Value Sampling}
 \newacronym{la}{LA}{Layer Attention}
 \newacronym{lgxa}{LGxA}{Layer Gradient x Activation}
 \newacronym{ap}{AP}{Average Precision}
+\newacronym{roc}{ROC}{Receiver Operating Characteristic}
 \newacronym{auc}{AUC}{Area Under the Curve}
-
+\newacronym{bert}{BERT}{Bidirectional Encoder Representations from Transformers}
 
 \addbibresource{references.bib}
 % Note: Fill these in with correct data, they are used throughout the document
 %\title{A Step Towards Explainable AI: Infer Species Names Based on Partial Descriptions in Natural Language}
-\title{A Step Towards Explainable AI: Learning a Natural Language Processing Model to Reason Like a Taxonomist}
+% \protect\\
+\title{\nohyphens{A Step Towards Explainable AI: Learning a Natural Language Processing Model to Reason Like a Taxonomist}}
 
 \author{Robert van de Vlasakker}
 % This can be left as-is to automatically update
@@ -194,6 +209,8 @@
   
   %%%%%% PAGE II 
   \restoregeometry
+  \newgeometry{inner=1.91cm,outer=1.91cm}
+  %\centering
   %\newgeometry{top=1.25cm,bottom=1.25cm,inner=0.66cm,outer=0.53cm,foot=1.19cm,includeheadfoot} % Subsequent page margins
   % Note: this uses the MS Word template margins, you might want to increase them a bit for printing (e.g. inner=1.91cm,outer=1.91cm)
   \thispagestyle{empty}
@@ -237,6 +254,7 @@
   
     {Laboratory of Geo-Information Science and Remote Sensing}
  \end{titlingpage}
+ \restoregeometry
 \graphicspath{ {./figures/} }
 
 \newpage
@@ -257,11 +275,39 @@ There are some mistakes such as 'Great Covert' obviously refers to 'greater conv
 While just used as a front cover, it does have some research potential to investigate the most common traits of a certain location.
 
 
+
+
+
 \newpage
 \thispagestyle{empty}
 \section*{Abstract}
+To tackle biodiversity loss, it is necessary to first identify and describe species.
+By splitting a Deep Neural Network into a visual component and a natural language component, this process can be scaled and automated.
+The natural language component first needs to learn to predict species based on visual traits.
+This study aim to create a consistent database that contains morphological species trait, that can be used to learn a natural language processing model reason like a skilled taxonomist.
 
-\glsaddall\printglossary[type=\acronymtype]\printglossary
+The first step is training an separate deep learning model that can recognise descriptive text about species.
+This classifier is inserted into a web crawler and can automatically query species a retrieve descriptions about said species.
+The result of running the web crawler for two weeks is a large database with textual descriptions for about 15,000 species.
+
+The second step is extracting the most important and most descriminative traits per parts per species.
+Several post-hoc deep learning explanation techniques and part-of-speech in combination with dependency parsing are compared.
+Part-of-speech in combination with dependency parsing extract the most relevant information from the descriptive sentences.
+By matching sentences against a glossary containing expert words, miss classified sentences and irrelevant traits could be filtered out.
+The data is processed and per species a knowledge graph is created.
+
+Finally, a natural language processing model is training that can reason like a skilled taxonomist.
+The model is trained on the knowledge graph that were reconstructed into small sentences before feeding them to natural language processing model.
+This deep learning model is able to distinguish descriminative traits for the subset of species it has been trained on
+
+\vspace{5mm} %5mm vertical space
+\noindent
+{\bf Keywords:} Natural Language Processing, Deep Learning, Species Classification, Knowledge Graph 
+
+
+\glsaddall\printglossary[type=\acronymtype, nonumberlist]
+\thispagestyle{empty}
+\printglossary[nonumberlist]
 
 
 \thispagestyle{empty}
@@ -274,7 +320,7 @@ While just used as a front cover, it does have some research potential to invest
 \newpage
 
 
-
+\newgeometry{top=2.8cm,bottom=2.8cm,inner=2.8cm,outer=2.8cm,}
 \renewcommand{\thesection}{\arabic{section}}
 \pagenumbering{arabic}
 \section{Introduction}
@@ -370,7 +416,7 @@ We expect that a DNN model will learn the most important traits of a species if 
 For example, if the models sees multiple unique sentences about a European robin (also see Figure \ref{fig:workflow}, the model will learn that an important trait for an European robin it its orange breast and plumage.
 By applying post-hoc explanatory techniques we can extract the most discriminative features from the text that are used for making a prediction.
 
-This brings us to the first objective of this research: (1) creating an high-quality database with species and their descriptions.
+This brings us to the first objective of this research: creating an high-quality database with species and their descriptions.
 This objective is accompanied with following research question:
 \begin{itemize}
     \item \emph{How can a high-quality database be created containing species names and a combination of unique descriptions per species?}
@@ -384,8 +430,8 @@ This brings us to the second objective of this research: (2) processing the data
 \begin{itemize}
     \item \emph{What interpretation techniques can be used with the natural language model to extract the most relevant traits for a species?}
 \end{itemize}
-By training an NLP model based on the text we gathered and applying several posthoc explanatory techniques we expect that the NLP model will focus on most discriminative features per sentence.
-Besides the aforementioned method, we also use the pretrained transformer model of \textcite{wolf_huggingfaces_2020} to extract the necessary features.
+By training an NLP model based on the text we gather and apply several posthoc explanatory techniques we expect that the NLP model will focus on most discriminative features per sentence.
+Besides the aforementioned method, we also use the pretrained transformer model of \textcite{wolf_huggingfaces_2020} to extract the necessary features, as these models are already pre-trained to extract relations between words.
 
 Finally we investigate how we can train an NLP model that can infer species bases on the data we gather and processed:
 \begin{itemize}
@@ -918,6 +964,15 @@ We use this technique to extract the most important word/trait combinations to c
 The methods from extracting useful plant term is almost the same as for birds.
 We first match every sentence against \href{https://en.wikipedia.org/wiki/Glossary_of_plant_morphology}{Wikipedia/Glossary/Plants}.
 This will allow us to remove irrelevant sentences that accidentally slipped though the classifier and allows us to create a more consistent database.
+In Figure \ref{fig:glossary} a small example is shown how we match sentences against the glossary containing expert words.
+\begin{figure} [htpb]
+    \centering
+    %\hspace{-2cm}
+    \includegraphics[width=0.8\textwidth]{figures/glossary_workflow.pdf}
+    \caption[Expert Glossary Example]{An example how each sentences is matched against a glossary containing expert words. This way, miss classified sentences can be filtered out and irrelevant description can be dropped.}
+    \label{fig:glossary}
+\end{figure}
+
 
 \begin{comment}
 \begin{figure} [htpb]
@@ -1014,7 +1069,7 @@ However, as we only look at the final result, the order does no longer matter.
          \centering
          %\hspace{-0.5cm}
          \includegraphics[width=\textwidth]{figures/probs_stacked.pdf}
-         \caption{The summed prediction probabilities and the summed negative log values.}
+         \caption{The prediction probabilities based on the summed values and the summed negative log values.}
          \label{fig:probs_stacked}
      \end{subfigure}
      \caption[Species Prediction Probabilities]{An example the prediction of a species. The prediction is done per sentence, the result of the model is a negative log value that can be converted into a probability. By summing the negative log values we can get a probability for the combined sentences. In this example the model reaches a prediction value of 1.0 with the first 12 sentences.}
@@ -1146,7 +1201,7 @@ As the the classes are imbalanced in both cases we  evaluated the model with a p
 The results of this plot can be found in Figure \ref{fig:precision-recall}, Figure \ref{fig:precision_recall_curve_test} contains the precision-recall plot for the test set and Figure \ref{fig:precision_recall_curve_test_external} contains the precision-recall plot for the left out datasets.
 \begin{figure} [htpb]
      \centering
-     \begin{subfigure}[b]{0.49\textwidth}
+     \begin{subfigure}[b]{0.48\textwidth}
          \centering
          %\hspace{-0.5cm}
          \includegraphics[width=\textwidth]{precision_recall_plot.pdf}
@@ -1154,7 +1209,7 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}, Figu
          \label{fig:precision_recall_curve_test}
      \end{subfigure}
      \hfill
-     \begin{subfigure}[b]{0.49\textwidth}
+     \begin{subfigure}[b]{0.48\textwidth}
          \centering
          %\hspace{-0.5cm}
          \includegraphics[width=\textwidth]{precision_recall_plot_extern.pdf}
@@ -1366,10 +1421,11 @@ In our case the negative class is also over represented in the dataset during tr
 The parameters are better optimised for the over represented class, i.e. the negative class.
 Figure \ref{fig:predictionvalues_external} clearly shows that the miss classified samples are much higher for the positive samples (description values). 
 The data distribution for the two-left out test sets is also skewed as can be seen from Table \ref{tab:precision_recall_metrics}.
-Figure \ref{fig:predictionvalues_external} also follow this skewness and predict more negative values 
+Figure \ref{fig:predictionvalues_external} show that the output probabilities for the two left-out datasets also follow this skewness; far more prediction values are pushed towards zero than towards one.
+The model learned to predict the negatives better than the postive values.
 
-
-Second, during the training of the binary classifier, text is randomly split into chunks. 
+Second, the data preparation could case performance issues.
+During the training of the binary classifier, text is randomly split into chunks. 
 In some cases this will result in text chunks that will contain part of a description and something else.
 The text data is not all in the correct place of a paragraph, e.g. descriptive data about species can also occur in the introduction (also see Section \ref{par:reedloss}).
 Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly as a single feature contains information from both labels.
@@ -1396,13 +1452,15 @@ Quickly testing the average height of the miss classified values below 0.5 and a
 A possible explanation is that paragraphs that are labeled as descriptions (because of their header), have relatively more non-description sentences than non-description paragraphs have description sentences, in this case the classifier perform worse because of incorrect labels.
 If the prediction values of the classifier stay below the set \(\beta\), the sentences will be miss labelled as the model is not allowed to change the label.
 To test this theory, one could test the classifier on addition datasets that are completely separated from the training process.
+Most likely it is a combination of the three aforementioned issues that case the model performance to hamper slightly.
 
-After improvement of binary classifier, it would also be interesting to change the threshold values of the binary classifier.
+It would also be interesting to change the threshold values of the binary classifier.
 In this research we simple used a threshold of 0.5 to classify whether something is a description or not.
 As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test_external} the f1-score on the external datasets was 0.83. 
 This score was reached with a recall of 0.77 and a precision of 0.83.
+The classifier found 77\% of all positive values and of all values classified as positive, 83\% was correct.
 By increasing the threshold value for classification to recall will go down and precision will go up.
-A lower recall in this case would mean less sentences would classified by model.
+A lower recall in this case would mean less sentences would be retrieved by the model.
 However, with a higher precision, more sentences that are classified as descriptive, are correct, resulting in a higher quality database.
 By lowering the recall enough, a precision 1.0 could be reached.
 While the quality of the database would increase, the size of the database would decrease as less sentences are stored.
@@ -1411,7 +1469,6 @@ This could result in vital information loss as the classifier might miss vital s
 \subsubsection{Data Origins}
 %Lowering the recall will result in less retrieved possible description candidate sentences.
 %To compensate for this, the web crawler could be improved.
-
 As can be seen from Figure \ref{fig:URL_distribution_1} the web crawler did not found many unique URLs per species; according to the boxplot, most values lay between 17 and 33.
 As far as we know there is not literature available on the number of online available databases and website that contain descriptions, but these number do not seem that high.
 %Google Search has a really nice API, however their API is rather pricey and costs could easily exceed over \$2000 dollars a month when constructing a large number of queries each month. 
@@ -1445,7 +1502,9 @@ Another option would be to store the extracted data under species title page, an
 For most species, the number of URLs that is useful, i.e. at least one descriptive sentence is found, lays between 5 and 10 as can be seen from Figure \ref{fig:URL_distribution_3}.
 About two thirds of the URLs found does not contain any useful information for this thesis.
 In these cases not a single description is found on the web page.
-
+This seems rather low.
+With the constructed queries, we expected that most returned websites do contain some descriptions.
+These low values could be related to the search engines used in this thesis (DuckDuckGo and Bing).
 
 %In this thesis we constructed several queries that use the Latin names of the species.
 %If the web page title contains the English name and not the Latin name of species Equation \ref{eq:intersection} is not valid and text will not be stored resulting in loss of possible descriptions.
@@ -1482,24 +1541,57 @@ Figure \ref{fig:hmean_violin} shows that PoS in combination with dependency pars
 The Integrated Gradients, is however a close second. 
 According to \textcite{sundararajan_axiomatic_2017}, 20 to 300 steps are needed to best approximate the integral within 5\%.
 Due to computational power limits we only used 20 and 50 steps to approximate the integral.
-As this was mainly to see which attribution techniques gave the best result, we did not further if a greater number of steps would yield better results (although it is highly likely as the similarity values seem to shift as the number of steps increases).
+As this was mainly to see which attribution techniques gave the best result, we did not further investigate if a higher number of steps would yield better results (although it is highly likely as the similarity values seem to shift as the number of steps increases).
 We did not test if the sum of the attribution is approximately equal to that of the difference between the input and baseline vector.
 
-We also simple took the method the highest harmonic mean accros 
-
-
 \subsubsection{Part-of-Speech Tagging}
-The PoS tagging is now based on the Python package of \textcite{honnibal_spacy_2020}.
-They used a transformer based approach to train the models \autocite{wolf_huggingfaces_2020, vaswani_attention_2017}.
-We used their interpretable output into a rule-based system to extract to most important information about parts.
-However, as both distillBERT and their models are based on the transformer model of \textcite{vaswani_attention_2017}, the semantic output of their models might already be present in the vector representations of the sentences.
-In future work it might be possible to directly use a transformer based model to extract the necessary data from the sentence instead of building a rule-based system.
-The information might even be already present in the output vectors of a trained BERT model as the model of \textcite{wolf_huggingfaces_2020} is also based on BERT.
+%The PoS tagging is now based on the Python package of \textcite{honnibal_spacy_2020}.
+%They used a transformer based approach to train the models \autocite{wolf_huggingfaces_2020, vaswani_attention_2017}.
+%We used their interpretable output in combination with a rule-based system to extract to most important information about parts.
+%However, as both distillBERT and their models are based on the transformer model of \textcite{vaswani_attention_2017}, the semantic output of their models might already be present in the vector representations of the sentences.
+%In future work it might be possible to directly use a transformer based model to extract the necessary data from the sentence instead of building a rule-based system.
+%The information might even be already present in the output vectors of a trained BERT model as the model of \textcite{wolf_huggingfaces_2020} is also based on BERT.
+We used PoS to extract information from sentences.
+By first matching nouns against an export glossary containing botanic terms we were able to filter out miss classified sentences and in the meantime extract information per part of each sentence.
+We used this information to create a knowledge graph per species (see Figure \ref{fig:kngraph_unweighted} for an example of a single graph). 
+These graphs are then again used to reconstruct sentences and predict a species (See Figure \ref{fig:probs_nonstacked} and Figure \ref{fig:probs_stacked}).
+The models seems to learn to predict a species based on two different datasets better then a random guess.
+We only assessed if the prediction values of the model were better than a random classifier as this would be impossible.
+% More explaining
 
 
+% Something about the similarity?
 
 
 %Since the PoS information extracting has proven to give decent results, duplicate information becomes less important as parts and traits can be shared across different species.
+
+\subsection{Species Prediction}
+Testing whether an NLP model is able to learn to predict a species is difficult.
+As we mention before, we cannot leave out any species during the training process.
+If the model does not see the species during training it is not able to predict it during testing.
+To counter this issue, we trained and tested the model on two different databases that have species overlap.
+We made the assumption that both database describe the species present.
+We do not assume that the model will reach a high accuracy classifying the species, therefore we tested the results of the classifier against that of random guessing a species.
+It is highly unlikely that both datasets describe a species equally detailed.
+
+
+We tried to infer branch importance by training a model on recreated pieces of text.
+This has proven to be very difficult as the nodes of the branches do not exist of singular words.
+E.g. a node could contain 'up to 5 cm long', but for an other species that (in real life) does share the same morphological traits it is described as 'to 5 cm long'.
+A BERT model will output both vectors with a high similarity.
+A classifier on top of BERT will also classify both nodes the same, but this is highly dependent on the complexity of the classifier and the amount of epoch used to train the classifier.
+
+When the classifier on top of BERT is trained long enough it will to start overfitting on the data.
+The classifier will see both nodes as two different once's and classify them as such
+The overfitting is also dependent on the complexity of the classifier. 
+A simple classifier cannot over fit the data, but it might not be able to capture the complexity of the BERT output to make reasonable prediction.
+While a complex classifier might capture every tiny difference of the BERT output.
+These problems are already visible in the weighted example graph of Figure \ref{fig:kngraph_weighted}.
+In this example the longer nodes are already classified as more important then the shorter nodes.
+
+We cannot exactly determine when the overfitting is happening as we do not have any ground truth data to test the model on.
+We can 
+
 
 \newpage
 \section{Conclusion} \label{par:conclusion}
