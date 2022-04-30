@@ -1134,7 +1134,24 @@ We again take the appropriate subset of our knowledge graph.
 Now, we search for the closest value in our knowledge graph subset.
 
 \subsubsection{CUB-200 Dataset comparison}
+To compare the results of our own dataset, we use the same approach as in Figure \ref{fig:similarity_workflow}.
+We take the highest value from every similarity matrix:
+\begin{equation}
+    m=\max(  {X_i}_j  )
+\end{equation}
+Where $m$ is the maximum value and $X$ is the matrix per bird per part.
+We sum all the maximum values:
+\begin{equation}
+     \sum_{1=i}^{n} m_i
+\end{equation}
+Where $m$ are the maximum values from the matrices and $n$ is the number of parts (between 0 and 15).
+When the same part is not available in both datasets, we sum a zero.
+For all birds this will results in a similarity value between 0.0\footnote{In this case not a single common part in present in both datasets.} and 15.0\footnote{In this case both datasets completely overlap with all parts and have 100\% similarity for all text samples.}.
 
+As is makes no sense to compare these values, we rank the values for each bird in our dataset against the CUB dataset.
+This ranking process will result in a heatmap with values between 1 (highest rank) and 200 (lowest rank) for every bird in our own dataset against the birds in the CUB dataset.
+If every bird in our own dataset has a high similarity with the CUB dataset, it will result in a high ranking values.
+We will match the average ranking value of our dataset against 200 times random sampling a value between 1 and 200.
 
 
 \subsection{Information Importance}
@@ -1488,7 +1505,7 @@ I some cases, a zero ground truth value is possible, resulting in an infinity la
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/stem_values.pdf}
-    \caption[Stem values ground truth vs predicted]{The the predicted stem values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any stem values for this palm species.}
+    \caption[Stem values ground truth vs predicted]{The the predicted stem values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any stem values for this palm species. Our approach resulted in 115 correct, 35 within 25\% 61 outside 25\% and 37 missing values.}
     \label{fig:stem_values}
 \end{figure}
 
@@ -1520,6 +1537,15 @@ I some cases, a zero ground truth value is possible, resulting in an infinity la
     \label{fig:petioleANDrachis_values}
 \end{figure}
 
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/bird_ranking_v4.pdf}
+    \caption[Ranking of our birds against CUB birds]{Ranking of the birds of our datasets against the birds of the CUB dataset. On the y-axis our birds can be found. Each bird is ranked against all other 200 birds of the CUB dataset. There is a visible diagonal pattern visible, meaning that our data gathering approach does result in useful data. Ideally, every value in the diagonal line would equal one. In our case the average ranking value is 40.15, which would be better than random sampling from a distribution between 1 and 201.}
+    \label{fig:bird_ranking}
+\end{figure}
+
+
 \newpage
 \section{Discussion} \label{par:discussion}
 \markboth{Discussion}{Discussion}
@@ -1538,7 +1564,7 @@ The classifier identifies almost all description text chunks from the data (reca
 The text chunks qualified as descriptions are almost all correctly classified (precision).
 
 The classifier performs worse on the two left-out datasets. 
-The returned results are still relatively high with 0.90; however, the precision is lower with 0.83; the returned labels are incorrect for 17% of the time.
+The returned results are still relatively high with 0.90; however, the precision is lower with 0.83; the returned labels are incorrect for 17\% of the time.
 However, as both f-1 values exceeded the threshold value set at the beginning of this thesis, the model was deemed sufficient and deployed in the web crawler. 
 %However, we have some suggestions to improve the binary classifier in future work.
 %Unfortunately we due to lack of time we only implemented of \(\beta\) of 0.80. 
@@ -1736,6 +1762,8 @@ By creating simpler ontology, that only contains properties, more traits can be 
 The benefits of such a simpler property graph is also that is easier to maintain as most relation are the same (e.g. "has part", "has property").
 In his case, the relation "Beaked by" will be changed into "Has part" (or something similar).
 
+
+
 %The model seems to learn to predict a species based on two different datasets better than a random guess.
 %We only assessed if the prediction values of the model were better than a random classifier, as this would be impossible.
 % More explaining
@@ -1746,45 +1774,73 @@ In his case, the relation "Beaked by" will be changed into "Has part" (or someth
 
 %Since the PoS information extracting has proven to give decent results, duplicate information becomes less important as parts and traits can be shared across different species.
 
+\subsubsection{Palm Trait Dataset Comparison}
+In the Palm Trait dataset, we searched for the closest value in case of numeric values.
+This works fairly well in the case of traits like the 'Stem Height', 'Stem Diameter' and 'Number of Leaves' as can be seen in Figures \ref{fig:stem_values} and \ref{fig:leaf_values}.
+For most palm species a values is found, and our approach even yield the exact same value as the value described in the Palm Trait dataset. 
+These traits are relatively simple\footnote{'Simple' as in everybody know what is meant, when this trait is presented.}.
+It is relatively easy to obtain information about these traits.
+When a web page contains any information about a palm trait, most of the times the simple traits are described.
+
+Plant traits, like 'Leaf Blade Length', 'Fruit Length and 'Fruit Width', seem to be more difficult to obtain. 
+Compared to the simpler traits, there are a lot more missing values.
+'Stem Height' and 'Stem Diameter' both have 37 missing values, 'Number of Leaves' only has 26 missing values, while 'Fruit Length' and 'Fruit Width' both have 72 missing values.
+
+\subsubsection{CUB-200 dataset Comparison}
+
 \subsection{Species Prediction}
 Testing whether an NLP model is able to learn to predict a species is difficult.
 As we mention before, we cannot leave out any species during the training process.
-If the model does not see the species during training it is not able to predict it during testing.
+If the model does not see the species during training it is not able to classify it during testing.
 It also not feasible to leave out part of the descriptive data of a species during the training process, as these descriptive data may contain essential descriptions for a species.
 To counter this issue, we trained and tested the model on two different databases that have species overlap.
 We made the assumption that it would be possible to distinguish the species from other species in a dataset with the descriptions present in the training dataset.
-We do not assume that the model will reach a high accuracy classifying the species, therefore we tested the results of the classifier against that of random guessing a species.
-It is highly unlikely that both datasets describe each species equally detailed.
+We do not assume that the model will reach a high accuracy classifying the species, therefore we tested the results of the classifier against that of random guessing a species, as it is highly unlikely that both datasets describe each species equally detailed.
 
 By summing the negative log values of the model output, like we did in Figure \ref{fig:predictionvalues_external}, the model learns to make predictions based on small text sentence; it makes it possible to use small text pieces during the training process and make a final prediction based on all pieces.
 The example of \ref{fig:predictionvalues_external} is a cherry-picked example; with all text samples, the model perfectly classifies the correct species.
 The model actually find the the correct species around the eleventh text sample.
 
-However, we did not expect that the model would reach a high accuracy in predicting species.
-That is why we compared the totals of all the species log values.
+For each species, we took the summed log value of the correct species and tested if these values were significantly higher than those of the incorrect species.
+We did not expect that the model would reach a high accuracy in predicting species.
 The Wilcoxon Singed Rank test does indicate that the model learn to classify the species.
 The log values of the correct species where significant higher than the log values of the incorrect species.
+
+The model does perform better than a random classifier.
+However, we do not know to what extent the model can correctly classify species.
+It is highly dependent on the database overlap in our case.
+One might even argue, that this test only proves that the databases are similar to some extent.
+To really investigate, the potential of this model, it can be reviewed by expert in the field.
+The model should be trained by all available data. 
+When the model makes a prediction and makes a classification based on text samples, the prediction is either correct or incorrect.
+In the case of an incorrect prediction, experts could help investigate if it is still a reasonable prediction, as many species look a like.
+The incorrect classification might be caused by a vital text piece that makes a distinguish between two (or more) species.
+
+
+
 
 
 
 
 \subsection{Branch Importance}
 We tried to infer branch importance by training a model on recreated pieces of text.
-This has proven to be very difficult as the nodes of the branches do not exist of singular words.
-E.g. a node could contain 'up to 5 cm long', but for an other species that  does share the same morphological traits it is described as 'to 5 cm long'.
+This has proven to be very difficult as the nodes of the branches do not all exist of singular words.
+
+E.g. a node could contain 'up to 5 cm long', but for an other species that does share the same morphological traits it is described as 'to 5 cm long'.
 A BERT model will output both vectors with a high similarity.
 A classifier on top of BERT will also classify both nodes the same, but this is highly dependent on the complexity of the classifier and the amount of epoch used to train the classifier.
-
 When the classifier on top of BERT is trained long enough it will to start overfitting on the data.
-The classifier will see both nodes as two different once's and classify them as such
+The classifier will see both nodes as two different nodes and classify them as such.
+In the example of the '5 cm long', the traits are no longer shared across the species, as the 'up to 5 cm long' and 'to 5 cm long' are now both seen as two unique nodes.
+
 The overfitting is also dependent on the complexity of the classifier. 
-A simple classifier cannot over fit the data, but it might not be able to capture the complexity of the BERT output to make reasonable prediction.
-While a complex classifier might capture every tiny difference of the BERT output.
+A simple classifier cannot over fit the data, but it might not be able to capture the complexity of the BERT output to make reasonable predictions.
+While a complex classifier might capture every tiny difference of the BERT output, resulting again in an over fitted model.
 These problems are already visible in the weighted example graph of Figure \ref{fig:kngraph_weighted}.
 In this example the longer nodes are already classified as more important then the shorter nodes.
 We cannot exactly determine when the overfitting is happening as we do not have any ground truth data to test the model on.
 
-In future work similar nodes can be merged.
+In future work similar nodes can be merged before a model for species classification is trained on those nodes.
 Like in the previous example 'up to 5 cm long' and 'to 5 cm long', will be merged in a single node.
 This will allow for more node sharing between species, which will result in a more useful model.
 
@@ -1810,11 +1866,15 @@ The data mainly exists of nodes (nouns/adjectives) and the relationship between 
 
 
 \newpage
-\section{Recommendations}
+\section{Future Work}
 \markboth{Recommendations}{Recommendations}
- 
+To check whether our approach extracted useful information, we matched in against the Palm Trait dataset of \textcite{kissling_palmtraits_2019} and the CUB-200 dataset of \textcite{welinder_caltech-ucsd_2010}.
+We created several Figures and tables to assess if our approach extracted useful information.
+However our approach is not penalised for any rubbish.
 
 
+
+\subsection{Ontology's}
 Now all the knowledge graph of the species stands on itself; the graphs can be linked among each other, but do not contain any other information other then descriptions.
 The benefit of a knowledge graph is that information is both interpretable for humans and computers.
 Knowledge graphs of the species can now easily be linked to other data sources like \href{https://www.wikidata.org/wiki/Wikidata:Main_Page}{WikiData}.
