@@ -879,7 +879,7 @@ Where~$i$ is 768 (the vector representation of a token) and~$j$ is the number of
 After this, we simply compute the cosine similarity of each text chunk against all the text chunks of the CUB-200 dataset:
 \begin{equation}
 \cos ({\bf A},{\bf B})= {{\bf A} {\bf B} \over \|{\bf A}\| \|{\bf B}\|} = \frac{ \sum_{i=1}^{n}{{\bf A}_i{\bf B}_i} }{ \sqrt{\sum_{i=1}^{n}{({\bf A}_i)^2}} \sqrt{\sum_{i=1}^{n}{({\bf B}_i)^2}} }
-\end{equation}
+\end{equation} \label{eq:cosine_sim}
 Where~$A$ is the vector of text chunk 1 and~$B$ the vector of text chunk 2. 
 In Figure \ref{fig:similarity_matrix}, an example of a comparison of a few fictional text chunks can be found. 
 Finally, we assess which technique delivers the best performance and select this for the test dataset.
@@ -1135,9 +1135,11 @@ Now, we search for the closest value in our knowledge graph subset.
 
 \subsubsection{CUB-200 Dataset comparison}
 To compare the results of our own dataset, we use the same approach as in Figure \ref{fig:similarity_workflow}.
-We take the highest value from every similarity matrix:
+We compare our dataset against the hand-annotated CUB-200 dataset.
+We take a common bird and a common part, and push both description through a untrained DistillBert model to retrieve the vector embeddings.
+Next, we compare both embeddings by computing the cosine similarity, and take the highest value from every similarity matrix:
 \begin{equation}
-    m=\max(  {X_i}_j  )
+    m=\max(0,  {X_i}_j  )
 \end{equation}
 Where $m$ is the maximum value and $X$ is the matrix per bird per part.
 We sum all the maximum values:
@@ -1570,7 +1572,7 @@ However, as both f-1 values exceeded the threshold value set at the beginning of
 %Unfortunately we due to lack of time we only implemented of \(\beta\) of 0.80. 
 %By starting with a lower \(\beta\) and gradually increase \(\beta\) during the parameter optimisation %process, the model might optimise the parameters better as it gets penalised less hard.
 
-\subsubsection{Classifier Accuracy}
+\subsubsection{Descriptions Classifier Accuracy}
 With the two left-out datasets, we processed the text the same way as we would have when the text was processed by the web crawler. 
 We clean the text and split the text into single sentences with the sentecizer of \textcite{honnibal_spacy_2020}.
 As we do not have the ground truth labels of this dataset, we implement Equation \ref{eq:softloss_ifthen}.
@@ -1623,19 +1625,9 @@ When the prediction values of the classifier stay below the set \(\beta\), the s
 To test this theory, one could test the classifier on addition datasets that are completely separated from the training process.
 Most likely, it is a combination of the three aforementioned issues that cause the model performance to hamper slightly.
 
-It would also be interesting to change the threshold values of the binary classifier.
-In this research, we simply used a threshold of 0.5 to classify whether something is a description or not.
-As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test_external}, the f1-score on the external datasets was 0.83. 
-This score was reached with a recall of 0.77 and a precision of 0.83.
-The classifier found 77\% of all positive values, and of all values classified as positive, 83\% was correct.
-By increasing the threshold value for classification to recall will go down, and precision will go up.
-A lower recall would mean less sentences would be retrieved by the model.
-However, with higher precision, more sentences that are classified as descriptive are correct, resulting in a higher quality database.
-By lowering the recall enough, a precision of 1.0 could be reached.
-While the quality of the database would increase, the size of the database would decrease as less sentences are stored.
-This could result in vital information loss as the classifier might miss vital sentences describing a species.
 
-\subsubsection{Data Origins}
+
+\subsubsection{Descriptions Data Origins}
 %Lowering the recall will result in less retrieved possible description candidate sentences.
 %To compensate for this, the web crawler could be improved.
 As can be seen from Figure \ref{fig:URL_distribution_1}, the web crawler did not find many unique URLs per species; according to the boxplot, most values lay between 17 and 33.
@@ -1680,23 +1672,9 @@ These low values could be related to the search engines used in this thesis (Duc
 %All other pages are also skipped, but they can still contain valuable information.
 %The same applies for all other pages with different headers then the Latin names.
 
-
-Figure \ref{fig:URL_top20} shows that more than 15\%\footnote{\href{https://www.researchgate.net/}{Researchgate.net} and \href{https://www.academia.edu/}{academia.edu} are both scientific resources that are returned the most. The actual number is probably much higher as Figure \ref{fig:URL_distribution_3} only displays the top 20 websites.} of the unique base URLs come from scientific databases.
-While these databases contain rich scholarly content, we did not use their data.
-Most of this data is offered as a PDF download (or sometimes as a viewable PDF).
-Reconstructing PDF files into their original structure has proven very difficult (although not impossible).
-Some (older) PDF files are scanned, resulting in a single image per two pages. 
-It is possible to split this page, but not all PDF files are scanned with the same margins. 
-This can result in pages that are not split correctly.
-Also, PDF files do not have any structural information left about the text itself. 
-It is possible to reconstruct the original text using the location of the indentations for every new paragraph.
-However, the indentation depends on the text margins, which varies across the PDF files.
-As for now, we skipped PDF (and similar files). 
-We left some room to quickly implement a PDF reader that could break down PDF files into single sentences in the web crawler.
-
 More time should be devoted to building a better web crawler in future research. 
 About two-thirds of all URLs retrieved does not contain any useful information.
-A lot of information is also stored in PDF files and text files, which are not used in this thesis.
+A lot of information is also stored in PDF files and text files, which are not used in this thesis (Also see Section \ref{par:future} Recommendations \& Future Work).
 
 \subsection{Information Extraction }
 As can be seen from Figures \ref{fig:BOW_distribution} and \ref{fig:CUB_distribution}, the overall distribution is somewhat equal for both datasets.
@@ -1721,7 +1699,7 @@ These techniques are originally developed for images and not for text and may no
 Part-of-Speech tagging in combination with dependency parsing yielded a slightly higher overall harmonic mean than the integrated gradients techniques.
 This technique no longer uses information from the trained model, instead it uses another pretrained transformer based model to extract the necessary features of the text samples.
 
-\subsubsection{Part-of-Speech Tagging}
+\subsubsection{Part-of-Speech Tagging \& Dependency Parsing}
 %The PoS tagging is now based on the Python package of \textcite{honnibal_spacy_2020}.
 %They used a transformer based approach to train the models \autocite{wolf_huggingfaces_2020, vaswani_attention_2017}.
 %We used their interpretable output in combination with a rule-based system to extract to most important information about parts.
@@ -1777,7 +1755,7 @@ In his case, the relation "Beaked by" will be changed into "Has part" (or someth
 \subsubsection{Palm Trait Dataset Comparison}
 In the Palm Trait dataset, we searched for the closest value in case of numeric values.
 This works fairly well in the case of traits like the 'Stem Height', 'Stem Diameter' and 'Number of Leaves' as can be seen in Figures \ref{fig:stem_values} and \ref{fig:leaf_values}.
-For most palm species a values is found, and our approach even yield the exact same value as the value described in the Palm Trait dataset. 
+For most palm species a value is found, and our approach even yield the exact same value as the value described in the Palm Trait dataset. 
 These traits are relatively simple\footnote{'Simple' as in everybody know what is meant, when this trait is presented.}.
 It is relatively easy to obtain information about these traits.
 When a web page contains any information about a palm trait, most of the times the simple traits are described.
@@ -1787,6 +1765,57 @@ Compared to the simpler traits, there are a lot more missing values.
 'Stem Height' and 'Stem Diameter' both have 37 missing values, 'Number of Leaves' only has 26 missing values, while 'Fruit Length' and 'Fruit Width' both have 72 missing values.
 
 \subsubsection{CUB-200 dataset Comparison}
+At first sight, the ranking results in Figure \ref{fig:bird_ranking} seem completely random.
+However, when taking a closer look, there is a faint small diagonal trend of darker green visible.
+From the top left corner to the right bottom corner, the bird ranking values do not seem completely random.
+Our approach seems to result in relevant information about the 200 birds present in the CUB-200 dataset.
+The average ranking of correct birds against each other (the diagonal line) is 40.15.
+This does conform that our AI system does pick up and extract relevant information from the internet.
+While this does not seem that high, we still have to consider the fact that a lot of birds are very similar and for some birds not all correct traits may be retrieved.
+
+Consider the Common raven (Corvus corax) and the Carrion crow (Corvus corone).
+Both come from the Corvus family, have completely black plumage, have black legs and have black eyes; they are very difficult to tell apart.
+The main differences between the species can be found in their sizes, and the differences in their beaks.
+The Common raven is much larger than the Carrion crow and the beak of the Common raven is larger and and is rather grayish black, instead of black like the Carrion crow.
+However, our approach still makes limited use of the search engines and therefore will also return a limited amount of text about both species.
+Our web crawler will search for descriptions about both species, and next  the text will be broken down into nodes and predicates.
+In the case of the beak of the Carrion crow, it could result in the following sentences: 'Beak is black.' and 'Beak is greyish'.
+In the case of the beak of the Common raven, it could result in the following sentence: 'Beak is blackish.' and 'Beak is small'.
+When the ground truth text of the CUB-200 dataset contains 'Beak is black' for Carrion crow.
+In this example, the Common raven will have a higher ranking against the Carrion crow of the CUB-200 dataset, while all text snippets are correct.
+
+There are also very strong horizontal patterns present in Figure \ref{fig:bird_ranking}.
+Our text snippets do seem to rank consistently high and low against certain birds of the CUB-200 dataset.
+We can take the mean of the columns and inspect the birds with the highest values.
+Taking the top five highest (ranked in order) column mean values results in the following birds: 
+\begin{itemize}
+    \setlength\itemsep{-0.25em}
+    \item Blue Grosbeak (\#108)
+    \item Indigo Bunting (\#85)
+    \item Cape Starling (\#122)
+    \item Florida Scrub-Jay (\#187)
+    \item Lazuli Bunting (\#95)
+\end{itemize}
+Each of these birds has a very colourful plumage. 
+All plumage (inner, outer, etc.) has a very different colour.
+These birds might have less trait overlap with the average bird, as the average bird colours are unsaturated plain colours according to \textcite{delhey_colour_2016}.
+However, we have not investigated the plumage colour of all birds present in the CUB-200 dataset.
+The 'Blue Grosbeak', 'Indigo Bunting' and 'Lazuli Bunting' also display strong sexually dimorphism; the male and female look very different.
+We only compared the results per bird per part, and did not make any distinguishes between male and females.
+When our AI system retrieved the descriptions for a female bird, it could be compared to a male counterpart in the CUB-200 dataset or vice-versa.
+
+Taking the top five lowest (ranked in order) column mean values results in the following birds: 
+\begin{itemize}
+    \setlength\itemsep{-0.25em}
+    \item Green-tailed Towhee (\#159)
+    \item Dark-eyed Junco (\#196)
+    \item Seaside Sparrow (\#24)
+    \item Gray Catbird (\#64)
+    \item Common Nighthawk (\#138)
+\end{itemize}
+These five birds are all mostly grayish.
+This could explain the overall higher similarity for these birds compared to others, as their colours are unsaturated and plain.
+But, again, we did not investigate the traits of 200 birds, and make this assumption based on research about bird colours of \textcite{delhey_colour_2016}.
 
 \subsection{Species Prediction}
 Testing whether an NLP model is able to learn to predict a species is difficult.
@@ -1866,12 +1895,47 @@ The data mainly exists of nodes (nouns/adjectives) and the relationship between 
 
 
 \newpage
-\section{Future Work}
+\section{Recommendations \& Future Work} \label{par:future}
 \markboth{Recommendations}{Recommendations}
+\subsection{Description Binary Classifier}
+It would be interesting to change the threshold values of the binary classifier.
+In this research, we simply used a threshold of 0.5 to classify whether something is a description or not.
+As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test_external}, the f1-score on the external datasets was 0.83. 
+This score was reached with a recall of 0.77 and a precision of 0.83.
+The classifier found 77\% of all positive values, and of all values classified as positive, 83\% was correct.
+By increasing the threshold value for classification to recall will go down, and precision will go up.
+A lower recall would mean less sentences would be retrieved by the model.
+However, with higher precision, more sentences that are classified as descriptive are correct, resulting in a higher quality database.
+By lowering the recall enough, a precision of 1.0 could be reached.
+While the quality of the database would increase, the size of the database would decrease as less sentences are stored.
+This could result in vital information loss as the classifier might miss vital sentences describing a species.
+
+%% Combination with glossary?
+
+\subsection{PDF Web Crawler}
+Figure \ref{fig:URL_top20} shows that more than 15\%\footnote{\href{https://www.researchgate.net/}{Researchgate.net} and \href{https://www.academia.edu/}{academia.edu} are both scientific resources that are returned the most. The actual number is probably much higher as Figure \ref{fig:URL_distribution_3} only displays the top 20 websites.} of the unique base URLs come from scientific databases.
+While these databases contain rich scholarly content, we did not use their data.
+Most of this data is offered as a PDF download (or sometimes as a viewable PDF).
+Reconstructing PDF files into their original structure has proven very difficult (although not impossible).
+Some (older) PDF files are scanned, resulting in a single image per two pages. 
+It is possible to split this page, but not all PDF files are scanned with the same margins. 
+This can result in pages that are not split correctly.
+Also, PDF files do not have any structural information left about the text itself. 
+It is possible to reconstruct the original text using the location of the indentations for every new paragraph.
+However, the indentation depends on the text margins, which varies across the PDF files.
+As for now, we skipped PDF (and similar files). 
+We left some room to quickly implement a PDF reader that could break down PDF files into single sentences in the web crawler.
+
+\subsection{Palm Trait \& CUB-200 dataset Comparison}
 To check whether our approach extracted useful information, we matched in against the Palm Trait dataset of \textcite{kissling_palmtraits_2019} and the CUB-200 dataset of \textcite{welinder_caltech-ucsd_2010}.
 We created several Figures and tables to assess if our approach extracted useful information.
 However our approach is not penalised for any rubbish.
 
+In the case of the comparison against the CUB-200 dataset, we took the highest comparison value of the vector embeddings of both species.
+By doing this, the AI system is rewarded for finding and extracting the correct information.
+However, the model is not penalised for adding nonsense.
+The similarity value cannot go down, it can only go up.
+In future research, the model needs to be penalised for information that is not useful.
 
 
 \subsection{Ontology's}
