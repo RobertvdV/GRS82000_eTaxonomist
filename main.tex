@@ -46,7 +46,7 @@
 \renewcommand{\familydefault}{\sfdefault} % Set default f
 \usepackage{comment}
 
-% COLORS
+% colours
 \usepackage{xcolor} 
 \usepackage{soul}
 \usepackage{adjustbox}
@@ -60,6 +60,9 @@
 \definecolor{color8}{HTML}{e3f4f7}
 \definecolor{color9}{HTML}{005020}
 \definecolor{color10}{HTML}{00441b}
+
+%%% TOC SETTINGS
+
 
 %%% GLOSSARIES
 \makeglossaries
@@ -170,6 +173,9 @@
   {\normalfont\bfseries}{}{0pt}{\Large}
   
 \pagenumbering{roman}
+
+
+
 \begin{document}
  \begin{titlingpage}
 \newgeometry{top=1.25cm,bottom=0.96cm,inner=1.91cm,outer=1.91cm,foot=0cm}
@@ -611,9 +617,9 @@ We train the model for 35 epochs.
 
 As there is a high probability that the dataset is will be unbalanced, we will evaluate it with a precision-recall summary and a precision-recall curve.
 The precision-recall summary and curve give more reliable results with unbalanced datasets \autocite{saito_precision-recall_2015}.
-When the model reaches an f1-score of at least 0.90 on the test set, the model is tested on two additional left-out databases, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
-When the model reaches an f1-score of 0.80 on these external datasets, the model will be deployed in a web crawler.
-The f1-score is calculated with the following formula:
+When the model reaches an F1-score of at least 0.90 on the test set, the model is tested on two additional held-out databases, the \href{http://www.llifle.com/}{LLifle} dataset and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
+When the model reaches an F1-score of 0.80 on these external datasets, the model will be deployed in a web crawler.
+The F1-score is calculated with the following formula:
 \begin{equation}
     F_1 = 2 \cdot \frac{\mathrm{precision} \cdot \mathrm{recall}}{\mathrm{precision} + \mathrm{recall}} 
 \end{equation}
@@ -623,7 +629,7 @@ Before text tokenisation, we first clean it of references and footnotes.
 We no longer split the into random chunks, but we use a sentecizer of \textcite{honnibal_spacy_2020} to split the text into sentences.
 Splitting text into sentences instead of random text chunks prevents information loss.
 
-The left-out datasets will also have mislabelled sentences like the training data.
+The held-out datasets will also have mislabelled sentences like the training data.
 We use the following equation\footnote{This actually looks like the \texttt{hardloss} (Equation 7) from \textcite{reed_training_2015}. In this case the equation is changed from a loss function to an If-Then statement.} to correct these labels to a certain extent:
 \begin{equation} \label{eq:softloss_ifthen}
 (\hat{\gamma}^{(i)} >= \beta \rightarrow \hat{\gamma}^{(i)} = \gamma^{(i)}) \wedge ( \leftharpoondown \hat{\gamma}^{(i)} = \hat{\gamma}^{(i)})
@@ -863,7 +869,7 @@ From \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Gloss
     %\textbf{Similarity Matrix}
     \includegraphics[width=0.8\textwidth]{similarity_matrix.pdf}
     \caption[Example of sentence similarity]{An example for the calculation of sentence similarity. 
-    In this case reconstructed text chunks from the CUB-200 dataset are shown on the y-axis and reconstructed text chunks from scraped data is shown on the x-axis. In this case 'Bill color yellow', and 'Bill yellow' is almost the same, hence the high similarity score of 0.91. Note that the matrix does not necessarily have to have equal rows and columns.}
+    In this case reconstructed text chunks from the CUB-200 dataset are shown on the y-axis and reconstructed text chunks from scraped data is shown on the x-axis. In this case 'Bill colour yellow', and 'Bill yellow' is almost the same, hence the high similarity score of 0.91. Note that the matrix does not necessarily have to have equal rows and columns.}
     \label{fig:similarity_matrix}
 \end{figure}
 
@@ -1121,7 +1127,7 @@ If most palms are not armed, the accuracy will be high.
 \noindent
 \textbf{Multi Class Variables.}
 We search for direct hits of multi class variables.
-This is the case for fruit colors (e.g. 'red') and fruit shapes (e.g. 'ovoid').
+This is the case for fruit colours (e.g. 'red') and fruit shapes (e.g. 'ovoid').
 We first subset our knowledge graph, so it only contains information about the palm fruit. 
 The knowledge graph is not subset any further.
 We report the results with a confusion matrix and report the precision, recall, and F1-score.
@@ -1232,14 +1238,14 @@ As shown from Figures \ref{fig:text_length_1}, \ref{fig:text_length_3}, \ref{fig
          \caption{The text length of description data after splitting.}
          \label{fig:text_length_4}
      \end{subfigure}
-    \caption[Text length distribution for training web crawler model]{The result of scraping structured sources to train  a binary classification model for descriptions classification. The text spans are randomly split into chunks between 10 words and their length, with a maximum of 512 words to prevent truncation. Text spans with a length below 10 words are not split, resulting in some text lengths below 10. Note that outliers of the boxplots are not shown.}
+    \caption[Text length distribution for training web crawler model]{The result of scraping structured sources to train  a binary classification model for descriptions classification. The text spans are randomly split into chunks between 10 words and their maximum length, with a maximum of 512 words to prevent truncation. Text spans with a length below 10 words are not split, resulting in some text lengths below 10. Note that outliers of the boxplots are not shown.}
     \label{fig:text_length_distribution}
 \end{figure}
 
 
-The model is evaluated on a left-out test set of 5\% and is evaluated on two left-out datasets, the \href{http://www.llifle.com/}{LLifle} and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
+The model is evaluated on a held-out test set of 5\% and is evaluated on two held-out datasets, the \href{http://www.llifle.com/}{LLifle} and the \href{https://www.worldagroforestry.org/}{AgroForestry} dataset.
 The summary performance metrics can be found in Table \ref{tab:precision_recall_metrics}.
-The model reaches high precision, recall and f1-score for both the "Non-Description" and "Description" classes.
+The model reaches high precision, recall and F1-score for both the "Non-Description" and "Description" classes.
 %These datasets are completely left out of the training/testing fase of the model.
 %Together, these dataset contain 17,204 samples.
 %771 text spans correspond to a description, and 16,433 text spans corresponds to something different.
@@ -1256,7 +1262,7 @@ The model reaches high precision, recall and f1-score for both the "Non-Descript
 \label{tab:precision_recall_metrics}
 \begin{tabular}{@{}lcccccccc@{}}
 \cmidrule(l){2-9}
- & \multicolumn{2}{c}{\textbf{Precision}} & \multicolumn{2}{c}{\textbf{Recall}} & \multicolumn{2}{c}{\textbf{f1-score}} & \multicolumn{2}{c}{\textbf{Support}} \\ \cmidrule(l){2-9} 
+ & \multicolumn{2}{c}{\textbf{Precision}} & \multicolumn{2}{c}{\textbf{Recall}} & \multicolumn{2}{c}{\textbf{F1-score}} & \multicolumn{2}{c}{\textbf{Support}} \\ \cmidrule(l){2-9} 
                  & Test & Extern & Test & Extern & Test & Extern & Test    & Extern \\ \midrule
 Other            & 0.98 & 0.96   & 0.99 & 0.96   & 0.99 & 0.97   & 167,955 & 64,639 \\
 Description      & 0.97 & 0.83   & 0.95 & 0.77   & 0.96 & 0.83   & 57,864  & 10,197  \\ \midrule
@@ -1284,19 +1290,19 @@ The results of this plot can be found in Figure \ref{fig:precision-recall}, Figu
          \caption{The Precision-Recall curve for the left out data.}
          \label{fig:precision_recall_curve_test_external}
      \end{subfigure}
-     \caption[Precision recall curves for test and left-out datasets]{The precision-recall curve for the test dataset and the left out datasets. The model seems to perform reasonable in both cases. The the Average Precision (AP) reaches 99\% in the case of the test dataset and the AP reaches 87\% in the case of the left-out datasets. The area under the curve (AUC) reaches 99.49\% for the test set and 93.14\% for the left-out datasets.}
+     \caption[Precision recall curves for test and held-out datasets]{The precision-recall curve for the test dataset and the left out datasets. The model seems to perform reasonable in both cases. The the Average Precision (AP) reaches 99\% in the case of the test dataset and the AP reaches 87\% in the case of the held-out datasets. The area under the curve (AUC) reaches 99.49\% for the test set and 93.14\% for the held-out datasets.}
      \label{fig:precision-recall}
 \end{figure}
 
-In Figure \ref{fig:predictionvalues_external} the prediction values and the distribution the prediction values of the classifier for the two left-out datasets can be found.
+In Figure \ref{fig:predictionvalues_external} the prediction values and the distribution the prediction values of the classifier for the two held-out datasets can be found.
 
-%{The distribution of the two left-out datasets. In the first figure all the values are shown. In the second only values between 0.2 and 0.8 are shown as values below 0.2 and above 0.8 are always treated as correct. Note that the bars are stacked in the second figure, making the correctly classified and misclassified as high a the corresponding bars from the first figure. In both figures each bin has a width of 0.01.}
+%{The distribution of the two held-out datasets. In the first figure all the values are shown. In the second only values between 0.2 and 0.8 are shown as values below 0.2 and above 0.8 are always treated as correct. Note that the bars are stacked in the second figure, making the correctly classified and misclassified as high a the corresponding bars from the first figure. In both figures each bin has a width of 0.01.}
 
 \begin{figure}[htpb]
  \centering
  %\hspace{-0.5cm}
  \includegraphics[width=\textwidth]{figures/predictionvalues_external.pdf}
- \caption[Prediction values of left-out datasets]{The distribution of the two left-out datasets and the kernel density estimations for the correct and incorrect values normalized between 0 and 1. Note that prediction values below 0.2 and above 0.8 are always treated as correct. Note that the kernel density line for all prediction values corresponds to the second y-axes that is not shown.}
+ \caption[Prediction values of held-out datasets]{The distribution of the two held-out datasets and the kernel density estimations for the correct and incorrect values normalized between 0 and 1. Note that prediction values below 0.2 and above 0.8 are always treated as correct. Note that the kernel density line for all prediction values corresponds to the second y-axes that is not shown.}
  \label{fig:predictionvalues_external}
 \end{figure}
 
@@ -1409,7 +1415,7 @@ We did not find any descriptions for one Bird, the Cape Starling (Lamprotornis n
          \centering
          %\hspace{-0.5cm}
          \includegraphics[width=\textwidth]{figures/CUB_distribution_BOW.pdf}
-         \caption{The description distribution of the BoW dataset.}
+         \caption{The description distribution of the our dataset.}
          \label{fig:BOW_distribution}
      \end{subfigure}
      \vfill
@@ -1433,7 +1439,7 @@ PoS, in combination with dependency, has the highest harmonic mean, the highest 
  \centering
  %\hspace{-0.5cm}
  \includegraphics[width=\textwidth]{figures/densities.pdf}
- \caption[Similarity results]{The Results of computing the similarity of the different methods of our own dataset against the CUB-200 dataset. The distributions are colored and sorted based on the harmonic mean.}
+ \caption[Similarity results]{The Results of computing the similarity of the different methods of our own dataset against the CUB-200 dataset. The distributions are coloured and sorted based on the harmonic mean.}
  \label{fig:hmean_violin}
 \end{figure}
 
@@ -1441,10 +1447,19 @@ PoS, in combination with dependency, has the highest harmonic mean, the highest 
 \subsection{Species Classification}
 We found 547 common species between the PoWo dataset and the Llifle dataset.
 219 species contain at least one description and are used to evaluate the dataset\footnote{There are a lot more overlapping species as we gathered around 30.000 species from the PoWo dataset and 20.000 from Llifle dataset, but these are common species that are described in both datasets.}.
-The median of the correct group was -625, and the median of the incorrect group was -896.
+The median of the correct group was -448, and the median of the incorrect group was -545.
 The mean of the correct group was -921, and the mean of the incorrect group was -990.
 The distributions in the two groups differed significantly (Wilcoxon Signed Rank = 15876422, n1 = 214, n2 = 214, P < 0.01, greater).
-The negative log prediction values of the correct species are higher than that of the negative log values of the incorrect species.
+The negative log prediction values of the correct species are higher than that of the negative log values of the incorrect species. 
+In Figure \ref{fig:Log_dist} the distributions and boxplots of the summed log values can be found.
+
+\begin{figure}[htpb]
+ \centering
+ %\hspace{-0.5cm}
+ \includegraphics[width=\textwidth]{figures/log_plot.pdf}
+ \caption[Log Distribution]{The summed log distribution of the species predictions. The blue values represent the correct species, and the orange values indicate the incorrect species. Note that outliers have not been plotted.}
+ \label{fig:Log_dist}
+\end{figure}
 
 
 \subsection{Information Extraction}
@@ -1565,7 +1580,7 @@ As shown from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:preci
 The classifier identifies almost all description text chunks from the data (recall).
 The text chunks qualified as descriptions are almost all correctly classified (precision).
 
-The classifier performs worse on the two left-out datasets. 
+The classifier performs worse on the two held-out datasets. 
 The returned results are still relatively high with a recall of 0.90; however, the precision is lower with 0.83; the returned labels are incorrect for 17\% of the time.
 However, as both f-1 values exceeded the threshold value set at the beginning of this thesis, the model was deemed sufficient and deployed in the web crawler. 
 %However, we have some suggestions to improve the binary classifier in future work.
@@ -1573,12 +1588,12 @@ However, as both f-1 values exceeded the threshold value set at the beginning of
 %By starting with a lower \(\beta\) and gradually increase \(\beta\) during the parameter optimisation %process, the model might optimise the parameters better as it gets penalised less hard.
 
 \subsubsection{Description Classifier Accuracy}
-With the two left-out datasets, we processed the text the same way as we would have when the text was processed by the web crawler. 
+With the two held-out datasets, we processed the text the same way as we would have when the text was processed by the web crawler. 
 We clean the text and split the text into single sentences with the sentecizer of \textcite{honnibal_spacy_2020}.
 As we do not have the ground truth labels of this dataset, we implement Equation \ref{eq:softloss_ifthen}.
 This equation will treat prediction values with a 0.8 or higher as correct\footnote{It actually changes the label of the sample.}.
 The classifier still performs very reasonably on the two left out datasets.
-However, with an f1-score of 0.86, the classifier performs worse than the test dataset.
+However, with an F1-score of 0.86, the classifier performs worse than the test dataset.
 This performance issue is likely to occur due to the following reasons:
 
 First, this could be a classic example where a model learns to predict over-represented class in the dataset.
@@ -1590,7 +1605,7 @@ In our case, the negative class is also over represented in the dataset during t
 The parameters are better optimised for the over represented class, i.e. the negative class.
 Figure \ref{fig:predictionvalues_external} clearly shows that the misclassified samples are much higher for the positive samples (description values) than for the negative samples. 
 The data distribution for the two-left out test sets is also skewed, as can be seen from Table \ref{tab:precision_recall_metrics}.
-Figure \ref{fig:predictionvalues_external} show that the output probabilities for the two left-out datasets also follow this skewness; far more prediction values are pushed towards zero than towards one.
+Figure \ref{fig:predictionvalues_external} show that the output probabilities for the two held-out datasets also follow this skewness; far more prediction values are pushed towards zero than towards one.
 The model learned to predict the negatives better than the positive values.
 
 Second, the data preparation could cause performance issues.
@@ -1600,9 +1615,9 @@ The text data is not all in the correct place of a paragraph, e.g. descriptive d
 Even with an appropriate \(\beta\), the model cannot optimise the parameters correctly as a single feature contains information from both labels.
 This will result in a model that cannot optimally utilise the loss function from \textcite{reed_training_2015}, as high prediction values will be less likely to be reached.
 Thus the loss function is not used to its full extend.
-%The model will perform well on correctly labeled sentences, but its prediction values will be less certain.
-This might explain the lower f-1 score of the classifier on the two left-out datasets.
-Like with the training data, the left-out datasets will contain mislabelled sentences as the text is messy (again, see Section \ref{par:reedloss}).
+%The model will perform well on correctly labelled sentences, but its prediction values will be less certain.
+This might explain the lower f-1 score of the classifier on the two held-out datasets.
+Like with the training data, the held-out datasets will contain mislabelled sentences as the text is messy (again, see Section \ref{par:reedloss}).
 The parameters are not fully optimised, and thus the model will not reach the \(\beta\) threshold of 0.8, resulting in an incorrect prediction, even when the sentence is a description.
 %This will result in mislabelled sentences, where the model cannot use the high prediction value in case it is certain about a prediction, because the parameters are not fully optimised.
 It would make sense to split the text into smaller chunks or even single sentences during the training of the classifier in future research.
@@ -1615,7 +1630,7 @@ We used the same \(\beta\) during training and testing.
 However, during the training, we used the soft loss of \textcite{reed_training_2015}, whereas, during testing, we used a modified version of their hard loss.
 The soft loss equation directly calculates regression targets for each batch, where the hard loss version is allowed to change the label if the set threshold is reached.
 
-Third, the lower f1-value could be specifically related to the two left-out datasets from Llifle and Agroforestry.
+Third, the lower F1-value could be specifically related to the two held-out datasets from Llifle and Agroforestry.
 Overall the classifier performed well; Figure \ref{fig:predictionvalues_external} show that most prediction values are pushed towards either zero or one.
 However, Figure \ref{fig:predictionvalues_external} also shows that more samples are mislabelled between the threshold value of 0.5 towards 0.8 than below 0.5 and above 0.2.
 Testing the misclassified values below 0.5 and above 0.5 against each other does confirm that misclassified values above 0.5 are significantly higher than below 0.5.
@@ -1892,41 +1907,45 @@ We do not assume that the model will reach a high accuracy classifying the speci
 
 By summing the negative log values of the model output, like we did in Figure \ref{fig:predictionvalues_external}, the model learns to make predictions based on small text sentence; it makes it possible to use small text pieces during the training process and make a final prediction based on all pieces.
 The example of \ref{fig:predictionvalues_external} is a cherry-picked example; with all text samples, the model perfectly classifies the correct species.
-The model actually find the the correct species around the eleventh text sample.
+The model actually find the the correct species around the eleventh text sample and the prediction does not change anymore as more text snippets are added.
 In most cases, we did not expect the model to find the correct species. 
-We do expect that correct species will have an overall higher rank (summed log value) than species that are incorrect.
+We did expect that correct species will have an overall higher rank (summed log value) than species that are incorrect.
 
 For each species, we took the summed log value of the correct species and tested if these values were significantly higher than those of the incorrect species.
 We did not expect that the model would reach a high accuracy in predicting species.
-The Wilcoxon Singed Rank test does indicate that the model learn to classify the species.
+The Wilcoxon Singed Rank test does indicate that the model learn to classify the species (also see Figure \ref{fig:Log_dist}).
 The log values of the correct species where significant higher than the log values of the incorrect species.
 
 The model does perform better than a random classifier.
 However, we do not know to what extent the model can correctly classify species.
 It is highly dependent on the database overlap in our case.
 One might even argue, that this test only proves that the databases are similar to some extent.
-To really investigate, the potential of this model, it can be reviewed by expert in the field.
+To really investigate, the potential of this model, it can be reviewed by experts in the field.
 The model should be trained by all available data. 
 When the model makes a prediction and makes a classification based on text samples, the prediction is either correct or incorrect.
 In the case of an incorrect prediction, experts could help investigate if it is still a reasonable prediction, as many species look a like.
+E.g. in the case of the Common raven versus the Carrion crow; when the model is presented snippets of the Common raven, and it predicts a Carrion crow, the model is incorrect, but the prediction is still very reasonable.
 The incorrect classification might be caused by a vital text piece that makes a distinguish between two (or more) species.
 
+Another approach is training the classifier on the same dataset as we did now, and manually select species from the other dataset.
+These species should be very distinguishable, e.g. group several uniformly coloured birds, each group with a different colour.
+Next, make sure that within each group there are also some bird traits that make it possible to separate them on the text traits.
 
 
-
-
-
-
-\subsection{Branch Importance}
+\subsection{Branch Importance} \label{par:branch_importance}
 We tried to infer branch importance by training a model on recreated pieces of text.
+Branch importance can tell us which traits are distinguishable within the used data.
 This has proven to be very difficult as the nodes of the branches do not all exist of singular words.
-
 E.g. a node could contain 'up to 5 cm long', but for an other species that does share the same morphological traits it is described as 'to 5 cm long'.
+In both cases (of depending on the other nodes), the overall importance of the nodes will be overestimated. 
+Both nodes are seen as unique, and thus very important for the specific species as they are unique for that species (assuming the nodes do not exists within other species knowledge graphs).
+
 A BERT model will output both vectors with a high similarity.
 A classifier on top of BERT will also classify both nodes the same, but this is highly dependent on the complexity of the classifier and the amount of epoch used to train the classifier.
 When the classifier on top of BERT is trained long enough it will to start overfitting on the data.
 The classifier will see both nodes as two different nodes and classify them as such.
 In the example of the '5 cm long', the traits are no longer shared across the species, as the 'up to 5 cm long' and 'to 5 cm long' are now both seen as two unique nodes.
+
 
 The overfitting is also dependent on the complexity of the classifier. 
 A simple classifier cannot over fit the data, but it might not be able to capture the complexity of the BERT output to make reasonable predictions.
@@ -1946,7 +1965,7 @@ In this thesis we investigated how a large database with species and their corre
 
 %In this thesis we investigated how we can automatically query web pages, retrieve the text and assess which sentences are part of a species descriptions and which are not.
 We found that a deep learning binary classification with a custom loss function can be quickly trained without annotating any data.
-By first gathering text from several structured web sources and using the paragraph and titles as labels and the text split into chunks of random size as features, we reached an f1-score of 0.96 on the test set and and f1-score of 0.83 on two completely left-out datasets.
+By first gathering text from several structured web sources and using the paragraph and titles as labels and the text split into chunks of random size as features, we reached an F1-score of 0.96 on the test set and and F1-score of 0.83 on two completely held-out datasets.
 The custom loss function allows the model for some semi-supervised learning by allowing the model to chance the label of a sample if a predefined threshold is reached.
 We deployed this model into a web crawler.
 We used scientific databases to find all currently known plant species and bird species.
@@ -1966,24 +1985,30 @@ The data mainly exists of nodes (nouns/adjectives) and the relationship between 
 \textbf{Description Binary Classifier.}
 It would be interesting to change the threshold values of the binary classifier.
 In this research, we simply used a threshold of 0.5 to classify whether something is a description or not.
-As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test_external}, the f1-score on the external datasets was 0.83. 
+As can be seen from Table \ref{tab:precision_recall_metrics} and Figure \ref{fig:precision_recall_curve_test_external}, the F1-score on the external datasets was 0.83. 
 This score was reached with a recall of 0.77 and a precision of 0.83.
 The classifier found 77\% of all positive values, and of all values classified as positive, 83\% was correct.
-By increasing the threshold value for classification to recall will go down, and precision will go up.
+By increasing the threshold value for classification the recall will go down, and precision will go up.
 A lower recall would mean less sentences would be retrieved by the model.
 However, with higher precision, more sentences that are classified as descriptive are correct, resulting in a higher quality database.
 By lowering the recall enough, a precision of 1.0 could be reached.
 While the quality of the database would increase, the size of the database would decrease as less sentences are stored.
 This could result in vital information loss as the classifier might miss vital sentences describing a species.
 
-%% Combination with glossary?
+In case of the two held-out databases, we can reach a precision of 1.00, when we increase the binary classifier threshold from 0.5 to 0.79; prediction values above 0.79 will be classified as a description.
+The recall of the description class will drop to 0.68, meaning the classifier detects only 68\% of the descriptions.
+In this example, it is highly likely that threshold value of 0.79 is linked the $\beta$ of 0.8 that is used to correct for miss labelled text snippets in the two held-out datasets. 
+In future work, the binary classifier can be tested on a manually labelled dataset to find a classification value with a good precision/recall trade-off.  
+Is also has to be tested to what extent increasing the threshold value, increases the quality of the description database. 
+We now use a glossary to filter out miss classified sentences as much as possible.
+Maybe increasing the threshold value does not improve the quality of the database that much as miss labelled sentences might already be filtered out.
 
 \noindent
 \newline
-\textbf{PDF Web Crawler.}
+\textbf{Data Origins PDF files.}
 Figure \ref{fig:URL_top20} shows that more than 15\%\footnote{\href{https://www.researchgate.net/}{Researchgate.net} and \href{https://www.academia.edu/}{academia.edu} are both scientific resources that are returned the most. The actual number is probably much higher as Figure \ref{fig:URL_distribution_3} only displays the top 20 websites.} of the unique base URLs come from scientific databases.
 While these databases contain rich scholarly content, we did not use their data.
-Most of this data is offered as a PDF download (or sometimes as a viewable PDF).
+Most of their data is offered as a PDF download (or sometimes as a viewable PDF).
 Reconstructing PDF files into their original structure has proven very difficult (although not impossible).
 Some (older) PDF files are scanned, resulting in a single image per two pages. 
 It is possible to split this page, but not all PDF files are scanned with the same margins. 
@@ -1994,34 +2019,63 @@ However, the indentation depends on the text margins, which varies across the PD
 As for now, we skipped PDF (and similar files). 
 We left some room to quickly implement a PDF reader that could break down PDF files into single sentences in the web crawler.
 
+By implementing a PDF reader that could break down scientific papers into single sentences, a large number of extra sources becomes available.
+As most of these extra data will come from scientific sources, the quality of the database will increase.
+Scientific sources describe how a specific species differs from a near relative.
+This makes it very interesting, as this will result in very specific traits that are distinguishable for said species.
+
 \noindent
 \newline
 \textbf{Palm Trait \& CUB-200 dataset Comparison.}
 To check whether our approach extracted useful information, we matched in against the Palm Trait dataset of \textcite{kissling_palmtraits_2019} and the CUB-200 dataset of \textcite{welinder_caltech-ucsd_2010}.
 We created several Figures and tables to assess if our approach extracted useful information.
-However our approach is not penalised for any rubbish.
+As for now, we only used metrics, to see if our model picks up a correct signal in the returned data.
+We did not include any way to validate the model incorrect, duplicate and unnecessary data.
 
-In the case of the comparison against the CUB-200 dataset, we took the highest comparison value of the vector embeddings of both species.
-By doing this, the AI system is rewarded for finding and extracting the correct information.
-However, the model is not penalised for adding nonsense.
-The similarity value cannot go down, it can only go up.
-In future research, the model needs to be penalised for information that is not useful.
+We took the highest similarity value of the vector embeddings for each bird when we compared our dataset against the CUB-200 dataset.
+Whenever the model came across a well-known bird species, a lot descriptions are found for that bird.
+We broke down the description sentences into small text snippets, resulting in more text snippets than a lesser-known bird.
+Because we only took the highest similarity value of the vector embeddings, bird with more text snippets have a higher chance of matching against the CUB-200 dataset.
+In the meantime, the large number of possibly incorrect snippets are not included in the model metrics.
+When our AI-system finds and extract a text snippet for a certain bird that is a 100\% against the same bird from the CUB-200 dataset, it will result in a similarity value of 1.00. 
+Even when one exact is found, and an $n$ number of snippets that do not make any sense, the model is correct and not penalised for these incorrect values.
+
+For the Palm Trait dataset, we used a different approach.
+We searched for direct hits, or the closest value. 
+When no missing value was found, it resulted in an incorrect value that was included in the metrics.
+Similarity values were no longer computed.
+However, the metric do not include any missing value.
+
+
+%In the case of the comparison against the CUB-200 dataset, we took the highest comparison value of the vector embeddings of both species.
+%By doing this, the AI system is rewarded for finding and extracting the correct information.
+%However, the model is not penalised for adding nonsense.
+%The similarity value cannot go down, it can only go up.
+%In future research, the model needs to be penalised for information that is not useful.
 
 
 \noindent
 \newline
 \textbf{Ontology's.}
-Now all the knowledge graph of the species stands on itself; the graphs can be linked among each other, but do not contain any other information other then descriptions.
+Now all the knowledge graph of the species stands on itself; the graphs can be linked among knowledge graph from other species, as long as the nodes contain exactly the same text.
+The graphs do not contain any other information other then descriptions.
 The benefit of a knowledge graph is that information is both interpretable for humans and computers.
 Knowledge graphs of the species can now easily be linked to other data sources like \href{https://www.wikidata.org/wiki/Wikidata:Main_Page}{WikiData}.
-This way the information can be improved, and might allow future models to learn which ending nodes contain measurement or colors instead of just learning which traits are relevant or irrelevant for a species.
+This way the information can be enriched, 
+Future models can learn the difference between parts, colours, measurements etc. based on the predicate between the nodes.
+
 The WikiData is now structured the same with the base nodes of the plant e.g. "\href{https://www.wikidata.org/wiki/Property:P527}{has part} (P527)"  is similar to our $has\_main\_part$ and $has\_sub\_part$.
 By processing our knowledge graph further, data could theoretically be linked.
-Instead of simple $is$ predicates between noun nodes and adjectives, the predicate could be changed into e.g. $has\_colour$, $has\_measurement$ or $has\_property$.
-This way it is much easier for a model the select important nodes.
-Nodes that contain measurements will be less important as this will be depended on the input image, while nodes that contain colors become more important as these will be easy distinguishable traits.
-To achieve this, textual descriptive must be processed to an such a level that nodes mostly contain single words.
-This allows species to have more shared nodes as the nodes become less unique.
+Instead of simple $has_property$ predicates between noun nodes and adjectives, the predicate could be changed into e.g. $has\_colour$, $has\_measurement$ or $has\_property$.
+This way it is much easier for a model the select important nodes, but in the meantime a simple property graph as still valid.
+Nodes that contain measurements will be less important as this will be depended on the input image, while nodes that contain colours become more important as these will be easy distinguishable traits.
+
+We still have a few more steps to take to create a 'clean' knowledge graph.
+An other important part is to create singular text nodes like we describe in Section \ref{par:branch_importance}.
+When nodes are processed in such a way that similar nodes are somehow 'pushed' together, more shared traits are possible.
+It is even possible to switch from an NLP model to a simpler model.
+We do not need vector representations of text any more, as we nodes are shared and we no longer need the similarity between miss matched nodes.
+With enough traits per species, we can simply select the unique combination traits for a species.
 
 In Figure \ref{fig:kngraph_rec} a small example of a knowledge graph that implements these features can be found.
 This knowledge graph corresponds to the following text:
