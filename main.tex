@@ -256,7 +256,7 @@
   \thispagestyle{empty}
   
   \begin{center}
-  {\bfseries \Large \thetitle}
+  {\bfseries \Large \hspace{1em}\thetitle}
   \newline
   \newline
   \newline
@@ -300,19 +300,20 @@
 \newpage
 \thispagestyle{empty}
 \section*{Foreword}
-First of all, I would like to thank my supervisors Diego Marcos and Professor Ioannis Athanasiadis.
+I want to thank my supervisors, professor Diego Marcos and Professor Ioannis Athanasiadis.
 Both were always available for support and constructive criticism.
 Especially Diego Marcos, without his feedback and constructive criticisms, this thesis would not have been possible.
+Large parts of this thesis are built on his ideas.
 \newline
 
 \noindent
-The front cover is a little joke to make the geo-information theme more prominent present in this thesis. 
+The front cover is a little joke to give the geo-information theme a more prominent presence in this thesis. 
 Most of this thesis is about textual data without any location information.
 The front cover is a word cloud that displays the most common Dutch bird traits that we found in our datasets. 
-It contains 519 bird that are present in the Netherlands, somewhere we 'lost' 7 birds as according to the \href{https://avibase.bsc-eoc.org/checklist.jsp?region=NL&list=howardmoore}{Checklist of Dutch bird species} there are 526 birds (September 2020) present in the Netherlands.
-For the word cloud we constructed a small database and simply counted the occurrences of all the trait combinations.
-There are some mistakes such as 'Great Covert' obviously refers to 'greater converts' and does not mean that birds in the Netherlands have great coverts.  
-While just used as a front cover, it does have some research potential to investigate the most common traits of a certain location.
+It contains 519 bird present in the Netherlands; somewhere, we have 'lost' 7 birds as according to the \href{https://avibase.bsc-eoc.org/checklist.jsp?region=NL&list=howardmoore}{Checklist of Dutch bird species} there are 526 birds (September 2020) present in the Netherlands.
+We constructed a small database for the word cloud and simply counted the occurrences of all the trait combinations. 
+There are some mistakes, such as 'Great Covert' obviously refers to 'greater converts' and does not mean that birds in the Netherlands have great coverts.  
+While just used as a front cover, it does have research potential to investigate the most common traits of a certain location.
 
 
 
@@ -321,28 +322,32 @@ While just used as a front cover, it does have some research potential to invest
 \newpage
 \thispagestyle{empty}
 \section*{Abstract}
-To tackle biodiversity loss, it is necessary to first identify and describe species.
-By splitting a Deep Neural Network into a visual component and a natural language component, this process can be scaled and automated.
-The natural language component first needs to learn to predict species based on visual traits.
-This study aim to create a consistent database that contains morphological species trait, that can be used to learn a natural language processing model reason like a skilled taxonomist.
+To tackle biodiversity loss, it is necessary first to identify and describe species.
+Deep Neural Networks can help automate and speed up this process.
+By splitting a Deep Neural Network into a visual component and a natural language component, we can improve the model and, in the meantime, keep the model interpretable.
+The visual component describes what it 'sees', and the natural language component takes the text and makes a prediction.
+The model will perform well on long-tailed datasets (biodiversity datasets) as traits can now also be shared across species.
+The intermediate results are easily interpretable as natural language is used.
+The first step of the visual-language hybrid model is training the language model.
+This study aims to create a consistent database containing morphological species traits that can be used to learn a natural language processing model like a skilled taxonomist.
 
-The first step is training an separate deep learning model that can recognise descriptive text about species.
-This classifier is inserted into a web crawler and can automatically query species a retrieve descriptions about said species.
-The result of running the web crawler for two weeks is a large database with textual descriptions for about 15,000 species.
+We first trained a model that can classify text into descriptions and otherwise.
+We trained this model by scraping several semi-structured databases and implemented a custom loss function to correct noisy labels.
+This classifier is implemented into a web crawler and can automatically query species and retrieve descriptions about said species.
+The result of running the web crawler for two weeks is a large database with 4,3 million textual descriptions for about 15 thousand species.
 
-The second step is extracting the most important and most descriminative traits per parts per species.
+The second step is extracting the most important and most discriminative traits per species.
 Several posthoc deep learning explanation techniques and part-of-speech in combination with dependency parsing are compared.
-Part-of-speech in combination with dependency parsing extract the most relevant information from the descriptive sentences.
+Part-of-Speech combined with dependency parsing gave the best results.
 By matching sentences against a glossary containing expert words, misclassified sentences and irrelevant traits could be filtered out.
-The data is processed and per species a knowledge graph is created.
 
-Finally, a natural language processing model is training that can reason like a skilled taxonomist.
-The model is trained on the knowledge graph that were reconstructed into small sentences before feeding them to natural language processing model.
-This deep learning model is able to distinguish descriminative traits for the subset of species it has been trained on
+Finally, a natural language processing model is trained to reason like a skilled taxonomist.
+The model is trained on small text snippets from the previous step, and a final prediction is made by combining the log values of the combined text snippets.
+This deep learning model can make species predictions based on textual descriptions and can distinguish discriminative traits for the subset of species it has been trained on.
 
 \vspace{5mm} %5mm vertical space
 \noindent
-{\bf Keywords:} Natural Language Processing, Deep Learning, Species Classification, Knowledge Graph 
+{\bf Keywords:} Natural Language Processing, Deep Learning, Species Classification, Species Traits, Taxonomy
 
 
 \glsaddall\printglossary[type=\acronymtype, nonumberlist]
@@ -408,7 +413,7 @@ Provided enough layers are stacked upon each other, very complex features can be
     \label{fig:CNN}
 \end{figure}
 
-Because the network's parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019}, and they do not perform well on long-tailed datasets\footnote{Long-tailed datasets are skewed datasets. A lot of samples are available for a few species and most species only are represented in the dataset only by a few species.}, like most real-world datasets \autocite{van_horn_inaturalist_2018}.
+Because the network's parameters are updated based on its input data, the reasoning of DNNs remains challenging to understand \autocite{li_interpretable_2021, losch_interpretability_2019}, and they do not perform well on long-tailed datasets\footnote{Long-tailed datasets are skewed datasets. A lot of samples are available for a few species and most species are represented in the dataset by a few samples.}, like most real-world datasets \autocite{van_horn_inaturalist_2018}.
 Stacking multiple layers of neurons on top of each other often results in millions of parameters.
 All of these neurons use non-linear activation functions that decrease the interpretability of the network.
 In long-tailed datasets, the parameters are not well optimised for less represented classes as the neurons cannot extract the necessary features.
@@ -483,20 +488,20 @@ The second objective of this research is: to process the data in such a way that
 \end{itemize}
 We train an NLP classification model on the sentences and expect the classifier to focus on the most important traits.
 We compare several posthoc explanation techniques to retrieve keywords. 
-Besides the method above, we also use the pre-trained transformer model of \textcite{wolf_huggingfaces_2020} to extract the necessary features, as these models are already pre-trained to extract relations between words.
+Besides the method above, we also use the pre-trained transformer model of \textcite{wolf_huggingfaces_2020} to use Part-of-Speech (PoS) with dependency parsing to extract the necessary features, as these models are already pre-trained to extract relations between words.
 
 Finally, we investigate how we can train an NLP model that can infer species based on the data we gathered and processed:
 \begin{itemize}
     \item \emph{How should a deep learning model be built, trained and evaluated to predict existing species with natural language?}
 \end{itemize}
 This model should distinguish species based on the data from research objective two.
-We expect that the model will (depending on the species used for training) distinguish species from each other and return the most distinctive feature(s) per species. 
+We expect that the model (depending on the species used for training) will distinguish species from each other and return the most distinctive feature(s) per species. 
 The final result will be a clean database.
 This database contains clean species descriptions, and there should be a distinction present to see which morphological trait is the most important.
 
 We first will describe our approach in the Methodology in Section \ref{par:methodoly}.
-Section \ref{par:dataset}, describes how we gather enough data to train an NLP model to recognise text descriptions an inn Section \ref{par:keywords} we describe a method for comparing different posthoc explanatory techniques to extract the most distinctive traits of each species.
-Section \ref{par:species_prediction} we describe how we train and NLP model to infer species based on descriptions.
+Section \ref{par:dataset}, describes how we gather enough data to train an NLP model to recognise text descriptions and in Section \ref{par:keywords} we describe a method for comparing different posthoc explanatory techniques to extract the most distinctive traits of each species.
+Section \ref{par:species_prediction} we describe how we train a NLP model to infer species based on descriptions.
 In Section \ref{par:results}, we present the results, and in Section \ref{par:discussion}, we discuss our results.
 
 \newpage
@@ -508,7 +513,7 @@ In Section \ref{par:results}, we present the results, and in Section \ref{par:di
     \centering
     %\vspace{-2cm}
     \includegraphics[width=\textwidth]{figures/workflow.pdf}
-    \caption[Proposed Workflow]{A simplified proposed workflow for this thesis. The web crawler searches for species descriptions on the world wide web. We use a custom script combined with the transformer models of \textcite{wolf_huggingfaces_2020} to extract the information from the sentences and create a knowledge graph per species. Finally, an NLP model is trained to extract the most distinctive traits of the knowledge graph that make a species distinct from other species.}
+    \caption[Proposed Workflow]{A simplified proposed workflow for this thesis. The web crawler searches for species descriptions on the world wide web. We extract the most important traits for each species. Finally, an NLP model is trained that can make a prediction based on the traits and keeps track which traits are most distinctive.}
     \label{fig:workflow}
 \end{figure}
 
@@ -591,7 +596,7 @@ The final activation function is a log-likelihood (log-softmax) function:
 \end{equation}
 Where~$x$ is the~$log$ probability.
 Using a log-softmax will slightly increase the error factor of the model over a normal softmax function, punishing mistakes a bit higher.
-he standard likelihood (softmax) probabilities can be computed by taking the exponent:
+The standard likelihood (softmax) probabilities can be computed by taking the exponent:
 \begin{equation}
     p = e^{x} 
 \end{equation}
@@ -623,7 +628,7 @@ We use a minimum of 10 words to prevent the model from fixating on specific word
 
 \subsubsection{Loss Function}
 Automatically labelling the data will not result in a consistent dataset.
-There is a chance we miss pecific headers and mislabel them during the preprocessing.
+There is a chance we miss specific headers and mislabel them during the preprocessing.
 Even if we correctly label all features, not all data will be labelled correctly as text is generally unstructured \autocite{kumar_text_2020}.
 E.g. some species descriptions might be located in the paragraph "Introduction", and some general information might be in the paragraph "Characteristics".
 Consider the text "The European robin is red-breasted with distinctive eyes.".
@@ -641,7 +646,7 @@ With Equation \ref{eq:softloss}, the model is now 'allowed' to disagree with the
 %When the prediction values reach a set threshold (\(\beta\)), the prediction is treated as correct and the loss is calculated accordingly.
 %If the model prediction reaches the set threshold, the prediction is seen as a the correct label and the label is changed during the training process, but if the model prediction is below the threshold, the loss will be calculated accordingly.
 We assume most labels are correct, allowing the model to learn enough from these samples.
-Therefore we use a \(\beta\) of 0.80\footnote{Best practice would be find the correct \(\beta\) through cross validation \autocite{reed_training_2015, han_survey_2021}. However, as we train the model on Google Colab instances this would not be feasible.}.
+We use a \(\beta\) of 0.80\footnote{Best practice would be find the correct \(\beta\) through cross validation \autocite{reed_training_2015, han_survey_2021}. However, as we train the model on Google Colab instances this would not be feasible. We use the same $\beta$ as \textcite{zhang_learn_2020}.}.
 If we start with a low \(\beta\) (e.g. 0.50), there is a chance the model does not learn correctly as it can bootstrap too many samples.
 If we use a high \(\beta\) (e.g. 1,00), the model cannot bootstrap any samples, resulting in a regular cross-entropy loss.
 
@@ -665,7 +670,7 @@ The F1-score is calculated with the following formula:
 We use the Python package from \textcite{pedregosa_scikit-learn_2011} to calculate precision-recall metrics.
 
 Before text tokenisation, we first clean it of references and footnotes.
-We no longer split the into random chunks, but we use a sentecizer of \textcite{honnibal_spacy_2020} to split the text into sentences.
+We no longer split text into random chunks, but we use a sentecizer of \textcite{honnibal_spacy_2020} to split the text into sentences.
 Splitting text into sentences instead of random text chunks prevents information loss.
 
 The held-out datasets will also have mislabelled sentences like the training data.
@@ -698,8 +703,8 @@ We do the same for the bird species; bird species are sorted based on their numb
     \centering
     %\textbf{The Web Crawler}
     %\vspace{-2cm}
-    \makebox[\textwidth][c]{\includegraphics[width=\textwidth]{figures/webcrawler.pdf}}
-    \caption[Web Crawler]{The process of the web crawler. The search engines are queries with five different queries per species. The search engines return a list of URLs per species. BeautifulSoup break extract the HTML of each URL and retrieves the text. SpaCy break the text down into single sentences. The sentences are presented to the classifier.}
+    \makebox[0.8\textwidth][c]{\includegraphics[width=0.8\textwidth]{figures/webcrawler_v4.pdf}}
+    \caption[Web Crawler]{The process of the web crawler. The search engines are queries with five different queries per species. The search engines return a list of URLs per species. BeautifulSoup and Requests extracts the HTML of each URL and retrieves the text. SpaCy breaks the text down into single sentences. The sentences are pushed through the classifier.}
     \label{fig:webcrawler}
 \end{figure}
 
@@ -743,7 +748,7 @@ This way, search engines cannot return any results that it deems similar.
 Each query will return a list of candidate URLs and are appended to a list for a single species.
 %The URL list is checked for duplicates as this is computationally less expense than calculating the cosine similarity for each sentence to drop duplicates.
 The URLs are visited, and all the text is retrieved.
-If a URL points towards a PDF file er text file, it is skipped.
+PDF files and text files are skipped.
 PDF files and text files are read line by line and not as a single text span, and it is difficult to break these down into single sentences. 
 Finally, the header of the URL is checked against the queried species to make sure that the page contains information about the queried species.
 In Figure \ref{fig:webcrawler}, the process overview of the web crawler can be found, and in Figure \ref{fig:webcrawler_sents}, a small example can be found of how the web crawler 'sees' a random piece of text.
@@ -888,7 +893,7 @@ Each bird is represented by approximately 60 images, and each of these images is
 Before extracting keywords, we first match every sentence from our dataset against a bird glossary from \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds}.
 Matching sentences against the glossary allows us to create a similarity matrix per part instead of per bird (see Figure \ref{fig:similarity_workflow}).
 %The CUB-200 dataset only contains visual traits, whereas our own bird dataset can also contain non-visual traits like behavioural traits or vocal traits.
-From \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds}, we extract 1,163 glossary terms related to birds\footnote{This list include the most common terms, but also similar terms. For example 'addled eggs ' has two glossary terms: 'wind eggs' and 'hypanema' that mean the same. We append all three term to the glossary list.}.
+From \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Glossary/Birds}, we extract 1,163 glossary terms related to birds\footnote{This list includes the most common terms, but also similar terms. For example 'addled eggs ' has two glossary terms: 'wind eggs' and 'hypanema' that mean the same. We append all three term to the glossary list.}.
 %Matching our own textual data against the bird glossary will also remove sentences that are incorrectly classified by our classifier and also saves computing power as we can first select the bird, then select a trait and finally match the results against the CUB-200 dataset (see Figure \ref{fig:similarity_workflow}).
 
 \begin{figure} [htbp]
@@ -897,7 +902,7 @@ From \href{https://en.wikipedia.org/wiki/Glossary_of_bird_terms}{Wikipedia/Gloss
     %\hspace{-2cm}
     %\textbf{Similarity Matrix}
     \includegraphics[width=1\textwidth]{figures/Similarity_workflow.pdf}
-    \caption[Similarity Workflow]{The workflow to compare the datasets. We first select a common bird. Secondly we select a common part. With out own dataset we use an information extraction technique (attribution or PoS) to extract a adjective. The part and the adjective are combined, and the similarity against the CUB-200 dataset is calculated.}
+    \caption[Similarity Workflow]{The workflow to compare the datasets. We first select a common bird. Secondly we select a common part. With our own dataset we use an information extraction technique (attribution or PoS) to extract an adjective. The part and the adjective are combined, and the similarity against the CUB-200 dataset is calculated.}
     \label{fig:similarity_workflow}
 \end{figure}
 
@@ -938,11 +943,11 @@ The harmonic mean is computed to get the best attribution method:
 Where~$H$ is the harmonic mean,~$n$ is the number of samples, and~$x$ is the similarity value. 
 
 \subsubsection{Post Hoc Attribution Techniques} \label{par:attribution}
-We try several posthoc explanation techniques to retrieve keywords from the description data\footnote{We do not use jittering techniques as this makes no sense in the case of text data, which results in fixed values when tokenised.}. 
+We try several posthoc explanation techniques to retrieve keywords from the description data\footnote{We do not use jittering techniques as this makes no sense in the case of text data, which result in fixed values when tokenised.}. 
 We implement all techniques with the Captum library from \textcite{kokhlikyan_captum_2020}.
 \begin{itemize}
     \item Layer Integrated Gradients (LIG), based on the paper of \textcite{sundararajan_axiomatic_2017}. We use LIG with 20 steps and with 100 steps.
-    \item Occlusions, based on the paper of \textcite{fleet_visualizing_2014}. Although this is originally used to explain CNNs, it can also explain NLP models. We use two different versions of occlusion, (1) with a window and stride of both 1. (2) a window of 3\footnote{The windows is 1-dimensional in this case as the input vector is a tensor of the tokenised text.} and a stride of 2. In both cases, the word(s) will be replaced with a tensor of zeros to check the prediction changes of the model. 
+    \item Occlusions, based on the paper of \textcite{fleet_visualizing_2014}. Although this is originally used to explain CNNs, it can also explain NLP models. We use two different versions of occlusion, (1) with a window and stride of both 1. (2) a window of 3\footnote{The window is 1-dimensional in this case as the input vector is a tensor of the tokenised text.} and a stride of 2. In both cases, the word(s) will be replaced with a tensor of zeros to check the prediction changes of the model. 
     \item Shapley Value Sampling (SVS), based on the papers of \textcite{castro_polynomial_2009, strumbelj_efficient_2010}. We use the Captum default of 25 samples.
     \item Layer Activation (LA), which simple computes the activation of the internal BERT embeddings for the inputs.
     \item Layer Gradient X Activation (LGXA), which is the element-wise multiplication of the gradients and the layers activation for a giver target with respect to the layer.
@@ -1018,7 +1023,7 @@ In Figure \ref{fig:glossary}, a small example is shown of how we match sentences
     \centering
     %\hspace{-2cm}
     \includegraphics[width=0.8\textwidth]{figures/glossary_workflow.pdf}
-    \caption[Expert Glossary Example]{An example how each sentences is matched against a glossary containing expert words. This way, misclassified sentences can be filtered out and irrelevant description can be dropped.}
+    \caption[Expert Glossary Example]{An example how each sentence is matched against a glossary containing expert words. This way, misclassified sentences can be filtered out and irrelevant description can be dropped.}
     \label{fig:glossary}
 \end{figure}
 
@@ -1051,17 +1056,80 @@ In Figure \ref{fig:kngraph_unweighted}, a small example of a single species can 
 \begin{figure} [htpb]
     \centering
     %\vspace{-2cm}
-    \includegraphics[width=\textwidth]{figures/kngraph_unweighted.pdf}
+    \includegraphics[width=0.9\textwidth]{figures/kngraph_unweighted.pdf}
     \caption[Example of an unweighted knowledge graph]{An example of the information extracted for a single species we entered into the web crawler. Note that the relations are not shown plotted in this figure. For aesthetic reasons we only used the first 20 sentences for the graph.}
     \label{fig:kngraph_unweighted}
 \end{figure}
+
+\subsection{Evaluation Information Extraction}
+%We test our complete workflow against two different datasets. 
+%(1) We test is against the Palm Trait dataset from \textcite{kissling_palmtraits_2019} and (2) we test our workflow against manually created species descriptions matrices.
+%We use the Palm Trait dataset to automatically assess the results of our workflow and we use the manually created species description matrices and compare them manually against our workflow results.
+We test our complete workflow against two different datasets. 
+(1) We test is against the Palm Trait dataset from \textcite{kissling_palmtraits_2019} and (2) we test our workflow CUB-200 dataset from \textcite{welinder_caltech-ucsd_2010}.
+We use both datasets to automatically assess the results of our workflow.
+
+
+\subsubsection{Palm Trait Dataset comparison} \label{par:palmtrait_methods}
+The Palm Trait dataset of \textcite{kissling_palmtraits_2019} contains over 2,500 palm plant (Arecaceae) traits. 
+The Palm Trait dataset contains measurements, shape descriptions, colours descriptions and parts present.
+The dataset describes the based parts of the palms, such as growth form, stems, armature, leaves and fruits.
+Some parts are described using binary variables (e.g. StemErect = 1.0), other are described using words (e.g. FruitColor = Purple; Yellow) and most parts are described using integers (e.g. LeafNumber = 7, StemHeightMeter = 18).
+We only use palm species that are complete within the Palm Trait database, leaving us with 248 species.
+Each palm species is presented to the web crawler and we create a knowledge graph for each species.
+\newline
+
+\noindent
+\textbf{Binary Class Variables.}
+In case of binary variables we search for direct matches (e.g. 'erect' in the case of StemErect and 'armed' in case of StemArmed).
+We use the normalised zero one loss \autocite{sammut_zero-one_2010} to calculate the accuracy of the workflow.
+In some cases, using this loss, can result in biased accuracy.
+For example in the case of StemArmed, we search for the term 'armed'. When this term is found, it results in a one and a zero otherwise. 
+If most palms are not armed, the accuracy will be high.
+\newline
+
+\noindent
+\textbf{Multi Class Variables.}
+We search for direct hits of multi class variables.
+This is the case for fruit colours (e.g. 'red') and fruit shapes (e.g. 'ovoid').
+We first subset our knowledge graph, so it only contains information about the palm fruit. 
+The knowledge graph is not subset any further.
+We report the results with a confusion matrix and report the precision, recall, and F1-score.
+\newline
+
+\noindent
+\textbf{Numeric Variables.}
+In most cases, the Palm Trait dataset contains numeric variables.
+We again take the appropriate subset of our knowledge graph.
+Now, we search for the closest value in our knowledge graph subset.
+
+\subsubsection{CUB-200 Dataset comparison}
+To compare the results of our own dataset, we use the same approach as in Figure \ref{fig:similarity_workflow}.
+We compare our dataset against the hand-annotated CUB-200 dataset.
+We take a common bird and a common part, and push both descriptions through a untrained DistillBert model to retrieve the vector embeddings.
+Next, we compare both embeddings by computing the cosine similarity, and take the highest value from every similarity matrix:
+\begin{equation}
+    m=\max(0,  {X_i}_j  )
+\end{equation}
+Where $m$ is the maximum value and $X$ is the matrix per bird per part.
+We sum all the maximum values:
+\begin{equation}
+     s=\sum_{1=i}^{n} m_i
+\end{equation}
+Where $s$ is the total similarity value for a bird, $m$ are the maximum values from the matrices and $n$ is the number of parts (between 0 and 15).
+When the same part is not available in both datasets, we sum a zero.
+For all birds this will results in a similarity value between 0.0\footnote{In this case not a single common part is present in both datasets.} and 15.0\footnote{In this case both datasets completely overlap with all parts and have 100\% similarity for all text samples.}.
+
+As is makes no sense to compare these values, we rank the values for each bird in our dataset against the CUB dataset.
+This ranking process will result in a heatmap with values between 1 (highest rank) and 200 (lowest rank) for every bird in our own dataset against the birds in the CUB dataset.
+If every bird in our own dataset has a high similarity with the CUB dataset, it will result in a high ranking values.
 
 
 \subsection{Evaluation Species Prediction} \label{par:species_prediction}
 We cannot use a classic train/test split approach to train and validate the model.
 If we leave certain species out of the training fase, the model cannot learn their distinctive traits.
 If we leave out random parts of each species, some crucial information for that species might be lost.
-To validate if the model learn anything (i.e. the prediction values are better than a random classifier) we use three separate datasets.
+To validate if the model learns anything (i.e. the prediction values are better than a random classifier) we use three separate datasets.
 The PoWo dataset is used as training data and the Llifle and AgroForesty datasets are jointly used as testing data.
 We first find plants species that are present in both sets with a simple intersection.
 %Next we create semantic triples for every species and reconstruct every every semantic triple into a sentence.
@@ -1070,7 +1138,7 @@ We first find plants species that are present in both sets with a simple interse
 \subsubsection{Data Preparation \& Training} \label{par:pos_training}
 Section \ref{par:results_keywords} and especially Figure \ref{fig:hmean_violin}, show that PoS in combination with dependency parsing is the most promising technique to extract useful species descriptions from sentences.
 We cannot directly use the graphs in a NLP model to predict species.
-Graphs are complex, can a variable size and have no fixed forms, whereas text (which can also be represented as a graph) is relatively simple and is ordered to some extent \autocite{sanchez-lengeling_gentle_2021}. 
+Graphs are complex, can have a variable size and have no fixed form, whereas text (which can also be represented as a graph) is relatively simple and is ordered to some extent \autocite{sanchez-lengeling_gentle_2021}. 
 For simplicity, in this thesis we prepare the semantic triples for species prediction by creation single text span out of them.
 Each text span exists of a start node, relation and end node.
 The text span is finalised with a punctuation and is capitalised.
@@ -1130,85 +1198,18 @@ However, as we only look at the final result, the order no longer matters.
 
 We take the final summed negative log  value of the combined sentences for each test species to see if the model learned anything.
 We summed negative log values of the correct prediction against the average summed negative log values of the incorrect prediction.
-As the data will be distributed non normally (-inf to 0) and the data are paired, we use a Wilcoxon Signed-Rank Test to test the paired samples against each other \autocite{wilcoxon_individual_1945}.
+As the data will be distributed non normally ($-\infty$ to 0) and the data are paired, we use a Wilcoxon Signed-Rank Test to test the paired samples against each other \autocite{wilcoxon_individual_1945}.
 %We statistically test the correct prediction (one per species) against the incorrect predictions (number of test species minus one).
 %As the data will be distributed non-normally (-inf to 0) and the data is paired  we use a Mann–Whitney U test \autocite{mann_test_1947} to see whether both distribution differ significantly from each other.
 We will use an \(\alpha\) of 0.01 to determine if the model has learned anything. 
 
-
-\subsection{Evaluation Information Extraction}
-%We test our complete workflow against two different datasets. 
-%(1) We test is against the Palm Trait dataset from \textcite{kissling_palmtraits_2019} and (2) we test our workflow against manually created species descriptions matrices.
-%We use the Palm Trait dataset to automatically assess the results of our workflow and we use the manually created species description matrices and compare them manually against our workflow results.
-We test our complete workflow against two different datasets. 
-(1) We test is against the Palm Trait dataset from \textcite{kissling_palmtraits_2019} and (2) we test our workflow CUB-200 dataset from \textcite{welinder_caltech-ucsd_2010}.
-We use both datasets to automatically assess the results of our workflow.
-
-
-\subsubsection{Palm Trait Dataset comparison} \label{par:palmtrait_methods}
-The Palm Trait dataset of \textcite{kissling_palmtraits_2019} contain over 2,500 palm plant (Arecaceae) traits. 
-The Palm Trait dataset contain measurements, shape descriptions, colours descriptions and parts present.
-The dataset describes the based parts of the palms, such as growth form, stems, armature, leaves and fruits.
-Some parts are described using binary variables (e.g. StemErect = 1.0), other are described using words (e.g. FruitColor = Purple; Yellow) and most parts are described using integers (e.g. LeafNumber = 7, StemHeightMeter = 18).
-We only use palm species that are complete within the Palm Trait database, leaving us with 248 species.
-Each palm species is presented to the web crawler and we create a knowledge graph for each species.
-\newline
-
-\noindent
-\textbf{Binary Class Variables.}
-In case of binary variables we search for direct matches (e.g. 'erect' in the case of StemErect and 'armed' in case of StemArmed).
-We use the normalised zero one loss \autocite{sammut_zero-one_2010} to calculate the accuracy of the workflow.
-In some cases, using this loss, can result in biased accuracy.
-For example in the case of StemArmed, we search for the term 'armed'. When this term is found, it results in a one and a zero otherwise. 
-If most palms are not armed, the accuracy will be high.
-\newline
-
-\noindent
-\textbf{Multi Class Variables.}
-We search for direct hits of multi class variables.
-This is the case for fruit colours (e.g. 'red') and fruit shapes (e.g. 'ovoid').
-We first subset our knowledge graph, so it only contains information about the palm fruit. 
-The knowledge graph is not subset any further.
-We report the results with a confusion matrix and report the precision, recall, and F1-score.
-\newline
-
-\noindent
-\textbf{Numeric Variables.}
-In most cases, the Palm Trait dataset contains numeric variables.
-We again take the appropriate subset of our knowledge graph.
-Now, we search for the closest value in our knowledge graph subset.
-
-\subsubsection{CUB-200 Dataset comparison}
-To compare the results of our own dataset, we use the same approach as in Figure \ref{fig:similarity_workflow}.
-We compare our dataset against the hand-annotated CUB-200 dataset.
-We take a common bird and a common part, and push both description through a untrained DistillBert model to retrieve the vector embeddings.
-Next, we compare both embeddings by computing the cosine similarity, and take the highest value from every similarity matrix:
-\begin{equation}
-    m=\max(0,  {X_i}_j  )
-\end{equation}
-Where $m$ is the maximum value and $X$ is the matrix per bird per part.
-We sum all the maximum values:
-\begin{equation}
-     s=\sum_{1=i}^{n} m_i
-\end{equation}
-Where $s$ is the total similarity value for a bird, $m$ are the maximum values from the matrices and $n$ is the number of parts (between 0 and 15).
-When the same part is not available in both datasets, we sum a zero.
-For all birds this will results in a similarity value between 0.0\footnote{In this case not a single common part in present in both datasets.} and 15.0\footnote{In this case both datasets completely overlap with all parts and have 100\% similarity for all text samples.}.
-
-As is makes no sense to compare these values, we rank the values for each bird in our dataset against the CUB dataset.
-This ranking process will result in a heatmap with values between 1 (highest rank) and 200 (lowest rank) for every bird in our own dataset against the birds in the CUB dataset.
-If every bird in our own dataset has a high similarity with the CUB dataset, it will result in a high ranking values.
-We will match the average ranking value of our dataset against 200 times random sampling a value between 1 and 200.
-
-
-\subsection{Information Importance}
+\subsubsection{Trait Importance}
 We start by querying web pages that contain possible textual description using the web crawler.
 We extract information from the sentences that are returned the same way we described in Section \ref{par:PoS} and prepare the data like we described in Section \ref{par:pos_training}.
 This will result in a graph per species describing the species in a semantic way.
-We again create text spans from node-edge-node relations and train a linear classifier NLP classifier on the data.
+We again create text snippets from node-edge-node relations and train a linear classifier NLP classifier on the data.
 We use the same architecture as in Figure \ref{fig:model_architecture} and keep the batch size and learning rate the same.
 We train the model for 1,000 epochs.
-
 
 To calculate the relative importance of each node-edge-node, we push all the samples for a single species\footnote{We do not split the data into a train and test set and use all 229 species for training} through our trained classifier.
 We calculate the negative log values for each sample.
@@ -1226,10 +1227,13 @@ As expected node-edge-node relations that are shared across many species, like t
 \begin{figure} [htpb]
     \centering
     %\vspace{-2cm}
-    \includegraphics[width=\textwidth]{figures/kngraph_weighted.pdf}
+    \includegraphics[width=0.9\textwidth]{figures/kngraph_weighted.pdf}
     \caption[Example of an weighted knowledge graph]{The same knowledge graph as Figure \ref{fig:kngraph_unweighted}, only in this figure the nodes are colourised based on their importance. Yellow means a high importance value and deep blue means not important at all.}
     \label{fig:kngraph_weighted}
 \end{figure}
+
+
+
 
 \newpage
 \section{Results} \label{par:results}
@@ -1465,7 +1469,7 @@ We did not find any descriptions for one Bird, the Cape Starling (Lamprotornis n
          \caption{The description distribution of the CUB dataset.}
          \label{fig:CUB_distribution}
      \end{subfigure}
-     \caption[Bird description distribution]{The number of descriptions per bird for our data set that consists of random data and the Birds of the World dataset, and the CUB-200 dataset from the California Institute for Technology \autocite{welinder_caltech-ucsd_2010}. }
+     \caption[Bird description distribution]{The number of descriptions per bird for our data set that consists of random data and the Birds of the World dataset, and the CUB-200 dataset from the California Institute for Technology. }
  \label{fig:CUBBOW_distribution}
 \end{figure}
 
@@ -1482,23 +1486,6 @@ PoS, in combination with dependency, has the highest harmonic mean, the highest 
  \label{fig:hmean_violin}
 \end{figure}
 
-
-\subsection{Species Classification}
-We found 547 common species between the PoWo dataset and the Llifle dataset.
-219 species contain at least one description and are used to evaluate the dataset\footnote{There are a lot more overlapping species as we gathered around 30.000 species from the PoWo dataset and 20.000 from Llifle dataset, but these are common species that are described in both datasets.}.
-The median of the correct group was -448, and the median of the incorrect group was -545.
-The mean of the correct group was -921, and the mean of the incorrect group was -990.
-The distributions in the two groups differed significantly (Wilcoxon Signed Rank = 15876422, n1 = 214, n2 = 214, P < 0.01, greater).
-The negative log prediction values of the correct species are higher than that of the negative log values of the incorrect species. 
-In Figure \ref{fig:Log_dist} the distributions and boxplots of the summed log values can be found.
-
-\begin{figure}[htpb]
- \centering
- %\hspace{-0.5cm}
- \includegraphics[width=\textwidth]{figures/log_plot.pdf}
- \caption[Log Distribution]{The summed log distribution of the species predictions. The blue values represent the correct species, and the orange values indicate the incorrect species. Note that outliers have not been plotted.}
- \label{fig:Log_dist}
-\end{figure}
 
 
 \subsection{Information Extraction}
@@ -1561,35 +1548,35 @@ In a few ground truth cases contain a zero, when our model predicts a different 
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/stem_values.pdf}
-    \caption[Stem values ground truth vs predicted]{The the predicted stem values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any stem values for this palm species. Our approach resulted in 115 correct, 35 within 25\% 61 outside 25\% and 37 missing values.}
+    \caption[Stem values ground truth vs predicted]{The predicted stem values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not find any stem values for this palm species. Our approach resulted in 115 correct, 35 within 25\% 61 outside 25\% and 37 missing values.}
     \label{fig:stem_values}
 \end{figure}
 
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/leaf_values.pdf}
-    \caption[Leaf values ground truth vs predicted]{The the predicted leaf values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any leaf values for this palm species.}
+    \caption[Leaf values ground truth vs predicted]{The predicted leaf values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not find any leaf values for this palm species.}
     \label{fig:leaf_values}
 \end{figure}
 
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/fruitlength_values.pdf}
-    \caption[Fruit length values ground truth vs predicted]{The the predicted fruit length values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any fruit length values for this palm species.}
+    \caption[Fruit length values ground truth vs predicted]{The predicted fruit length values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not find any fruit length values for this palm species.}
     \label{fig:fruitlength_values}
 \end{figure}
 
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/fruitwidth_values.pdf}
-    \caption[Fruit width values ground truth vs predicted]{The the predicted fruit width values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any fruit length width for this palm species.}
+    \caption[Fruit width values ground truth vs predicted]{The predicted fruit width values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not find any fruit length width for this palm species.}
     \label{fig:fruitwidth_values}
 \end{figure}
 
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/petioleANDrachis_values.pdf}
-    \caption[Petiole and rachis values ground truth vs predicted]{The the predicted petiole and rachis values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not found any petiole length and rachis length for this palm species.}
+    \caption[Petiole and rachis values ground truth vs predicted]{The predicted petiole and rachis values expressed as a percentage of the ground truth values. Extreme values (below or above 25\%) are not plotted and are indicated with a little triangle. A dashed vertical line indicates a missing value; the web crawler did not find any petiole length and rachis length for this palm species.}
     \label{fig:petioleANDrachis_values}
 \end{figure}
 
@@ -1601,10 +1588,26 @@ There is a faint visible diagonal pattern visible, meaning that our data gatheri
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=1\textwidth]{figures/bird_ranking_v4.pdf}
-    \caption[Ranking of our birds against CUB birds]{Ranking of the birds of our datasets against the birds of the CUB dataset. On the y-axis our birds can be found. Each bird is ranked against all other 200 birds of the CUB dataset. }
+    \caption[Ranking of our birds against CUB birds]{We ranked our text descriptions (y-axis) against the descriptions of the CUB-200 dataset. Each bird is ranked against all other birds, making this a 200 times 200 matrix. There is a faint diagonal line visible, indicating our model does pick up some signal.}
     \label{fig:bird_ranking}
 \end{figure}
 
+\subsection{Species Classification}
+We found 547 common species between the PoWo dataset and the Llifle dataset.
+219 species contain at least one description and are used to evaluate the dataset\footnote{There are a lot more overlapping species as we gathered around 30.000 species from the PoWo dataset and 20.000 from Llifle dataset, but these are common species that are described in both datasets.}.
+The median of the correct group was -448, and the median of the incorrect group was -545.
+The mean of the correct group was -921, and the mean of the incorrect group was -990.
+The distributions in the two groups differed significantly (Wilcoxon Signed Rank = 15876422, n1 = 214, n2 = 214, P < 0.01, greater).
+The negative log prediction values of the correct species are higher than that of the negative log values of the incorrect species. 
+In Figure \ref{fig:Log_dist} the distributions and boxplots of the summed log values can be found.
+
+\begin{figure}[htpb]
+ \centering
+ %\hspace{-0.5cm}
+ \includegraphics[width=\textwidth]{figures/log_plot.pdf}
+ \caption[Log Distribution]{The summed log distribution of the species predictions. The blue values represent the correct species, and the orange values indicate the incorrect species. Note that outliers have not been plotted.}
+ \label{fig:Log_dist}
+\end{figure}
 
 \newpage
 \section{Discussion} \label{par:discussion}
@@ -1613,7 +1616,7 @@ There is a faint visible diagonal pattern visible, meaning that our data gatheri
 \subsection{Binary Classifier}
 We gathered enough samples (See Figure \ref{fig:text_length_distribution}) to properly train a binary classifier.
 Figures \ref{fig:text_length_1} and \ref{fig:text_length_2} show that the number of samples for the negative class is much higher than the positive class. 
-After splitting the features into chunks of a random length between 10 and the text length, the data is still skewed; the non-description class is over represented in the data (see Figures \ref{fig:text_length_3} and \ref{fig:text_length_4}). 
+After splitting the features into chunks of a random length between 10 and the text length, the data is still skewed; the non-description class is overrepresented in the data (see Figures \ref{fig:text_length_3} and \ref{fig:text_length_4}). 
 This skewed data set could lead to problems as the classifier will not see enough underrepresented class samples.
 The classifier will only update the parameters for the non-description class and still reach a good result on the test data.
 Because of this skewness, we evaluated the dataset with a precision-recall plot (Figures \ref{fig:precision_recall_curve_test} and \ref{fig:precision_recall_curve_test_external}).
@@ -1639,16 +1642,16 @@ The classifier still performs very reasonably on the two left out datasets.
 However, with an F1-score of 0.86, the classifier performs worse than the test dataset.
 This performance issue is likely to occur due to the following reasons:
 
-First, this could be a classic example where a model learns to predict over-represented class in the dataset.
+First, this could be a classic example where a model learns to predict overrepresented class in the dataset.
 %The model has seen more sample of non-description data than is has seen description data.
 During the training process, the model has seen more samples of the negative class.
 The model updates the parameters based on the loss function and does so equally for both classes.
 As the model has seen more samples of the negative class, it better learns to predict the negative class.
-In our case, the negative class is also over represented in the dataset during training (See Section \ref{par:results_binary_classifier}).
+In our case, the negative class is also overrepresented in the dataset during training (See Section \ref{par:results_binary_classifier}).
 The parameters are better optimised for the over represented class, i.e. the negative class.
 Figure \ref{fig:predictionvalues_external} clearly shows that the misclassified samples are much higher for the positive samples (description values) than for the negative samples. 
-The data distribution for the two-left out test sets is also skewed, as can be seen from Table \ref{tab:precision_recall_metrics}.
-Figure \ref{fig:predictionvalues_external} show that the output probabilities for the two held-out datasets also follow this skewness; far more prediction values are pushed towards zero than towards one.
+The data distribution for the two held-out test sets is also skewed, as can be seen from Table \ref{tab:precision_recall_metrics}.
+Figure \ref{fig:predictionvalues_external} shows that the output probabilities for the two held-out datasets also follow this skewness; far more prediction values are pushed towards zero than towards one.
 The model learned to predict the negatives better than the positive values.
 
 Second, the data preparation could cause performance issues.
@@ -1688,8 +1691,7 @@ Most likely, it is a combination of the three aforementioned issues that cause t
 As can be seen from Figure \ref{fig:URL_distribution_1}, the web crawler did not find many URLs per species; according to the boxplot, most values lay between 17 and 33.
 As far as we know, there is no literature available on the number of online available databases and websites that contain descriptions, but these numbers do not seem that high.
 At time of writing, a bottleneck of our AI system is the web crawler.
-We currently use Bing and DuckDuckGo to search the web for species descriptions.
-However, as we do not have access to official API's we only use the results of the first pages, this severely limits the number of results.
+We currently use Bing and DuckDuckGo to search the web for species descriptions, and as we do not have access to official API's, we only use the results of the first pages, this severely limits the number of results.
 
 
 The number of unique base URLs is even lower in Figure \ref{fig:URL_distribution_2}.
@@ -1723,7 +1725,7 @@ A lot of information is also stored in PDF files and text files, which are not u
 As can be seen from Figures \ref{fig:BOW_distribution} and \ref{fig:CUB_distribution}, the overall distribution is somewhat equal for both datasets.
 The CUB dataset does seem to be more consistent in the data distribution.
 The CUB dataset has a single outlier, whereas our dataset has multiple outliers, and has a lower $\sigma$ compared to $\mu$ then our dataset.
-This does influence the comparison values, but does influence the conclusion.
+%This does influence the comparison values, but does influence the conclusion.
 We first match select a bird in both datasets, and after, this we match each part against each other.
 If there is no (no part) data available in the BoW dataset, it will not match against the CUB-200 dataset, and no similarity value will be computed.
 
@@ -1757,7 +1759,7 @@ These graphs are then again used to reconstruct sentences and predict a species 
 We release our code for the rule-based PoS tagging in combination with dependency parsing.
 
 PoS tagging in combination with dependency parsing has proven to be exceptionally difficult.
-Ideally one would extract nodes and relations that only contain a single word per node or relation\footnote{In the case of a compound it a node could contain more words, like the example of the "Brown bear".}.
+Ideally one would extract nodes and relations that only contain a single word per node or relation\footnote{In the case of a compound a node could contain more words, like the example of the "Brown bear".}.
 This would allow for more sharing nodes between the species. 
 In this thesis we did not process all the text into single words representing a node.
 E.g. in the example of Figure \ref{fig:kngraph_unweighted} there is a triple containing "capsule", "has\_property"\footnote{This relation is not visible in Figure \ref{fig:kngraph_unweighted} due to aesthetic reasons.} and "beaked by persistent style".
@@ -1768,7 +1770,7 @@ Finally a new triple should be created: "style", "has\_modifier" and "persistent
  \centering
  %\hspace{-0.5cm}
  \includegraphics[width=0.6\textwidth]{figures/kn_discussion_example.pdf}
- \caption[Processing triples into singular words]{By further processing triples, every node and relation would exist out of one word allowing for more common traits across species.}
+ \caption[Processing triples into singular words]{By further processing triples, every node and relation would consist of one word allowing for more common traits across species.}
  \label{fig:kn_discussion}
 \end{figure}
 
@@ -1807,7 +1809,7 @@ The Palm dataset consists of multiple different variables as we described in Sec
 In the Palm Trait dataset, we searched for the closest value in case of numeric values.
 This works fairly well in the case of traits like the 'Stem Height', 'Stem Diameter' and 'Number of Leaves' as can be seen in Figures \ref{fig:stem_values} and \ref{fig:leaf_values}.
 For most palm species a value is found, and our approach even yields the exact same value as the value described in the Palm Trait dataset several times. 
-These traits are relatively simple\footnote{'Simple' as in everybody know what is meant, when this trait is presented.}.
+These traits are relatively simple\footnote{'Simple' as in everybody knows what is meant, when this trait is presented.}.
 It is relatively easy to obtain information about these traits.
 When a web page contains any information about a palm trait, most of the times the simple traits are described.
 This makes it easy for our approach to find the correct, or a close value for the species.
@@ -1826,7 +1828,7 @@ When our approach returns a value, we (at this moment) do not know anything abou
 The returned value for, e.g. the fruit width, could be 25 cm, 0.25 m, or it could even be expressed in millimeters. 
 This could account for several larger outliers in Figures \ref{fig:stem_values}, \ref{fig:fruitlength_values}, \ref{fig:fruitwidth_values} and \ref{fig:petioleANDrachis_values}.
 The same applies for imperial units (e.g. feet, inches).
-The Palm trait dataset uses the metric system, so we need to convert them to metric values.
+%The Palm trait dataset uses the metric system, so we need to convert them to metric values.
 As long as the unit of measurements is provided in the descriptions (feet, meters), we can convert them to a common unit.
 The unit is an 'appositional modifier' of a noun, or an 'adjectival complement' of a verb that describes a noun ('normal subject').
 If the the unit contains any values, they are always joined by as an 'numeric modifier', allowing us in future work to correct these values.
@@ -1838,7 +1840,7 @@ If the the unit contains any values, they are always joined by as an 'numeric mo
 Figure \ref{fig:confusion_matrix_shapes} contains the confusion matrix for the shapes of the fruit and Figure \ref{fig:confusion_matrix_colours} contains the confusion matrix for the colours of the fruit.
 In Table \ref{tab:confusion_matrix_metric_table} the accompanying metrics for both Figures can be found. 
 
-I case of the fruit shape, our AI system misses quite a few values. 
+In case of the fruit shape, our AI system misses quite a few values. 
 With 129 missing values, a little over 50\% are missed for the selected palm trees.
 Our approach does seem to pick up a signal.
 With an average precision of 45\% over all classes, the model seems to correctly identify certain classes out of all predictions.
@@ -1853,9 +1855,9 @@ Colour description might occur in the queried website by the web crawler.
 The precision, recall and the F1-score are very reasonable.
 The precision for the colours of the fruit is very high with 77.00\%.
 Most mistakes are made in 'orange', 'yellow' and 'white'.
-quite a few colours are predicted as one of the aforementioned colours while the true colour is something.
+Quite a few colours are predicted as one of the aforementioned colours while the true colour is something different.
 However, the mistakes are often close to the true colour on radiometric spectrum.
-The prediction are wrong in these cases, but one might argue that the prediction is correct to some extent.
+The predictions are wrong in these cases, but one might argue that the prediction is correct to some extent.
 E.g. when the predicted colour is 'yellow', but the actual colour is 'orange', it could be an yellowish orange.
 The same applies in the case of 'brown'.
 The prediction is 'yellow' and the actual colour is 'brown', but the colour could be yellowish brown.
@@ -1879,7 +1881,7 @@ Our AI system has to return values like these in the data to make a correct clas
 With 'StemErect' the model is almost correct all of the time when it classifies a species as erect.
 The precision almost reaches 100\%.
 While a precision of almost 100\% is very good, we expected a precision of exactly 100\%.
-When our model find that a stem is erect, one expect that the stem is also erect in the Palm Trait dataset.
+When our model finds that a stem is erect, one expects that the stem is also erect in the Palm Trait dataset.
 Further investigation explained that there are several palm species with a '2' as value.
 We are not sure what $StemErect$ $==$ $2$ means.
 We could not find anything in their documentation related to these values and these values might be incorrect.
@@ -1926,8 +1928,8 @@ Each of these birds has a very colourful plumage.
 All plumage (inner, outer, etc.) has a very different colour.
 These birds might have less trait overlap with the average bird, as the average bird colours are unsaturated plain colours according to \textcite{delhey_colour_2016}.
 However, we have not investigated the plumage colour of all birds present in the CUB-200 dataset.
-The 'Blue Grosbeak', 'Indigo Bunting' and 'Lazuli Bunting' also display strong sexually dimorphism; the male and female look very different.
-We only compared the results per bird per part, and did not make any distinguishes between male and females.
+The 'Blue Grosbeak', 'Indigo Bunting' and 'Lazuli Bunting' also display strong sexually dimorphism; the male and female look very different that could increase the dissimilarity.
+We only compared the results per bird per part, and did not make any distinctions between males and females.
 When our AI system retrieved the descriptions for a female bird, it could be compared to a male counterpart in the CUB-200 dataset or vice-versa.
 
 Taking the top five lowest (ranked in order) column mean values results in the following birds: 
@@ -1943,25 +1945,27 @@ These five birds are all mostly grayish.
 This could explain the overall higher similarity for these birds compared to others, as their colours are unsaturated and plain.
 But, again, we did not investigate the traits of 200 birds, and make this assumption based on research about bird colours of \textcite{delhey_colour_2016}.
 
-\subsection{Species Prediction}
+\subsection{Species Classification}
 Testing whether an NLP model is able to learn to predict a species is difficult.
 As we mention before, we cannot leave out any species during the training process.
 If the model does not see the species during training it is not able to classify it during testing.
-It also not feasible to leave out part of the descriptive data of a species during the training process, as these descriptive data may contain essential descriptions describing a species.
+It also not feasible to leave out part of the descriptive data of a species during the training process, as these descriptive data may contain essential descriptions.
 To counter this issue, we trained and tested the model on two different databases that have species overlap.
+
+\subsubsection{Species Prediction}
 The train dataset is our own dataset, that is created by our approach (see Figure \ref{fig:workflow}).
 We use the PoWo dataset and the Llifle dataset as test data and make the assumption that it would be possible to distinguish the species from other species in a dataset with the descriptions present in the training dataset.
 We do not assume that the model will reach a high accuracy classifying the species, therefore we tested the results of the classifier against that of random guessing a species, as it is highly unlikely that both datasets describe each species equally detailed.
 
 By summing the negative log values of the model output, like we did in Figure \ref{fig:predictionvalues_external}, the model learns to make predictions based on small text sentence; it makes it possible to use small text pieces during the training process and make a final prediction based on all pieces.
 The example of \ref{fig:predictionvalues_external} is a cherry-picked example; with all text samples, the model perfectly classifies the correct species.
-The model actually find the the correct species around the eleventh text sample and the prediction does not change anymore as more text snippets are added.
+The model actually finds the correct species around the eleventh text sample and the prediction does not change anymore as more text snippets are added.
 In most cases, we did not expect the model to find the correct species. 
 We did expect that correct species will have an overall higher rank (summed log value) than species that are incorrect.
 
 For each species, we took the summed log value of the correct species and tested if these values were significantly higher than those of the incorrect species.
 We did not expect that the model would reach a high accuracy in predicting species.
-The Wilcoxon Singed Rank test does indicate that the model learn to classify the species (also see Figure \ref{fig:Log_dist}).
+The Wilcoxon Singed Rank test does indicate that the model learns to classify the species (also see Figure \ref{fig:Log_dist}).
 The log values of the correct species where significant higher than the log values of the incorrect species.
 
 The model does perform better than a random classifier.
@@ -1973,14 +1977,14 @@ The model should be trained by all available data.
 When the model makes a prediction and makes a classification based on text samples, the prediction is either correct or incorrect.
 In the case of an incorrect prediction, experts could help investigate if it is still a reasonable prediction, as many species look a like.
 E.g. in the case of the Common raven versus the Carrion crow; when the model is presented snippets of the Common raven, and it predicts a Carrion crow, the model is incorrect, but the prediction is still very reasonable.
-The incorrect classification might be caused by a vital text piece that makes a distinguish between two (or more) species.
+The incorrect classification might be caused by a vital text piece that makes a distinction between two (or more) species.
 
 Another approach is training the classifier on the same dataset as we did now, and manually select species from the other dataset.
 These species should be very distinguishable, e.g. group several uniformly coloured birds, each group with a different colour.
 Next, make sure that within each group there are also some bird traits that make it possible to separate them on the text traits.
 
 
-\subsection{Branch Importance} \label{par:branch_importance}
+\subsubsection{Trait Importance} \label{par:branch_importance}
 We tried to infer branch importance by training a model on recreated pieces of text.
 Branch importance can tell us which traits are distinguishable within the used data.
 This has proven to be very difficult as the nodes of the branches do not all exist of singular words.
@@ -1990,7 +1994,7 @@ Both nodes are seen as unique, and thus very important for the specific species 
 
 A BERT model will output both vectors with a high similarity.
 A classifier on top of BERT will also classify both nodes the same, but this is highly dependent on the complexity of the classifier and the amount of epoch used to train the classifier.
-When the classifier on top of BERT is trained long enough it will to start overfitting on the data.
+When the classifier on top of BERT is trained long enough it will start overfitting on the data.
 The classifier will see both nodes as two different nodes and classify them as such.
 In the example of the '5 cm long', the traits are no longer shared across the species, as the 'up to 5 cm long' and 'to 5 cm long' are now both seen as two unique nodes.
 
@@ -2015,7 +2019,7 @@ We built a large NLP classifier for detecting descriptions.
 For training and testing data we used several structured web sources.
 We used the paragraph to label the dataset with positive and negative values.
 A custom loss function was during training to compensate for mislabelled samples.
-The custom loss function allows the model for some semi-supervised learning by allowing the model to chance the label of a sample if a predefined threshold is reached.
+The custom loss function allows the model for some semi-supervised learning by allowing the model to change the label of a sample if a predefined threshold is reached.
 We reached an F1-score of 0.96 on the test set and and F1-score of 0.83 on two completely held-out datasets.
 By deploying this model in a web crawler we were able to create a database consisting of almost 15 thousand different plant species and containing almost 4,3 million descriptive sentences within two weeks.
 
@@ -2030,7 +2034,6 @@ Evaluating this model is difficult as we cannot create a test set from the data,
 To test the model, we used an never seen hand-annotated dataset containing the same species seen during training.
 We assumed both dataset have at least some overlap between the species descriptions and our model is able to pickup that signal.
 Our model does pick up a signal, and perform better than random guessing a species.
-
 Extracting the most important trait per species is difficult.
 In our database, most traits are unique, even when describing the same trait.
 Computing and extracting the importance relative to other traits for a species is now highly dependent on the training time of the model.
@@ -2108,16 +2111,16 @@ We did not include any way to validate the model incorrect, duplicate and unnece
 We took the highest similarity value of the vector embeddings for each bird when we compared our dataset against the CUB-200 dataset.
 Whenever the model came across a well-known bird species, a lot descriptions are found for that bird.
 We broke down the description sentences into small text snippets, resulting in more text snippets than a lesser-known bird.
-Because we only took the highest similarity value of the vector embeddings, bird with more text snippets have a higher chance of matching against the CUB-200 dataset.
+Because we only took the highest similarity value of the vector embeddings, birds with more text snippets have a higher chance of matching against the CUB-200 dataset.
 In the meantime, the large number of possibly incorrect snippets are not included in the model metrics.
-When our AI-system finds and extract a text snippet for a certain bird that is a 100\% against the same bird from the CUB-200 dataset, it will result in a similarity value of 1.00. 
+When our AI-system finds and extracts a text snippet for a certain bird that is a 100\% against the same bird from the CUB-200 dataset, it will result in a similarity value of 1.00. 
 Even when one exact is found, and an $n$ number of snippets that do not make any sense, the model is correct and not penalised for these incorrect values.
 
-For the Palm Trait dataset, we used a different approach.
-We searched for direct hits, or the closest value. 
-When no missing value was found, it resulted in an incorrect value that was included in the metrics.
-Similarity values were no longer computed.
-However, the metric do not include any missing value.
+%For the Palm Trait dataset, we used a different approach.
+%We searched for direct hits, or the closest value. 
+%When no missing value was found, it resulted in an incorrect value that was included in the metrics.
+%Similarity values were no longer computed.
+%However, the metrics do not include any missing value.
 
 
 %In the case of the comparison against the CUB-200 dataset, we took the highest comparison value of the vector embeddings of both species.
@@ -2147,7 +2150,7 @@ We still have a few more steps to take to create a 'clean' knowledge graph.
 An other important part is to create singular text nodes like we describe in Section \ref{par:branch_importance}.
 When nodes are processed in such a way that similar nodes are somehow 'pushed' together, more shared traits are possible.
 It is even possible to switch from an NLP model to a simpler model.
-We do not need vector representations of text any more, as we nodes are shared and we no longer need the similarity between mismatched nodes.
+We do not need vector representations of text any more, as the nodes are shared and we no longer need the similarity between mismatched nodes.
 With enough traits per species, we can simply select the unique combination traits for a species.
 
 In Figure \ref{fig:kngraph_rec} a small example of a knowledge graph that implements these features can be found.
@@ -2169,6 +2172,8 @@ Storing species descriptions into knowledge graphs has a lot of potential.
  \caption[Knowledge Graph Future Example]{An simple property knowledge graph. All the nodes consists of singular words; species can shared these traits. Relations are kept simple (simple property graph vs rigorous graph) and can be connected to other ontology's, like e.g. WikiData. The graph can also point towards other species in case the relation is 'similar to' and retrieve the correct traits.}
  \label{fig:kngraph_rec}
 \end{figure}
+
+%%%% SPECIES PREDICTION? FIST ON TAX? THEN SPECIES LEVEL ETC?
 
 
 \printbibliography
